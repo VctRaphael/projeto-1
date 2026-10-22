@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tupã IA - Chatbot Especialista na Estância Turística de Tupã</title>
+  <meta name="description" content="Inteligência Artificial e Chatbot especializado em história, turismo, faculdades, economia e cultura de Tupã - SP.">
+  
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Google Fonts (Inter) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- CABEÇALHO PRINCIPAL -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="logo-area">
+        <div class="logo-icon">
+          <i class="fa-solid fa-bolt"></i>
+        </div>
+        <div class="logo-text">
+          <h1>Tupã IA <span class="badge-tag">Estância Turística</span></h1>
+          <span class="logo-subtitle">Modelo de Linguagem Especializado em Tupã - SP</span>
+        </div>
+      </div>
+      
+      <div class="header-actions">
+        <button id="open-settings-btn" class="header-btn" title="Configurações do Modelo">
+          <i class="fa-solid fa-sliders"></i> <span>Motor IA</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- NAVEGAÇÃO DE ABAS -->
+  <nav class="nav-tabs-wrapper">
+    <div class="nav-tabs-container">
+      <button class="nav-tab-btn active" data-tab="chat">
+        <i class="fa-solid fa-comments"></i> Chatbot Especialista
+      </button>
+      <button class="nav-tab-btn" data-tab="places">
+        <i class="fa-solid fa-map-location-dot"></i> Guia Turístico & Varpa
+      </button>
+      <button class="nav-tab-btn" data-tab="facts">
+        <i class="fa-solid fa-landmark"></i> História & Faculdades
+      </button>
+    </div>
+  </nav>
+
+  <!-- ÁREA DE CONTEÚDO PRINCIPAL -->
+  <main class="main-wrapper">
+    
+    <!-- ABA 1: CHATBOT -->
+    <section id="tab-chat" class="tab-content active">
+      <div class="chat-layout">
+        
+        <!-- Sidebar com Sugestões e Destaques -->
+        <aside class="chat-sidebar">
+          <div class="sidebar-section-title">
+            <i class="fa-solid fa-wand-magic-sparkles"></i> Perguntas Frequentes
+          </div>
+          <div class="quick-prompts-list">
+            <button class="prompt-btn" onclick="sendQuickPrompt('Quem fundou Tupã e qual a história da fundação em 1929?')">
+              <i class="fa-solid fa-landmark"></i> História e Fundação (1929)
+            </button>
+            <button class="prompt-btn" onclick="sendQuickPrompt('Como funciona a visita ao Museu Índia Vanuíre e o que tem lá?')">
+              <i class="fa-solid fa-feather-pointed"></i> Museu Índia Vanuíre
+            </button>
+            <button class="prompt-btn" onclick="sendQuickPrompt('Quais os atrativos do Distrito de Varpa, queijos e cachoeiras?')">
+              <i class="fa-solid fa-tree"></i> Distrito de Varpa e Queijos
+            </button>
+            <button class="prompt-btn" onclick="sendQuickPrompt('Fale sobre as faculdades de Tupã, como a FADAP e a UNESP')">
+              <i class="fa-solid fa-graduation-cap"></i> FADAP/FAP e UNESP Tupã
+            </button>
+            <button class="prompt-btn" onclick="sendQuickPrompt('Por que Tupã é chamada de Capital do Amendoim e polo solar?')">
+              <i class="fa-solid fa-seedling"></i> Capital do Amendoim
+            </button>
+            <button class="prompt-btn" onclick="sendQuickPrompt('Quais os melhores eventos da cidade, como a EXAPIT e o Tupã Folia?')">
+              <i class="fa-solid fa-ticket"></i> EXAPIT e Tupã Folia
+            </button>
+          </div>
+
+          <!-- Card Informativo do Município -->
+          <div class="sidebar-stats-card">
+            <h4><i class="fa-solid fa-circle-info"></i> Dados Rápidos</h4>
+            <p><strong>População:</strong> ~64 mil habitantes</p>
+            <p><strong>Fundação:</strong> 12/10/1929</p>
+            <p><strong>Fundador:</strong> Luiz de Souza Leão</p>
+            <p><strong>Altitude:</strong> 508 metros</p>
+            <p><strong>Distritos:</strong> Varpa, Parnaso e Universo</p>
+          </div>
+        </aside>
+
+        <!-- Área Principal de Mensagens -->
+        <div class="chat-main-area">
+          <!-- Toolbar do Chat -->
+          <div class="chat-toolbar">
+            <div class="chat-status-indicator">
+              <span class="pulse-dot"></span>
+              <span>Tupã IA Conectada & Pronta</span>
+            </div>
+            <div class="toolbar-controls">
+              <label class="toggle-container" title="Ativar áudio das respostas automaticamente">
+                <input type="checkbox" id="tts-toggle">
+                <i class="fa-solid fa-volume-high"></i> Ler em voz alta
+              </label>
+              <button id="clear-chat-btn" class="icon-btn" title="Limpar conversa">
+                <i class="fa-solid fa-trash-can"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Mensagens -->
+          <div id="chat-messages" class="messages-container">
+            <!-- Mensagens são inseridas dinamicamente pelo JS -->
+          </div>
+
+          <!-- Barra de Input -->
+          <div class="chat-input-wrapper">
+            <form id="chat-form" class="chat-input-form">
+              <textarea 
+                id="user-input" 
+                class="chat-textarea" 
+                placeholder="Pergunte sobre história, turismo, Varpa, faculdades, amendoim..." 
+                rows="1"
+                required
+              ></textarea>
+              
+              <button type="button" id="mic-btn" class="input-action-btn" title="Falar por microfone">
+                <i class="fa-solid fa-microphone"></i>
+              </button>
+              
+              <button type="submit" class="input-action-btn btn-send" title="Enviar mensagem">
+                <i class="fa-solid fa-paper-plane"></i>
+              </button>
+            </form>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ABA 2: GUIA TURÍSTICO -->
+    <section id="tab-places" class="tab-content">
+      <div class="places-section-header">
+        <h2>Pontos Turísticos & Ecoturismo de Tupã</h2>
+        <p>Conheça os principais cartões-postais da cidade e do distrito histórico de Varpa.</p>
+      </div>
+      <div id="places-grid" class="places-grid">
+        <!-- Renderizado dinamicamente via app.js -->
+      </div>
+    </section>
+
+    <!-- ABA 3: HISTÓRIA & FACULDADES -->
+    <section id="tab-facts" class="tab-content">
+      <div class="places-section-header">
+        <h2>História, Fatos & Ensino Superior</h2>
+        <p>Curiosidades marcantes e instituições que transformaram Tupã em polo regional.</p>
+      </div>
+
+      <div class="sidebar-section-title" style="margin-bottom: 14px;">
+        <i class="fa-solid fa-star"></i> Curiosidades Históricas
+      </div>
+      <div id="facts-list" class="facts-grid">
+        <!-- Renderizado dinamicamente -->
+      </div>
+
+      <div class="institutions-section">
+        <div class="sidebar-section-title">
+          <i class="fa-solid fa-building-columns"></i> Faculdades e Instituições de Ensino
+        </div>
+        <div class="institutions-grid">
+          <div class="inst-card">
+            <h4>FADAP / FAP</h4>
+            <p><strong>Faculdade da Alta Paulista:</strong> Grande tradição regional na formação de profissionais em Direito, Odontologia, Enfermagem, Psicologia, Agronomia e Saúde.</p>
+          </div>
+          <div class="inst-card">
+            <h4>UNESP Tupã</h4>
+            <p><strong>Universidade Estadual Paulista:</strong> Câmpus público e gratuito de excelência com cursos de Engenharia de Biossistemas e Administração, além de pós-graduação.</p>
+          </div>
+          <div class="inst-card">
+            <h4>ETEC Prof. Massuyuki Kawano</h4>
+            <p><strong>Centro Paula Souza:</strong> Ensino médio e técnico de referência nas áreas de tecnologia, enfermagem, administração e design.</p>
+          </div>
+          <div class="inst-card">
+            <h4>FATEC Tupã</h4>
+            <p><strong>Faculdade de Tecnologia:</strong> Cursos superiores tecnológicos voltados para o agronegócio e gestão de sistemas.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MODAL DE CONFIGURAÇÕES DE IA -->
+  <div id="settings-modal" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-sliders"></i> Motor de Inteligência Artificial</h3>
+        <button id="close-settings-btn" class="icon-btn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="provider-select">Provedor do Modelo:</label>
+          <select id="provider-select">
+            <option value="local">Motor Local Integrado (Offline, 100% Gratuito e Especializado)</option>
+            <option value="gemini">Google Gemini (API Key)</option>
+            <option value="openai">OpenAI ChatGPT (API Key)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="api-key-input">Chave de API (Opcional):</label>
+          <input type="password" id="api-key-input" placeholder="Cole sua chave de API (se usar Gemini/OpenAI)">
+          <small style="color: var(--text-muted); font-size: 0.78rem; margin-top: 4px;">
+            Por padrão, o motor local já contém todo o conhecimento sobre Tupã e funciona sem precisar de chave ou internet.
+          </small>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="save-settings-btn" class="header-btn" style="background: var(--primary); border: none;">Salvar Alterações</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCRIPTS -->
+  <script src="tupa-data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
