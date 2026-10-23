@@ -3,235 +3,2556 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tupã IA - Chatbot Especialista na Estância Turística de Tupã</title>
-  <meta name="description" content="Inteligência Artificial e Chatbot especializado em história, turismo, faculdades, economia e cultura de Tupã - SP.">
-  
-  <!-- Font Awesome Icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  
-  <!-- Google Fonts (Inter) -->
+  <title>Tupã IA - Inteligência Artificial & Portal Completo de Tupã (SP)</title>
+  <meta name="description" content="Assistente virtual inteligente integrado com todos os dados da Prefeitura de Tupã (tupa.sp.gov.br), IBGE, economia, renda per capita, serviços públicos, secretarias, saúde e turismo.">
+
+  <!-- Google Fonts: Plus Jakarta Sans & Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  
-  <!-- Custom CSS -->
-  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --font-heading: 'Plus Jakarta Sans', -apple-system, sans-serif;
+      --font-body: 'Inter', -apple-system, sans-serif;
+
+      --bg-deep: #0a0f1d;
+      --bg-surface: #111827;
+      --bg-card: #182234;
+      --bg-card-hover: #1f2c42;
+      --bg-input: #1a2333;
+      
+      --primary: #0ea5e9;
+      --primary-hover: #0284c7;
+      --primary-glow: rgba(14, 165, 233, 0.25);
+      
+      --accent: #10b981;
+      --solar: #f59e0b;
+      --danger: #ef4444;
+
+      --border: rgba(255, 255, 255, 0.08);
+      --border-focus: rgba(14, 165, 233, 0.4);
+
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --radius-xl: 28px;
+      
+      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+      --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.4);
+      --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.5);
+      --transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: var(--font-body);
+      background-color: var(--bg-deep);
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      position: relative;
+      line-height: 1.6;
+    }
+
+    .bg-glow {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(140px);
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.5;
+    }
+
+    .glow-1 {
+      width: 450px;
+      height: 450px;
+      background: radial-gradient(circle, rgba(14, 165, 233, 0.2), transparent 70%);
+      top: -100px;
+      right: -50px;
+    }
+
+    .glow-2 {
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(16, 185, 129, 0.15), transparent 70%);
+      bottom: -150px;
+      left: -100px;
+    }
+
+    /* Navbar */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(10, 15, 29, 0.92);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-container {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-badge-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-md);
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      box-shadow: 0 4px 14px var(--primary-glow);
+    }
+
+    .brand-title {
+      font-family: var(--font-heading);
+      font-size: 1.25rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      letter-spacing: -0.5px;
+    }
+
+    .gradient-text {
+      background: linear-gradient(135deg, #38bdf8, #34d399);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .city-pill {
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      background: rgba(255, 255, 255, 0.08);
+      padding: 2px 8px;
+      border-radius: 20px;
+      color: var(--text-secondary);
+      border: 1px solid var(--border);
+    }
+
+    .live-status {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.75rem;
+      color: var(--accent);
+      font-weight: 500;
+      margin-top: 1px;
+    }
+
+    .pulse-dot {
+      width: 7px;
+      height: 7px;
+      background: var(--accent);
+      border-radius: 50%;
+      box-shadow: 0 0 10px var(--accent);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 0.5; transform: scale(0.9); }
+      50% { opacity: 1; transform: scale(1.15); }
+      100% { opacity: 0.5; transform: scale(0.9); }
+    }
+
+    /* Tabs */
+    .nav-tabs {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.04);
+      padding: 4px;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+    }
+
+    .nav-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-secondary);
+      padding: 8px 16px;
+      border-radius: var(--radius-md);
+      font-family: var(--font-heading);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: var(--transition);
+      white-space: nowrap;
+    }
+
+    .nav-btn:hover {
+      color: var(--text-primary);
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .nav-btn.active {
+      background: var(--primary);
+      color: #fff;
+      box-shadow: 0 4px 14px var(--primary-glow);
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .voice-toggle-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      padding: 7px 14px;
+      border-radius: var(--radius-md);
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .voice-toggle-btn:hover {
+      border-color: var(--primary);
+      color: var(--text-primary);
+    }
+
+    .voice-toggle-btn.active {
+      background: rgba(14, 165, 233, 0.15);
+      border-color: var(--primary);
+      color: #38bdf8;
+    }
+
+    /* Main Container */
+    .main-content {
+      max-width: 1240px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 24px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      z-index: 1;
+    }
+
+    .view-panel {
+      display: none;
+      flex-direction: column;
+      animation: fadeIn 0.3s ease forwards;
+    }
+
+    .view-panel.active {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Chat View */
+    .hero-welcome {
+      text-align: center;
+      margin: 20px auto 30px;
+      max-width: 760px;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(14, 165, 233, 0.12);
+      border: 1px solid rgba(14, 165, 233, 0.3);
+      padding: 6px 14px;
+      border-radius: 30px;
+      color: #38bdf8;
+      font-size: 0.82rem;
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+
+    .hero-title {
+      font-family: var(--font-heading);
+      font-size: 2.2rem;
+      font-weight: 800;
+      line-height: 1.25;
+      letter-spacing: -0.8px;
+      margin-bottom: 12px;
+    }
+
+    .hero-desc {
+      color: var(--text-secondary);
+      font-size: 0.98rem;
+      line-height: 1.6;
+    }
+
+    /* Suggestion Pills */
+    .suggestions-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .suggestion-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      padding: 14px 16px;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transition: var(--transition);
+      text-align: left;
+    }
+
+    .suggestion-card:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--primary);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .sug-icon {
+      font-size: 1.3rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-sm);
+      background: rgba(255, 255, 255, 0.05);
+      flex-shrink: 0;
+    }
+
+    .sug-text h4 {
+      font-family: var(--font-heading);
+      font-size: 0.86rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 2px;
+    }
+
+    .sug-text p {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    /* Chat Messages Box */
+    .chat-container {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      min-height: 380px;
+      margin-bottom: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .chat-bubble {
+      display: flex;
+      gap: 14px;
+      max-width: 88%;
+      animation: messageIn 0.25s ease forwards;
+    }
+
+    @keyframes messageIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .chat-bubble.user {
+      align-self: flex-end;
+      flex-direction: row-reverse;
+    }
+
+    .chat-bubble.bot {
+      align-self: flex-start;
+    }
+
+    .bubble-avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+
+    .chat-bubble.user .bubble-avatar {
+      background: linear-gradient(135deg, #3b82f6, #6366f1);
+      color: #fff;
+    }
+
+    .chat-bubble.bot .bubble-avatar {
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: #fff;
+      box-shadow: 0 4px 12px var(--primary-glow);
+    }
+
+    .msg-bubble-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 14px 18px;
+      position: relative;
+    }
+
+    .chat-bubble.user .msg-bubble-box {
+      background: linear-gradient(135deg, #0284c7, #0369a1);
+      border-color: rgba(255, 255, 255, 0.15);
+      border-bottom-right-radius: 4px;
+      color: #fff;
+    }
+
+    .chat-bubble.bot .msg-bubble-box {
+      border-bottom-left-radius: 4px;
+    }
+
+    .msg-sender-title {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--primary);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .chat-bubble.user .msg-sender-title {
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .msg-text-content {
+      font-size: 0.94rem;
+      line-height: 1.65;
+      color: var(--text-primary);
+      word-break: break-word;
+    }
+
+    .msg-text-content p {
+      margin-bottom: 8px;
+    }
+
+    .msg-text-content p:last-child {
+      margin-bottom: 0;
+    }
+
+    .msg-text-content ul, .msg-text-content ol {
+      margin-left: 20px;
+      margin-bottom: 8px;
+    }
+
+    .msg-text-content li {
+      margin-bottom: 4px;
+    }
+
+    .msg-text-content strong {
+      color: #38bdf8;
+    }
+
+    .chat-bubble.user .msg-text-content strong {
+      color: #fff;
+    }
+
+    .msg-text-content a {
+      color: #34d399;
+      text-decoration: underline;
+      font-weight: 600;
+    }
+
+    .msg-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 10px;
+      padding-top: 8px;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .msg-action-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 8px;
+      border-radius: var(--radius-sm);
+      transition: var(--transition);
+    }
+
+    .msg-action-btn:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-primary);
+    }
+
+    /* Typing indicator */
+    .typing-indicator {
+      display: none;
+      align-items: center;
+      gap: 5px;
+      padding: 8px 12px;
+      background: var(--bg-card);
+      border-radius: var(--radius-md);
+      width: fit-content;
+      border: 1px solid var(--border);
+    }
+
+    .typing-dot {
+      width: 6px;
+      height: 6px;
+      background: var(--primary);
+      border-radius: 50%;
+      animation: typingBounce 1.2s infinite ease-in-out;
+    }
+
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes typingBounce {
+      0%, 80%, 100% { transform: translateY(0); opacity: 0.4; }
+      40% { transform: translateY(-5px); opacity: 1; }
+    }
+
+    /* Chat Input Bar */
+    .input-dock {
+      position: sticky;
+      bottom: 20px;
+      z-index: 50;
+      background: rgba(17, 24, 39, 0.95);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border-focus);
+      border-radius: var(--radius-xl);
+      padding: 8px 12px 8px 18px;
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6);
+      transition: var(--transition);
+    }
+
+    .input-dock:focus-within {
+      border-color: var(--primary);
+      box-shadow: 0 12px 40px var(--primary-glow);
+    }
+
+    .input-form {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .chat-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text-primary);
+      font-family: var(--font-body);
+      font-size: 0.96rem;
+      padding: 8px 0;
+    }
+
+    .chat-input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .mic-btn, .send-btn {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
+      flex-shrink: 0;
+    }
+
+    .mic-btn {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-secondary);
+    }
+
+    .mic-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text-primary);
+    }
+
+    .mic-btn.listening {
+      background: var(--danger);
+      color: #fff;
+      animation: pulse 1.2s infinite;
+    }
+
+    .send-btn {
+      background: linear-gradient(135deg, var(--primary), #0284c7);
+      color: #fff;
+      box-shadow: 0 4px 12px var(--primary-glow);
+    }
+
+    .send-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 16px var(--primary-glow);
+    }
+
+    .dock-footer {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 16px;
+      margin-top: 6px;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    /* Section Headings */
+    .section-heading {
+      text-align: center;
+      margin: 10px auto 30px;
+      max-width: 700px;
+    }
+
+    .section-tag {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--primary);
+      background: rgba(14, 165, 233, 0.12);
+      padding: 4px 12px;
+      border-radius: 20px;
+      display: inline-block;
+      margin-bottom: 10px;
+    }
+
+    .section-heading h2 {
+      font-family: var(--font-heading);
+      font-size: 1.85rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      margin-bottom: 8px;
+    }
+
+    .section-heading p {
+      color: var(--text-secondary);
+      font-size: 0.92rem;
+    }
+
+    /* Emergency Strip */
+    .emergency-strip {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .emergency-item {
+      background: rgba(239, 68, 68, 0.08);
+      border: 1px solid rgba(239, 68, 68, 0.25);
+      border-radius: var(--radius-md);
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .em-icon {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: #ef4444;
+      background: rgba(239, 68, 68, 0.15);
+      width: 44px;
+      height: 44px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .em-content h5 {
+      font-family: var(--font-heading);
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .em-content p {
+      font-size: 0.78rem;
+      color: #fca5a5;
+      font-weight: 600;
+    }
+
+    /* Mayoral Leadership Banner */
+    .mayor-card {
+      background: linear-gradient(135deg, rgba(14, 165, 233, 0.12), rgba(16, 185, 129, 0.12));
+      border: 1px solid rgba(14, 165, 233, 0.3);
+      border-radius: var(--radius-lg);
+      padding: 20px 24px;
+      margin-bottom: 24px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .mayor-info {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .mayor-avatar-badge {
+      width: 52px;
+      height: 52px;
+      border-radius: var(--radius-md);
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      color: #fff;
+      box-shadow: 0 4px 16px var(--primary-glow);
+    }
+
+    .mayor-details h3 {
+      font-family: var(--font-heading);
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .mayor-details p {
+      font-size: 0.84rem;
+      color: var(--text-secondary);
+    }
+
+    .mayor-contact-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .mayor-pill {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border);
+      padding: 6px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 0.78rem;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Services Grid */
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 16px;
+      margin-bottom: 30px;
+    }
+
+    .service-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: var(--transition);
+    }
+
+    .service-card:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--primary);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .service-icon {
+      font-size: 1.6rem;
+      width: 44px;
+      height: 44px;
+      border-radius: var(--radius-md);
+      background: rgba(255, 255, 255, 0.05);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .service-title {
+      font-family: var(--font-heading);
+      font-size: 1.05rem;
+      font-weight: 700;
+    }
+
+    .service-desc {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      line-height: 1.55;
+      flex: 1;
+    }
+
+    .service-link {
+      color: var(--primary);
+      font-size: 0.82rem;
+      font-weight: 600;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 6px;
+    }
+
+    .service-link:hover {
+      color: #38bdf8;
+      text-decoration: underline;
+    }
+
+    /* Secretarias Directory Accordion/Grid */
+    .secretarias-section {
+      margin-top: 10px;
+      margin-bottom: 30px;
+    }
+
+    .secretarias-heading {
+      margin-bottom: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .secretarias-heading h3 {
+      font-family: var(--font-heading);
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .sec-search-input {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 8px 14px;
+      color: #fff;
+      font-size: 0.84rem;
+      outline: none;
+      width: 260px;
+    }
+
+    .sec-search-input:focus {
+      border-color: var(--primary);
+    }
+
+    .secretarias-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 14px;
+    }
+
+    .sec-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      transition: var(--transition);
+    }
+
+    .sec-card:hover {
+      border-color: rgba(14, 165, 233, 0.4);
+      background: var(--bg-card-hover);
+    }
+
+    .sec-badge {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: #38bdf8;
+      background: rgba(14, 165, 233, 0.12);
+      padding: 2px 8px;
+      border-radius: 4px;
+      width: fit-content;
+    }
+
+    .sec-name {
+      font-family: var(--font-heading);
+      font-size: 0.96rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .sec-head {
+      font-size: 0.82rem;
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .sec-info {
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+      line-height: 1.45;
+    }
+
+    .sec-btn {
+      margin-top: 6px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      color: var(--text-primary);
+      padding: 6px 10px;
+      border-radius: var(--radius-sm);
+      font-size: 0.74rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      transition: var(--transition);
+    }
+
+    .sec-btn:hover {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+
+    /* Places Grid */
+    .places-grid-v2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 18px;
+      margin-bottom: 30px;
+    }
+
+    .place-card-v2 {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: var(--transition);
+    }
+
+    .place-card-v2:hover {
+      border-color: var(--primary);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .place-category-badge {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--solar);
+      background: rgba(245, 158, 11, 0.12);
+      padding: 3px 10px;
+      border-radius: 20px;
+      width: fit-content;
+    }
+
+    .place-title-v2 {
+      font-family: var(--font-heading);
+      font-size: 1.15rem;
+      font-weight: 800;
+    }
+
+    .place-desc-v2 {
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      line-height: 1.55;
+      flex: 1;
+    }
+
+    .place-meta-v2 {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .place-dica-v2 {
+      background: rgba(16, 185, 129, 0.1);
+      border-left: 3px solid var(--accent);
+      padding: 8px 12px;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      font-size: 0.8rem;
+      color: #6ee7b7;
+    }
+
+    .place-ask-btn {
+      margin-top: 6px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      color: var(--text-primary);
+      padding: 8px 14px;
+      border-radius: var(--radius-md);
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      text-align: center;
+    }
+
+    .place-ask-btn:hover {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+
+    /* Facts & Universities */
+    .facts-grid-v2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 14px;
+      margin-bottom: 30px;
+    }
+
+    .fact-card-v2 {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 18px;
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      transition: var(--transition);
+    }
+
+    .fact-card-v2:hover {
+      border-color: var(--accent);
+      transform: translateY(-2px);
+    }
+
+    .fact-icon-v2 {
+      font-size: 1.4rem;
+      background: rgba(16, 185, 129, 0.12);
+      width: 42px;
+      height: 42px;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      color: var(--accent);
+    }
+
+    .fact-content-v2 h4 {
+      font-family: var(--font-heading);
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .fact-content-v2 p {
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    .section-subheading {
+      margin: 20px 0 16px;
+    }
+
+    .section-subheading h3 {
+      font-family: var(--font-heading);
+      font-size: 1.35rem;
+      font-weight: 800;
+    }
+
+    .section-subheading p {
+      color: var(--text-secondary);
+      font-size: 0.88rem;
+    }
+
+    .universities-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin-bottom: 30px;
+    }
+
+    .uni-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: var(--transition);
+    }
+
+    .uni-card:hover {
+      border-color: var(--primary);
+    }
+
+    .uni-header {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .uni-badge {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: #38bdf8;
+      background: rgba(14, 165, 233, 0.12);
+      padding: 2px 8px;
+      border-radius: 4px;
+      width: fit-content;
+    }
+
+    .uni-header h4 {
+      font-family: var(--font-heading);
+      font-size: 1.15rem;
+      font-weight: 800;
+    }
+
+    .uni-subtitle {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .uni-card p {
+      font-size: 0.84rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+      flex: 1;
+    }
+
+    .uni-ask-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      color: var(--text-primary);
+      padding: 8px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      text-align: center;
+    }
+
+    .uni-ask-btn:hover {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 80px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: rgba(17, 24, 39, 0.95);
+      border: 1px solid var(--border-focus);
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 30px;
+      font-size: 0.84rem;
+      font-weight: 500;
+      box-shadow: var(--shadow-lg);
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.3s ease;
+      z-index: 1000;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* Responsiveness */
+    @media (max-width: 900px) {
+      .nav-container { flex-wrap: wrap; }
+      .nav-tabs { order: 3; width: 100%; justify-content: center; margin-top: 8px; }
+      .hero-title { font-size: 1.8rem; }
+      .chat-bubble { max-width: 96%; }
+    }
+
+    @media (max-width: 600px) {
+      .main-content { padding: 14px; }
+      .nav-btn span { display: none; }
+      .nav-btn { padding: 8px 12px; }
+      .hero-title { font-size: 1.5rem; }
+      .suggestions-grid { grid-template-columns: 1fr; }
+    }
+  </style>
 </head>
 <body>
 
-  <!-- CABEÇALHO PRINCIPAL -->
-  <header class="app-header">
-    <div class="header-container">
-      <div class="logo-area">
-        <div class="logo-icon">
-          <i class="fa-solid fa-bolt"></i>
+  <!-- Ambient Glow -->
+  <div class="bg-glow glow-1"></div>
+  <div class="bg-glow glow-2"></div>
+
+  <!-- Header / Navbar -->
+  <header class="navbar">
+    <div class="nav-container">
+      
+      <div class="brand-group">
+        <div class="brand-badge-icon">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 0 0-8-8z"></path>
+            <circle cx="12" cy="10" r="3"></circle>
+          </svg>
         </div>
-        <div class="logo-text">
-          <h1>Tupã IA <span class="badge-tag">Estância Turística</span></h1>
-          <span class="logo-subtitle">Modelo de Linguagem Especializado em Tupã - SP</span>
+        <div>
+          <div class="brand-title">
+            <span class="gradient-text">Tupã IA</span>
+            <span class="city-pill">Estância Turística</span>
+          </div>
+          <div class="live-status">
+            <span class="pulse-dot"></span>
+            <span>Integrado a tupa.sp.gov.br & IBGE</span>
+          </div>
         </div>
       </div>
-      
-      <div class="header-actions">
-        <button id="open-settings-btn" class="header-btn" title="Configurações do Modelo">
-          <i class="fa-solid fa-sliders"></i> <span>Motor IA</span>
+
+      <!-- Navigation Tabs -->
+      <nav class="nav-tabs">
+        <button class="nav-btn active" data-tab="chat">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+          <span>Chatbot IA</span>
+        </button>
+
+        <button class="nav-btn" data-tab="services">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+          <span>Prefeitura & Serviços</span>
+        </button>
+
+        <button class="nav-btn" data-tab="places">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon></svg>
+          <span>Guia Turístico</span>
+        </button>
+
+        <button class="nav-btn" data-tab="facts">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+          <span>História & Economia</span>
+        </button>
+      </nav>
+
+      <!-- Voice toggle -->
+      <div class="nav-actions">
+        <button id="toggle-voice-btn" class="voice-toggle-btn active" title="Ativar ou desativar leitura por voz">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+          </svg>
+          <span id="voice-status">Voz Ativa</span>
         </button>
       </div>
+
     </div>
   </header>
 
-  <!-- NAVEGAÇÃO DE ABAS -->
-  <nav class="nav-tabs-wrapper">
-    <div class="nav-tabs-container">
-      <button class="nav-tab-btn active" data-tab="chat">
-        <i class="fa-solid fa-comments"></i> Chatbot Especialista
-      </button>
-      <button class="nav-tab-btn" data-tab="places">
-        <i class="fa-solid fa-map-location-dot"></i> Guia Turístico & Varpa
-      </button>
-      <button class="nav-tab-btn" data-tab="facts">
-        <i class="fa-solid fa-landmark"></i> História & Faculdades
-      </button>
-    </div>
-  </nav>
+  <!-- Main View Area -->
+  <main class="main-content">
 
-  <!-- ÁREA DE CONTEÚDO PRINCIPAL -->
-  <main class="main-wrapper">
-    
-    <!-- ABA 1: CHATBOT -->
-    <section id="tab-chat" class="tab-content active">
-      <div class="chat-layout">
-        
-        <!-- Sidebar com Sugestões e Destaques -->
-        <aside class="chat-sidebar">
-          <div class="sidebar-section-title">
-            <i class="fa-solid fa-wand-magic-sparkles"></i> Perguntas Frequentes
-          </div>
-          <div class="quick-prompts-list">
-            <button class="prompt-btn" onclick="sendQuickPrompt('Quem fundou Tupã e qual a história da fundação em 1929?')">
-              <i class="fa-solid fa-landmark"></i> História e Fundação (1929)
-            </button>
-            <button class="prompt-btn" onclick="sendQuickPrompt('Como funciona a visita ao Museu Índia Vanuíre e o que tem lá?')">
-              <i class="fa-solid fa-feather-pointed"></i> Museu Índia Vanuíre
-            </button>
-            <button class="prompt-btn" onclick="sendQuickPrompt('Quais os atrativos do Distrito de Varpa, queijos e cachoeiras?')">
-              <i class="fa-solid fa-tree"></i> Distrito de Varpa e Queijos
-            </button>
-            <button class="prompt-btn" onclick="sendQuickPrompt('Fale sobre as faculdades de Tupã, como a FADAP e a UNESP')">
-              <i class="fa-solid fa-graduation-cap"></i> FADAP/FAP e UNESP Tupã
-            </button>
-            <button class="prompt-btn" onclick="sendQuickPrompt('Por que Tupã é chamada de Capital do Amendoim e polo solar?')">
-              <i class="fa-solid fa-seedling"></i> Capital do Amendoim
-            </button>
-            <button class="prompt-btn" onclick="sendQuickPrompt('Quais os melhores eventos da cidade, como a EXAPIT e o Tupã Folia?')">
-              <i class="fa-solid fa-ticket"></i> EXAPIT e Tupã Folia
-            </button>
-          </div>
+    <!-- SEÇÃO 1: CHATBOT IA INTELIGENTE -->
+    <section id="view-chat" class="view-panel active">
+      
+      <div class="hero-welcome">
+        <div class="hero-badge">
+          ✨ Inteligência Artificial Especializada na Cidade de Tupã
+        </div>
+        <h1 class="hero-title">
+          Explore e Consulte Tudo Sobre <span class="gradient-text">Tupã (SP)</span>
+        </h1>
+        <p class="hero-desc">
+          Inteligência Artificial especialista em economia (PIB, renda per capita), serviços públicos (IPTU, 1Doc), secretarias municipais, saúde (UPA, Santa Casa), turismo (Vanuíre, Varpa) e universidades (FADAP, UNESP).
+        </p>
+      </div>
 
-          <!-- Card Informativo do Município -->
-          <div class="sidebar-stats-card">
-            <h4><i class="fa-solid fa-circle-info"></i> Dados Rápidos</h4>
-            <p><strong>População:</strong> ~64 mil habitantes</p>
-            <p><strong>Fundação:</strong> 12/10/1929</p>
-            <p><strong>Fundador:</strong> Luiz de Souza Leão</p>
-            <p><strong>Altitude:</strong> 508 metros</p>
-            <p><strong>Distritos:</strong> Varpa, Parnaso e Universo</p>
-          </div>
-        </aside>
-
-        <!-- Área Principal de Mensagens -->
-        <div class="chat-main-area">
-          <!-- Toolbar do Chat -->
-          <div class="chat-toolbar">
-            <div class="chat-status-indicator">
-              <span class="pulse-dot"></span>
-              <span>Tupã IA Conectada & Pronta</span>
-            </div>
-            <div class="toolbar-controls">
-              <label class="toggle-container" title="Ativar áudio das respostas automaticamente">
-                <input type="checkbox" id="tts-toggle">
-                <i class="fa-solid fa-volume-high"></i> Ler em voz alta
-              </label>
-              <button id="clear-chat-btn" class="icon-btn" title="Limpar conversa">
-                <i class="fa-solid fa-trash-can"></i>
-              </button>
-            </div>
-          </div>
-
-          <!-- Mensagens -->
-          <div id="chat-messages" class="messages-container">
-            <!-- Mensagens são inseridas dinamicamente pelo JS -->
-          </div>
-
-          <!-- Barra de Input -->
-          <div class="chat-input-wrapper">
-            <form id="chat-form" class="chat-input-form">
-              <textarea 
-                id="user-input" 
-                class="chat-textarea" 
-                placeholder="Pergunte sobre história, turismo, Varpa, faculdades, amendoim..." 
-                rows="1"
-                required
-              ></textarea>
-              
-              <button type="button" id="mic-btn" class="input-action-btn" title="Falar por microfone">
-                <i class="fa-solid fa-microphone"></i>
-              </button>
-              
-              <button type="submit" class="input-action-btn btn-send" title="Enviar mensagem">
-                <i class="fa-solid fa-paper-plane"></i>
-              </button>
-            </form>
+      <!-- Sugestões Interativas Rápidas -->
+      <div class="suggestions-grid">
+        <div class="suggestion-card" onclick="sendPrompt('Qual é a renda per capita, o PIB e os dados econômicos de Tupã?')">
+          <div class="sug-icon">💰</div>
+          <div class="sug-text">
+            <h4>Renda per Capita & PIB</h4>
+            <p>Estatísticas do IBGE, salários e economia</p>
           </div>
         </div>
 
+        <div class="suggestion-card" onclick="sendPrompt('Quem é o prefeito atual de Tupã e como falar no Gabinete?')">
+          <div class="sug-icon">🏛️</div>
+          <div class="sug-text">
+            <h4>Prefeito & Gabinete</h4>
+            <p>Renan Pontelli, contatos e atendimento</p>
+          </div>
+        </div>
+
+        <div class="suggestion-card" onclick="sendPrompt('Como emitir a 2ª via do IPTU e obter isenção na Prefeitura?')">
+          <div class="sug-icon">🧾</div>
+          <div class="sug-text">
+            <h4>IPTU & Arrecadação</h4>
+            <p>2ª via no portal oficial e isenção</p>
+          </div>
+        </div>
+
+        <div class="suggestion-card" onclick="sendPrompt('Quais as vagas abertas no PAT de Tupã e concursos públicos?')">
+          <div class="sug-icon">💼</div>
+          <div class="sug-text">
+            <h4>PAT & Concursos</h4>
+            <p>Vagas de emprego e editais públicos</p>
+          </div>
+        </div>
+
+        <div class="suggestion-card" onclick="sendPrompt('Onde fica e como funciona o atendimento da UPA e Santa Casa de Tupã?')">
+          <div class="sug-icon">🏥</div>
+          <div class="sug-text">
+            <h4>UPA 24h & Santa Casa</h4>
+            <p>Telefones, exames online e remédios</p>
+          </div>
+        </div>
+
+        <div class="suggestion-card" onclick="sendPrompt('Quais são as atrações turísticas de Tupã, Varpa e o Museu Vanuíre?')">
+          <div class="sug-icon">🌲</div>
+          <div class="sug-text">
+            <h4>Turismo, Varpa & Vanuíre</h4>
+            <p>Tradição letã, queijos e museu indígena</p>
+          </div>
+        </div>
       </div>
+
+      <!-- Container do Histórico de Mensagens -->
+      <div class="chat-container" id="chat-messages">
+        <!-- Mensagem de Boas-Vindas Inicial -->
+        <div class="chat-bubble bot">
+          <div class="bubble-avatar">🤖</div>
+          <div class="msg-bubble-box">
+            <div class="msg-sender-title">Tupã IA • Conectada aos Portais Oficiais</div>
+            <div class="msg-text-content">
+              Olá! Seja muito bem-vindo ao portal inteligente de <strong>Tupã (SP)</strong>! 🏛️🌾<br><br>
+              Estou totalmente integrada aos dados oficiais da Prefeitura Municipal (<strong>tupa.sp.gov.br</strong>), do IBGE, do PNUD e do acervo cultural e histórico da nossa Estância Turística.<br><br>
+              Você pode me perguntar sobre:
+              <ul>
+                <li><strong>Economia & Renda:</strong> PIB per capita, salários médios, IDHM e capital do amendoim.</li>
+                <li><strong>Prefeitura & Gestão:</strong> Prefeito Renan Pontelli, 18 secretarias, endereços e ramais diretos.</li>
+                <li><strong>Cidadão & Tributos:</strong> Emissão da 2ª via do IPTU, protocolos no 1Doc e ouvidoria municipal.</li>
+                <li><strong>Emprego & Oportunidades:</strong> PAT (vagas na Rua Guaianazes, 70) e editais de concursos.</li>
+                <li><strong>Saúde & Emergências:</strong> UPA 24h, Santa Casa, consulta de exames laboratoriais e medicamentos.</li>
+                <li><strong>Turismo & História:</strong> Museu Histórico Índia Vanuíre, Distrito de Varpa, Solar do Fundador e faculdades (FADAP, UNESP).</li>
+              </ul>
+              Como posso te ajudar hoje?
+            </div>
+            <div class="msg-actions">
+              <button class="msg-action-btn" onclick="speakMessage(this)" title="Ouvir áudio">
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+                Ouvir
+              </button>
+              <button class="msg-action-btn" onclick="copyText(this)" title="Copiar texto">
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                Copiar
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div id="typing-indicator" class="typing-indicator">
+          <span class="typing-dot"></span>
+          <span class="typing-dot"></span>
+          <span class="typing-dot"></span>
+          <span style="font-size:0.75rem; color:var(--text-muted); margin-left:6px;">Tupã IA digitando...</span>
+        </div>
+      </div>
+
+      <!-- Dock de Entrada de Texto -->
+      <div class="input-dock">
+        <form id="chat-form" class="input-form">
+          <input 
+            type="text" 
+            id="chat-input" 
+            class="chat-input" 
+            placeholder="Pergunte sobre renda per capita, prefeito, IPTU, PAT, secretarias, UPA, Varpa..." 
+            autocomplete="off"
+            required
+          >
+          
+          <button type="button" id="mic-btn" class="mic-btn" title="Falar por microfone">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+              <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+              <line x1="12" y1="19" x2="12" y2="23"></line>
+              <line x1="8" y1="23" x2="16" y2="23"></line>
+            </svg>
+          </button>
+
+          <button type="submit" id="send-btn" class="send-btn" title="Enviar Mensagem">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="22" y1="2" x2="11" y2="13"></line>
+              <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+            </svg>
+          </button>
+        </form>
+        <div class="dock-footer">
+          <span>Tupã IA • Conectado a dados de tupa.sp.gov.br e estatísticas oficiais do IBGE / PNUD</span>
+        </div>
+      </div>
+
     </section>
 
-    <!-- ABA 2: GUIA TURÍSTICO -->
-    <section id="tab-places" class="tab-content">
-      <div class="places-section-header">
+    <!-- SEÇÃO 2: PREFEITURA & SERVIÇOS (EXTRAÍDO DE TUPA.SP.GOV.BR) -->
+    <section id="view-services" class="view-panel">
+      <div class="section-heading">
+        <span class="section-tag">Portal do Cidadão & Serviços Oficiais</span>
+        <h2>Prefeitura da Estância Turística de Tupã</h2>
+        <p>Dados oficiais, prefeito, secretarias, telefones de urgência e links diretos extraídos do portal <strong>tupa.sp.gov.br</strong>.</p>
+      </div>
+
+      <!-- Cartão do Gabinete do Prefeito -->
+      <div class="mayor-card">
+        <div class="mayor-info">
+          <div class="mayor-avatar-badge">🏛️</div>
+          <div class="mayor-details">
+            <h3>Prefeito: Renan Victor Pontelli</h3>
+            <p>Vice-prefeita: Joice Berni • Gabinete do Executivo Municipal</p>
+          </div>
+        </div>
+        <div class="mayor-contact-pills">
+          <span class="mayor-pill">📍 Praça da Bandeira, 800 - Centro</span>
+          <span class="mayor-pill">📞 (14) 3404-1000 / 3496-3346</span>
+          <span class="mayor-pill">✉️ prefeito@tupa.sp.gov.br</span>
+          <span class="mayor-pill">⏰ 7h30 às 17h00</span>
+        </div>
+      </div>
+
+      <!-- Faixa de Emergência -->
+      <div class="emergency-strip">
+        <div class="emergency-item">
+          <div class="em-icon">192</div>
+          <div class="em-content">
+            <h5>SAMU (Emergência Médica)</h5>
+            <p>192 (Plantão 24 Horas)</p>
+          </div>
+        </div>
+        <div class="emergency-item">
+          <div class="em-icon">193</div>
+          <div class="em-content">
+            <h5>Corpo de Bombeiros</h5>
+            <p>193 • (14) 3496-1193</p>
+          </div>
+        </div>
+        <div class="emergency-item">
+          <div class="em-icon">190</div>
+          <div class="em-content">
+            <h5>Polícia Militar</h5>
+            <p>190 (Ronda & Ocorrências)</p>
+          </div>
+        </div>
+        <div class="emergency-item">
+          <div class="em-icon" style="color:#38bdf8; background:rgba(14,165,233,0.15)">UPA</div>
+          <div class="em-content">
+            <h5>Pronto Atendimento 24h</h5>
+            <p style="color:#38bdf8">(14) 3441-4292</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Grid de Serviços Digitais -->
+      <div class="services-grid">
+        <div class="service-card">
+          <div class="service-icon">💻</div>
+          <h3 class="service-title">Central de Atendimento 1Doc</h3>
+          <p class="service-desc">
+            Protocolo digital oficial da Prefeitura para emissão de certidões, ITBI, alvarás, requerimentos e acompanhamento de processos sem filas.
+          </p>
+          <a href="https://tupa.1doc.com.br/atendimento" target="_blank" class="service-link">Acessar Portal 1Doc ↗</a>
+        </div>
+
+        <div class="service-card">
+          <div class="service-icon">🧾</div>
+          <h3 class="service-title">IPTU & Arrecadação Online</h3>
+          <p class="service-desc">
+            Emissão direta da 2ª via de boletos de IPTU, certidão negativa de débitos de imóveis, consulta de débitos e formulário de isenção para idosos.
+          </p>
+          <a href="https://tupa.portalservicos.app.br:2053/home" target="_blank" class="service-link">Portal do IPTU / Arrecadação ↗</a>
+        </div>
+
+        <div class="service-card">
+          <div class="service-icon">💼</div>
+          <h3 class="service-title">PAT (Vagas de Emprego)</h3>
+          <p class="service-desc">
+            Posto de Atendimento ao Trabalhador com intermediação de mão de obra e vagas diárias em empresas locais.<br>
+            <strong>Endereço:</strong> Rua Guaianazes, nº 70 - 1º Piso • Fone: (14) 3404-1000.
+          </p>
+          <button class="place-ask-btn" onclick="sendPrompt('Quais as vagas de emprego no PAT de Tupã e como cadastrar currículo?')">Consultar Vagas com a IA →</button>
+        </div>
+
+        <div class="service-card">
+          <div class="service-icon">🩺</div>
+          <h3 class="service-title">Consulta de Exames & Remédios</h3>
+          <p class="service-desc">
+            Consulte resultados de exames laboratoriais municipais e verifique a lista pública em tempo real de remédios disponíveis na Farmácia Municipal.
+          </p>
+          <a href="https://sistemas7.mrxtecnologia.com.br/saudetupa/consultapublica.jsp" target="_blank" class="service-link">Lista de Medicamentos SUS ↗</a>
+        </div>
+
+        <div class="service-card">
+          <div class="service-icon">🏥</div>
+          <h3 class="service-title">Santa Casa de Misericórdia</h3>
+          <p class="service-desc">
+            Hospital geral regional de referência com Pronto Socorro 24 horas, UTI e maternidade.<br>
+            <strong>Endereço:</strong> Rua Manoel Ferreira Damião, 426 • <strong>Fone:</strong> (14) 3404-3636.
+          </p>
+          <a href="http://www.santacasatupa.org.br" target="_blank" class="service-link">Portal da Santa Casa ↗</a>
+        </div>
+
+        <div class="service-card">
+          <div class="service-icon">📢</div>
+          <h3 class="service-title">Ouvidoria Municipal & Iluminação</h3>
+          <p class="service-desc">
+            Canal direto para solicitação de serviços de zeladoria urbana (tapa-buracos, lâmpadas apagadas, podas de árvores), denúncias e elogios.
+          </p>
+          <a href="https://tupa.1doc.com.br/b.php?pg=wp/detalhes&itd=4" target="_blank" class="service-link">Abrir Ouvidoria ↗</a>
+        </div>
+
+        <div class="service-card">
+          <div class="service-icon">📜</div>
+          <h3 class="service-title">Concursos & Processos Seletivos</h3>
+          <p class="service-desc">
+            Acompanhamento de editais vigentes da Prefeitura para cargos de professores temporários, agentes de trânsito e apoio escolar.
+          </p>
+          <a href="https://www.tupa.sp.gov.br/concurso" target="_blank" class="service-link">Ver Concursos Abertos ↗</a>
+        </div>
+
+        <div class="service-card">
+          <div class="service-icon">🚗</div>
+          <h3 class="service-title">Trânsito & Multas (SF Trânsito)</h3>
+          <p class="service-desc">
+            Consulta oficial de veículos, emissão de 2ª via de autos de infração e acompanhamento de recursos de multas municipais.
+          </p>
+          <a href="https://tupa.sftransito.com.br/" target="_blank" class="service-link">Acessar SF Trânsito ↗</a>
+        </div>
+
+        <div class="service-card">
+          <div class="service-icon">👶</div>
+          <h3 class="service-title">Educação & Fila de Creches</h3>
+          <p class="service-desc">
+            Consulte a transparência da fila de espera de creches municipais (CMEIs) e solicitações de Auxílio Transporte escolar para alunos.
+          </p>
+          <a href="https://sistemas.tupa.sp.gov.br:5907/publico/consultarfilacreches/" target="_blank" class="service-link">Fila de Espera Creches ↗</a>
+        </div>
+      </div>
+
+      <!-- Diretório Oficial das 18 Secretarias Municipais -->
+      <div class="secretarias-section">
+        <div class="secretarias-heading">
+          <div>
+            <h3>Guia Completo das 18 Secretarias Municipais</h3>
+            <p style="color:var(--text-secondary); font-size:0.84rem;">Titulares, telefones oficiais, endereços e e-mails extraídos do portal da Prefeitura</p>
+          </div>
+          <input type="text" id="sec-filter" class="sec-search-input" placeholder="Buscar secretaria (ex: saúde, obras, educação)..." onkeyup="filterSecretarias()">
+        </div>
+
+        <div class="secretarias-grid" id="secretarias-container"></div>
+      </div>
+
+    </section>
+
+    <!-- SEÇÃO 3: GUIA TURÍSTICO -->
+    <section id="view-places" class="view-panel">
+      <div class="section-heading">
+        <span class="section-tag">Roteiro Imperdível</span>
         <h2>Pontos Turísticos & Ecoturismo de Tupã</h2>
-        <p>Conheça os principais cartões-postais da cidade e do distrito histórico de Varpa.</p>
+        <p>Explore o Museu Índia Vanuíre, a tradição letã em Varpa e os cartões-postais da cidade.</p>
       </div>
-      <div id="places-grid" class="places-grid">
-        <!-- Renderizado dinamicamente via app.js -->
-      </div>
+
+      <div class="places-grid-v2" id="places-grid-container"></div>
     </section>
 
-    <!-- ABA 3: HISTÓRIA & FACULDADES -->
-    <section id="tab-facts" class="tab-content">
-      <div class="places-section-header">
-        <h2>História, Fatos & Ensino Superior</h2>
-        <p>Curiosidades marcantes e instituições que transformaram Tupã em polo regional.</p>
+    <!-- SEÇÃO 4: HISTÓRIA & ECONOMIA -->
+    <section id="view-facts" class="view-panel">
+      <div class="section-heading">
+        <span class="section-tag">Indicadores & Ensino</span>
+        <h2>Dados Econômicos, Renda & Polo Universitário</h2>
+        <p>Estatísticas oficiais do IBGE, renda per capita, desenvolvimento humano e instituições de ensino de Tupã.</p>
       </div>
 
-      <div class="sidebar-section-title" style="margin-bottom: 14px;">
-        <i class="fa-solid fa-star"></i> Curiosidades Históricas
-      </div>
-      <div id="facts-list" class="facts-grid">
-        <!-- Renderizado dinamicamente -->
+      <div class="facts-grid-v2" id="facts-container"></div>
+
+      <div class="section-subheading">
+        <h3>Polo de Ensino Superior & Técnico</h3>
+        <p>Instituições renomadas que formam profissionais de todo o Brasil em Tupã</p>
       </div>
 
-      <div class="institutions-section">
-        <div class="sidebar-section-title">
-          <i class="fa-solid fa-building-columns"></i> Faculdades e Instituições de Ensino
-        </div>
-        <div class="institutions-grid">
-          <div class="inst-card">
+      <div class="universities-grid">
+        <div class="uni-card">
+          <div class="uni-header">
+            <span class="uni-badge">Tradição Regional</span>
             <h4>FADAP / FAP</h4>
-            <p><strong>Faculdade da Alta Paulista:</strong> Grande tradição regional na formação de profissionais em Direito, Odontologia, Enfermagem, Psicologia, Agronomia e Saúde.</p>
+            <span class="uni-subtitle">Faculdade da Alta Paulista</span>
           </div>
-          <div class="inst-card">
+          <p>Referência sólida há décadas em cursos como <strong>Direito, Odontologia, Enfermagem, Psicologia, Agronomia</strong> e Engenharias.</p>
+          <button class="uni-ask-btn" onclick="sendPrompt('Quais cursos a FADAP / FAP oferece em Tupã?')">Perguntar sobre a FADAP à IA →</button>
+        </div>
+
+        <div class="uni-card">
+          <div class="uni-header">
+            <span class="uni-badge">Universidade Pública Estadual</span>
             <h4>UNESP Tupã</h4>
-            <p><strong>Universidade Estadual Paulista:</strong> Câmpus público e gratuito de excelência com cursos de Engenharia de Biossistemas e Administração, além de pós-graduação.</p>
+            <span class="uni-subtitle">Câmpus Experimental</span>
           </div>
-          <div class="inst-card">
-            <h4>ETEC Prof. Massuyuki Kawano</h4>
-            <p><strong>Centro Paula Souza:</strong> Ensino médio e técnico de referência nas áreas de tecnologia, enfermagem, administração e design.</p>
-          </div>
-          <div class="inst-card">
+          <p>Ensino superior público e gratuito, pioneira nacional em <strong>Engenharia de Biossistemas</strong> e excelência em <strong>Administração</strong> com mestrado e doutorado.</p>
+          <button class="uni-ask-btn" onclick="sendPrompt('Quais são os diferenciais do câmpus da UNESP em Tupã?')">Perguntar sobre a UNESP à IA →</button>
+        </div>
+
+        <div class="uni-card">
+          <div class="uni-header">
+            <span class="uni-badge">Tecnologia Pública</span>
             <h4>FATEC Tupã</h4>
-            <p><strong>Faculdade de Tecnologia:</strong> Cursos superiores tecnológicos voltados para o agronegócio e gestão de sistemas.</p>
+            <span class="uni-subtitle">Faculdade de Tecnologia de SP</span>
           </div>
+          <p>Cursos de graduação tecnológica gratuitos voltados à Gestão da Produção Industrial, Agronegócio e TI.</p>
+          <button class="uni-ask-btn" onclick="sendPrompt('Quais cursos a FATEC de Tupã oferece?')">Perguntar sobre a FATEC à IA →</button>
+        </div>
+
+        <div class="uni-card">
+          <div class="uni-header">
+            <span class="uni-badge">Ensino Médio & Técnico</span>
+            <h4>ETEC Prof. Massuyuki Kawano</h4>
+            <span class="uni-subtitle">Centro Paula Souza</span>
+          </div>
+          <p>Referência máxima no ensino médio e cursos técnicos de alta performance nas áreas de informática, design e gestão.</p>
+          <button class="uni-ask-btn" onclick="sendPrompt('Quais cursos técnicos a ETEC de Tupã tem disponíveis?')">Perguntar sobre a ETEC à IA →</button>
         </div>
       </div>
     </section>
 
   </main>
 
-  <!-- MODAL DE CONFIGURAÇÕES DE IA -->
-  <div id="settings-modal" class="modal-overlay">
-    <div class="modal-card">
-      <div class="modal-header">
-        <h3><i class="fa-solid fa-sliders"></i> Motor de Inteligência Artificial</h3>
-        <button id="close-settings-btn" class="icon-btn"><i class="fa-solid fa-xmark"></i></button>
-      </div>
-      <div class="modal-body">
-        <div class="form-group">
-          <label for="provider-select">Provedor do Modelo:</label>
-          <select id="provider-select">
-            <option value="local">Motor Local Integrado (Offline, 100% Gratuito e Especializado)</option>
-            <option value="gemini">Google Gemini (API Key)</option>
-            <option value="openai">OpenAI ChatGPT (API Key)</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="api-key-input">Chave de API (Opcional):</label>
-          <input type="password" id="api-key-input" placeholder="Cole sua chave de API (se usar Gemini/OpenAI)">
-          <small style="color: var(--text-muted); font-size: 0.78rem; margin-top: 4px;">
-            Por padrão, o motor local já contém todo o conhecimento sobre Tupã e funciona sem precisar de chave ou internet.
-          </small>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button id="save-settings-btn" class="header-btn" style="background: var(--primary); border: none;">Salvar Alterações</button>
-      </div>
-    </div>
-  </div>
+  <div id="toast" class="toast"></div>
 
-  <!-- SCRIPTS -->
-  <script src="tupa-data.js"></script>
-  <script src="app.js"></script>
+  <!-- JAVASCRIPT EMBUTIDO COMPLETO & ATUALIZADO -->
+  <script>
+    const TUPA_DATA = {
+      secretarias: [
+        {
+          nome: "Secretaria de Saúde",
+          secretario: "Rosângela de Souza Urel",
+          endereco: "Rua Caetés, 1200",
+          telefone: "(14) 3404-2200",
+          email: "saudeexpediente@tupa.sp.gov.br",
+          horario: "7h00 às 17h00",
+          servicos: "UPA 24h, postos de saúde (UBS/USF), vacinas, medicamentos e exames"
+        },
+        {
+          nome: "Secretaria de Obras e Infraestrutura",
+          secretario: "Leandro Marquezi",
+          endereco: "Rua Nhambiquaras, 1555",
+          telefone: "(14) 3404-2233",
+          email: "obras@tupa.sp.gov.br",
+          horario: "7h00 às 17h00",
+          servicos: "Pavimentação, recapeamento, tapa-buracos e projetos estruturais"
+        },
+        {
+          nome: "Secretaria de Finanças & Arrecadação",
+          secretario: "Laina Lopes Jacob",
+          endereco: "Praça da Bandeira, 800 (Paço)",
+          telefone: "(14) 3404-1000",
+          email: "financas@tupa.sp.gov.br",
+          horario: "7h30 às 17h00",
+          servicos: "IPTU, ISS, certidões negativas, dívida ativa e tributos municipais"
+        },
+        {
+          nome: "Secretaria de Educação",
+          secretario: "Carla Renata Servilha Ortega Brandão",
+          endereco: "Rua Aimorés, 507 - Jd. Rubiácea",
+          telefone: "(14) 3404-3550",
+          email: "educacao@tupa.sp.gov.br",
+          horario: "7h00 às 17h00",
+          servicos: "Creches (CMEIs), EMEFs, transporte escolar e merenda"
+        },
+        {
+          nome: "Secretaria de Desenvolvimento Econômico & PAT",
+          secretario: "Marcelo Massao Edamitsu",
+          endereco: "Rua Guaianazes, 70 - 1º Piso",
+          telefone: "(14) 3404-1000",
+          email: "desenvolvimento@tupa.sp.gov.br",
+          horario: "7h30 às 17h00",
+          servicos: "Vagas do PAT, Banco do Povo, abertura de empresas e comércio exterior"
+        },
+        {
+          nome: "Secretaria de Turismo",
+          secretario: "Nayara Martins Cassolin",
+          endereco: "Rua Guaianazes, 70 - 2º Piso",
+          telefone: "(14) 3404-1000",
+          email: "turismo@tupa.sp.gov.br",
+          horario: "7h30 às 17h00",
+          servicos: "Divulgação turística, Distrito de Varpa, artesanato e eventos"
+        },
+        {
+          nome: "Secretaria de Meio Ambiente",
+          secretario: "Davi Bondartchuk",
+          endereco: "Rua Francisco Budaibes, 101",
+          telefone: "(14) 3496-3346",
+          email: "meioambiente@tupa.sp.gov.br",
+          horario: "7h às 11h | 13h às 17h",
+          servicos: "Coleta de lixo, podas e cortes de árvores, denúncias ambientais"
+        },
+        {
+          nome: "Secretaria de Cultura e Defesa do Folclore",
+          secretario: "Luís Carlos dos Passos Sanches",
+          endereco: "Av. Tamoios, 1650",
+          telefone: "(14) 3491-5013",
+          email: "cultura@tupa.sp.gov.br",
+          horario: "8h00 às 17h00",
+          servicos: "Eventos, Solar Luiz de Souza Leão, Feira da Lua e editais culturais"
+        },
+        {
+          nome: "Secretaria de Esportes",
+          secretario: "Fabiano Santos Souza Bocchi",
+          endereco: "Rua Coroados, 1816",
+          telefone: "(14) 3491-2558",
+          email: "esportes@tupa.sp.gov.br",
+          horario: "7h30 às 17h00",
+          servicos: "Copa Tupã, escolinhas municipais, ginásios e Jogos Regionais"
+        },
+        {
+          nome: "Secretaria de Desenvolvimento Social e Família",
+          secretario: "Paula Carneiro Gonçalves",
+          endereco: "Rua Paiaquás, 609",
+          telefone: "(14) 3496-2464",
+          email: "social@tupa.sp.gov.br",
+          horario: "7h00 às 17h00",
+          servicos: "CRAS, CREAS, Cadastro Único, Bolsa Família e assistência social"
+        },
+        {
+          nome: "Secretaria de Planejamento e Gestão",
+          secretario: "Beto Saito",
+          endereco: "Praça da Bandeira, 800",
+          telefone: "(14) 3404-1000",
+          email: "planejamento.gestao@tupa.sp.gov.br",
+          horario: "7h30 às 17h00",
+          servicos: "Plano Diretor, convênios e gestão orçamentária"
+        },
+        {
+          nome: "Secretaria de Administração",
+          secretario: "Everton Nakashima",
+          endereco: "Praça da Bandeira, 800",
+          telefone: "(14) 3404-1000",
+          email: "administracao@tupa.sp.gov.br",
+          horario: "7h30 às 17h00",
+          servicos: "Recursos humanos, concursos e processos seletivos da prefeitura"
+        },
+        {
+          nome: "Secretaria de Agricultura e Abastecimento",
+          secretario: "Anderson Pereira",
+          endereco: "Rua Adamantina, 60",
+          telefone: "(14) 3441-1310",
+          email: "agricultura@tupa.sp.gov.br",
+          horario: "7h às 11h | 13h às 17h",
+          servicos: "Patrulha agrícola, estradas rurais, apoio ao produtor de amendoim"
+        },
+        {
+          nome: "Secretaria de Assuntos Jurídicos",
+          secretario: "Fabio Evandro Porcelli",
+          endereco: "Praça da Bandeira, 800",
+          telefone: "(14) 3404-1000 / 1025",
+          email: "assjuridico@tupa.sp.gov.br",
+          horario: "7h30 às 17h00",
+          servicos: "Assessoria legal, execução fiscal e defesa do município"
+        },
+        {
+          nome: "Secretaria de Comunicação",
+          secretario: "Mariane Gava",
+          endereco: "Praça da Bandeira, 800",
+          telefone: "(14) 3404-1000",
+          email: "imprensa@tupa.sp.gov.br",
+          horario: "7h30 às 17h00",
+          servicos: "Sala de imprensa, diário oficial e portal tupa.sp.gov.br"
+        },
+        {
+          nome: "Secretaria de Governo",
+          secretario: "Marcos Roberto Caliani",
+          endereco: "Praça da Bandeira, 800",
+          telefone: "(14) 3404-1000",
+          email: "governo@tupa.sp.gov.br",
+          horario: "7h30 às 17h00",
+          servicos: "Articulação institucional e coordenação política"
+        },
+        {
+          nome: "Secretaria de Gabinete",
+          secretario: "Dorival Jeronimo Coquemala",
+          endereco: "Praça da Bandeira, 800",
+          telefone: "(14) 3496-3346",
+          email: "prefeito@tupa.sp.gov.br",
+          horario: "7h30 às 17h00",
+          servicos: "Agenda do prefeito e audiências com a comunidade"
+        },
+        {
+          nome: "Secretaria de Relações Institucionais",
+          secretario: "Adriana Rodrigues de Moraes",
+          endereco: "Praça da Bandeira, 800",
+          telefone: "(14) 3404-1000",
+          email: "sec.institucional@tupa.sp.gov.br",
+          horario: "7h30 às 17h00",
+          servicos: "Relações com a Câmara Municipal e órgãos estaduais/federais"
+        }
+      ],
+      pontos_turisticos: [
+        {
+          nome: "Museu Histórico e Pedagógico Índia Vanuíre",
+          categoria: "Cultura & História Indígena",
+          descricao: "Referência nacional e latino-americana em museologia indígena. Abriga mais de 38 mil peças catalogadas dos povos originários Kaingang, Krenak e Terena.",
+          endereco: "Rua Coroados, 521 - Centro de Tupã",
+          dica: "Aberto de terça a domingo, com entrada 100% gratuita!"
+        },
+        {
+          nome: "Distrito Histórico de Varpa",
+          categoria: "Ecoturismo & Tradição Letã",
+          descricao: "Fundado em 1922 por imigrantes da Letônia. Preserva construções de madeira, o famoso Rancho dos Defumados, o Museu dos Pioneiros e a Cachoeira da Palma.",
+          distancia: "25 km do centro de Tupã (acesso totalmente asfaltado)",
+          dica: "Experimente o autêntico Queijo Suíço Artesanal de Varpa e os defumados caseiros!"
+        },
+        {
+          nome: "Solar Luiz de Souza Leão",
+          categoria: "Patrimônio Histórico",
+          descricao: "Residência original do fundador de Tupã, construída em 1933 e tombada pelo Condephaat. É envolvida por um bosque municipal com rica fauna e flora.",
+          endereco: "Rua Caingangs, 600 - Centro",
+          dica: "Ótimo ponto para passeios relaxantes e fotografias históricas."
+        },
+        {
+          nome: "Praça da Bandeira & Fonte Luminosa",
+          categoria: "Lazer & Convivência",
+          descricao: "Coração cívico e social da cidade onde fica o Paço Municipal. Palco da tradicional Feira da Lua, shows regionais e celebrações populares.",
+          endereco: "Praça da Bandeira, Centro de Tupã"
+        },
+        {
+          nome: "Igreja Matriz de São Pedro",
+          categoria: "Arquitetura Religiosa",
+          descricao: "Templo monumental no centro da cidade dedicado a São Pedro, padroeiro de Tupã, com belos vitrais artísticos e fachada neoclássica.",
+          endereco: "Em frente à Praça da Bandeira"
+        },
+        {
+          nome: "Cachoeira da Palma (Varpa)",
+          categoria: "Ecoturismo & Natureza",
+          descricao: "Belíssima queda d'água localizada no distrito de Varpa, rodeada de mata nativa, ideal para ecoturismo e passeios com a família.",
+          distancia: "Distrito de Varpa (cerca de 28 km de Tupã)"
+        }
+      ],
+      curiosidades: [
+        {
+          titulo: "Renda per Capita & PIB",
+          icone: "💰",
+          texto: "O PIB per capita de Tupã é de aproximadamente R$ 48.934,77 por habitante ao ano (Censo IBGE), com PIB municipal total de R$ 3,19 bilhões."
+        },
+        {
+          titulo: "IDHM Alto (0,771)",
+          icone: "📈",
+          texto: "Segundo o Atlas Brasil (PNUD), Tupã ostenta Índice de Desenvolvimento Humano de 0,771, com destaque para a Longevidade (0,852) e Renda (0,764)."
+        },
+        {
+          titulo: "Salário Médio Formal",
+          icone: "💼",
+          texto: "O trabalhador com carteira assinada em Tupã recebe média salarial de 2,1 a 2,4 salários mínimos, impulsionado pela indústria e agronegócio."
+        },
+        {
+          titulo: "Capital Nacional do Amendoim",
+          icone: "🥜",
+          texto: "Tupã é o maior polo de cultivo, secagem e beneficiamento de amendoim do Brasil, abrigando gigantes da exportação como a Amendupã."
+        },
+        {
+          titulo: "Polo de Energia Solar",
+          icone: "☀️",
+          texto: "Cidade pioneira no interior de São Paulo a atrair grandes usinas fotovoltaicas e investimentos bilionários em transição energética sustentável."
+        },
+        {
+          titulo: "População Oficial (IBGE)",
+          icone: "👥",
+          texto: "A população recenseada de Tupã é de 65.433 habitantes, com área territorial de 627,98 km² e três distritos: Varpa, Parnaso e Universo."
+        },
+        {
+          titulo: "Traçado Urbano Indígena",
+          icone: "🏹",
+          texto: "Fundada em 12 de outubro de 1929 por Luiz de Souza Leão, suas ruas centrais homenageiam tribos brasileiras: Caingangs, Coroados, Guaranis e Aimorés."
+        },
+        {
+          titulo: "Colônia Letã de Varpa",
+          icone: "🌲",
+          texto: "Varpa é uma das maiores e mais preservadas colônias de imigrantes batistas da Letônia no mundo, fundada em 1922 com culinária típica suíço-letã."
+        }
+      ]
+    };
+
+    const App = {
+      chatHistory: [],
+      isVoiceActive: true,
+      isListening: false,
+      recognition: null,
+      synth: window.speechSynthesis || null,
+      typingInterval: null
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initNavigation();
+      initSecretarias();
+      initPlaces();
+      initFacts();
+      initChatForm();
+      initSpeechFeatures();
+    });
+
+    function initNavigation() {
+      const tabs = document.querySelectorAll('.nav-btn');
+      tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          tabs.forEach(t => t.classList.remove('active'));
+          document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
+
+          tab.classList.add('active');
+          const targetId = `view-${tab.dataset.tab}`;
+          const panel = document.getElementById(targetId);
+          if (panel) panel.classList.add('active');
+
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+      });
+
+      const voiceBtn = document.getElementById('toggle-voice-btn');
+      const voiceStatus = document.getElementById('voice-status');
+      if (voiceBtn) {
+        voiceBtn.addEventListener('click', () => {
+          App.isVoiceActive = !App.isVoiceActive;
+          voiceBtn.classList.toggle('active', App.isVoiceActive);
+          voiceStatus.textContent = App.isVoiceActive ? 'Voz Ativa' : 'Voz Muda';
+          showToast(App.isVoiceActive ? 'Leitura de voz ativada!' : 'Leitura de voz silenciada.');
+          if (!App.isVoiceActive && App.synth) App.synth.cancel();
+        });
+      }
+    }
+
+    function initSecretarias() {
+      const container = document.getElementById('secretarias-container');
+      if (!container) return;
+
+      container.innerHTML = TUPA_DATA.secretarias.map(s => `
+        <div class="sec-card" data-keywords="${(s.nome + ' ' + s.secretario + ' ' + s.servicos).toLowerCase()}">
+          <span class="sec-badge">Secretaria Oficial</span>
+          <div class="sec-name">${s.nome}</div>
+          <div class="sec-head">Titular: ${s.secretario}</div>
+          <div class="sec-info">
+            📍 ${s.endereco}<br>
+            📞 <strong>${s.telefone}</strong><br>
+            ✉️ ${s.email}<br>
+            ⏰ ${s.horario}<br>
+            <em style="color:#94a3b8">Serviços: ${s.servicos}</em>
+          </div>
+          <button class="sec-btn" onclick="sendPrompt('Como entrar em contato e quais serviços a ${s.nome} de Tupã oferece?')">
+            Perguntar sobre esta secretaria →
+          </button>
+        </div>
+      `).join('');
+    }
+
+    function filterSecretarias() {
+      const query = document.getElementById('sec-filter').value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      const cards = document.querySelectorAll('.sec-card');
+      cards.forEach(card => {
+        const text = card.getAttribute('data-keywords').normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        card.style.display = text.includes(query) ? 'flex' : 'none';
+      });
+    }
+
+    function initPlaces() {
+      const grid = document.getElementById('places-grid-container');
+      if (!grid) return;
+
+      grid.innerHTML = TUPA_DATA.pontos_turisticos.map(p => `
+        <article class="place-card-v2">
+          <span class="place-category-badge">${p.categoria}</span>
+          <h3 class="place-title-v2">${p.nome}</h3>
+          <p class="place-desc-v2">${p.descricao}</p>
+          ${p.endereco ? `<div class="place-meta-v2">📍 ${p.endereco}</div>` : ''}
+          ${p.distancia ? `<div class="place-meta-v2">🚗 ${p.distancia}</div>` : ''}
+          ${p.dica ? `<div class="place-dica-v2">💡 <strong>Dica:</strong> ${p.dica}</div>` : ''}
+          <button class="place-ask-btn" onclick="sendPrompt('Conte mais detalhes turísticos e curiosidades sobre o ${p.nome}')">
+            Perguntar sobre este local à IA →
+          </button>
+        </article>
+      `).join('');
+    }
+
+    function initFacts() {
+      const grid = document.getElementById('facts-container');
+      if (!grid) return;
+
+      grid.innerHTML = TUPA_DATA.curiosidades.map(f => `
+        <div class="fact-card-v2">
+          <div class="fact-icon-v2">${f.icone}</div>
+          <div class="fact-content-v2">
+            <h4>${f.titulo}</h4>
+            <p>${f.texto}</p>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function initChatForm() {
+      const form = document.getElementById('chat-form');
+      const input = document.getElementById('chat-input');
+      if (!form || !input) return;
+
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const text = input.value.trim();
+        if (!text) return;
+        input.value = '';
+        processUserMessage(text);
+      });
+    }
+
+    function sendPrompt(text) {
+      document.querySelectorAll('.nav-btn').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
+
+      const chatTab = document.querySelector('.nav-btn[data-tab="chat"]');
+      const chatView = document.getElementById('view-chat');
+      if (chatTab) chatTab.classList.add('active');
+      if (chatView) chatView.classList.add('active');
+
+      processUserMessage(text);
+    }
+
+    function processUserMessage(rawText) {
+      appendMessage('user', rawText);
+      showTyping(true);
+
+      setTimeout(() => {
+        const botResponse = generateTupaResponse(rawText);
+        showTyping(false);
+        appendBotStreamingMessage(botResponse);
+      }, 450);
+    }
+
+    function appendMessage(sender, text) {
+      const container = document.getElementById('chat-messages');
+      const typing = document.getElementById('typing-indicator');
+
+      const bubble = document.createElement('div');
+      bubble.className = `chat-bubble ${sender}`;
+
+      const avatar = sender === 'user' ? '👤' : '🤖';
+      const title = sender === 'user' ? 'Você' : 'Tupã IA';
+
+      bubble.innerHTML = `
+        <div class="bubble-avatar">${avatar}</div>
+        <div class="msg-bubble-box">
+          <div class="msg-sender-title">${title}</div>
+          <div class="msg-text-content">${formatMarkdown(text)}</div>
+        </div>
+      `;
+
+      container.insertBefore(bubble, typing);
+      scrollToBottom();
+    }
+
+    function appendBotStreamingMessage(fullText) {
+      const container = document.getElementById('chat-messages');
+      const typing = document.getElementById('typing-indicator');
+
+      const bubble = document.createElement('div');
+      bubble.className = 'chat-bubble bot';
+
+      bubble.innerHTML = `
+        <div class="bubble-avatar">🤖</div>
+        <div class="msg-bubble-box">
+          <div class="msg-sender-title">Tupã IA • Conectada aos Portais Oficiais</div>
+          <div class="msg-text-content"></div>
+          <div class="msg-actions">
+            <button class="msg-action-btn" onclick="speakMessage(this)" title="Ouvir áudio">
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+              Ouvir
+            </button>
+            <button class="msg-action-btn" onclick="copyText(this)" title="Copiar texto">
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+              Copiar
+            </button>
+          </div>
+        </div>
+      `;
+
+      container.insertBefore(bubble, typing);
+      const textContainer = bubble.querySelector('.msg-text-content');
+
+      let idx = 0;
+      const speed = 7;
+      if (App.typingInterval) clearInterval(App.typingInterval);
+
+      App.typingInterval = setInterval(() => {
+        idx += 3;
+        if (idx >= fullText.length) {
+          idx = fullText.length;
+          clearInterval(App.typingInterval);
+          textContainer.innerHTML = formatMarkdown(fullText);
+          scrollToBottom();
+
+          if (App.isVoiceActive) {
+            speakAloud(cleanTextForVoice(fullText));
+          }
+        } else {
+          textContainer.innerHTML = formatMarkdown(fullText.substring(0, idx)) + '<span style="color:#0ea5e9">▍</span>';
+          scrollToBottom();
+        }
+      }, speed);
+    }
+
+    function formatMarkdown(text) {
+      if (!text) return '';
+      let escaped = text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+
+      escaped = escaped.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+      escaped = escaped.replace(/\*(.*?)\*/g, '<em>$1</em>');
+      escaped = escaped.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+      escaped = escaped.replace(/\n/g, '<br>');
+
+      return escaped;
+    }
+
+    function cleanTextForVoice(text) {
+      return text
+        .replace(/[*_#`~]/g, '')
+        .replace(/\[(.*?)\]\((.*?)\)/g, '$1')
+        .replace(/https?:\/\/\S+/g, '')
+        .replace(/[•\-\n\r]+/g, ' ')
+        .trim();
+    }
+
+    function speakAloud(text) {
+      if (!App.synth) return;
+      App.synth.cancel();
+
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'pt-BR';
+      utterance.rate = 1.05;
+      utterance.pitch = 1.0;
+
+      const voices = App.synth.getVoices();
+      const ptVoice = voices.find(v => v.lang === 'pt-BR' || v.lang.startsWith('pt'));
+      if (ptVoice) utterance.voice = ptVoice;
+
+      App.synth.speak(utterance);
+    }
+
+    function speakMessage(btn) {
+      const bubble = btn.closest('.msg-bubble-box');
+      const textEl = bubble.querySelector('.msg-text-content');
+      if (textEl) {
+        speakAloud(cleanTextForVoice(textEl.innerText));
+        showToast('Reproduzindo áudio...');
+      }
+    }
+
+    function copyText(btn) {
+      const bubble = btn.closest('.msg-bubble-box');
+      const textEl = bubble.querySelector('.msg-text-content');
+      if (textEl) {
+        navigator.clipboard.writeText(textEl.innerText).then(() => {
+          showToast('Texto copiado com sucesso!');
+        });
+      }
+    }
+
+    function initSpeechFeatures() {
+      const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+      const micBtn = document.getElementById('mic-btn');
+
+      if (!SpeechRec) {
+        if (micBtn) micBtn.style.display = 'none';
+        return;
+      }
+
+      App.recognition = new SpeechRec();
+      App.recognition.lang = 'pt-BR';
+      App.recognition.continuous = false;
+
+      App.recognition.onresult = (e) => {
+        const speechResult = e.results[0][0].transcript;
+        document.getElementById('chat-input').value = speechResult;
+        processUserMessage(speechResult);
+      };
+
+      App.recognition.onend = () => {
+        App.isListening = false;
+        micBtn.classList.remove('listening');
+      };
+
+      App.recognition.onerror = () => {
+        App.isListening = false;
+        micBtn.classList.remove('listening');
+        showToast('Não foi possível captar a voz.');
+      };
+
+      micBtn.addEventListener('click', () => {
+        if (App.isListening) {
+          App.recognition.stop();
+          App.isListening = false;
+          micBtn.classList.remove('listening');
+        } else {
+          try {
+            App.recognition.start();
+            App.isListening = true;
+            micBtn.classList.add('listening');
+            showToast('Ouvindo... pode falar!');
+          } catch (err) {
+            console.error(err);
+          }
+        }
+      });
+    }
+
+    function showTyping(show) {
+      const el = document.getElementById('typing-indicator');
+      if (el) el.style.display = show ? 'flex' : 'none';
+      scrollToBottom();
+    }
+
+    function scrollToBottom() {
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      if (!toast) return;
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2600);
+    }
+
+    // =========================================================================
+    // MOTOR DE PROCESSAMENTO DE LINGUAGEM NATURAL (NLP PRECISO COM LIMITE DE PALAVRAS)
+    // =========================================================================
+
+    function matchKeyword(text, keyword) {
+      const kw = keyword.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      // Palavras curtas (<= 5 caracteres) exigem limite exato de palavra (\b) para não colidir
+      // Exemplo: 'upa' não pode disparar para 'tupa' ou 'tupaense'
+      if (kw.length <= 5) {
+        const regex = new RegExp(`(^|\\s|[.,!?;:()\\/\\-])${kw}($|\\s|[.,!?;:()\\/\\-])`, 'i');
+        return regex.test(text);
+      }
+      return text.includes(kw);
+    }
+
+    function hasAny(text, keywords) {
+      return keywords.some(kw => matchKeyword(text, kw));
+    }
+
+    function generateTupaResponse(query) {
+      const q = query.toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
+
+      // 1. RENDA PER CAPITA, PIB, SALÁRIO, IDHM E DADOS ECONÔMICOS
+      if (hasAny(q, ['renda', 'per capita', 'percapita', 'pib', 'idhm', 'salario', 'riqueza', 'quanto ganha', 'classe social', 'indicadores economicos', 'ibge', 'custo de vida'])) {
+        return `📊 **Renda per Capita e Indicadores Econômicos de Tupã (SP):**\n\n` +
+          `Com base nas estatísticas oficiais consolidadas do **IBGE** e do **Atlas do Desenvolvimento Humano (PNUD)**:\n\n` +
+          `• **PIB per capita:** O PIB per capita de Tupã é de aproximadamente **R$ 48.934,77** por habitante ao ano.\n` +
+          `• **PIB Municipal Total:** Cerca de **R$ 3,19 bilhões** gerados por serviços, indústria e agronegócio.\n` +
+          `• **IDHM (Índice de Desenvolvimento Humano):** **0,771** — classificado como **Desenvolvimento Humano Alto**:\n` +
+          `  - *Longevidade:* **0,852** (alta expectativa de vida ao nascer)\n` +
+          `  - *Renda:* **0,764**\n` +
+          `  - *Educação:* **0,704**\n` +
+          `• **Salário Médio:** O trabalhador formal em Tupã tem rendimento médio de **2,1 a 2,4 salários mínimos**.\n` +
+          `• **População Censitária:** **65.433 habitantes** (Censo IBGE).\n\n` +
+          `🌾 **Principais Pilares da Economia Tupaense:**\n` +
+          `1. **Capital Nacional do Amendoim:** Maior polo de cultivo, secagem e exportação de amendoim do Brasil, sediando multinacionais e indústrias como a **Amendupã**.\n` +
+          `2. **Polo de Energia Solar:** Cidade pioneira no Estado de SP na instalação de mega usinas fotovoltaicas e geração limpa.\n` +
+          `3. **Polo Calçadista & Agro:** Grande polo na confecção de calçados infantis e forte pecuária de corte e leite.`;
+      }
+
+      // 2. PREFEITO, VICE-PREFEITA E GABINETE DO EXECUTIVO
+      if (hasAny(q, ['prefeito', 'prefeita', 'vice-prefeita', 'vice prefeita', 'renan', 'pontelli', 'joice', 'berni', 'quem governa', 'mandato', 'gabinete do prefeito'])) {
+        return `🏛️ **Gabinete do Executivo Municipal de Tupã:**\n\n` +
+          `• **Prefeito Municipal:** **Renan Victor Pontelli**\n` +
+          `• **Vice-prefeita:** **Joice Berni**\n` +
+          `• **Secretário de Gabinete:** Dorival Jeronimo Coquemala\n` +
+          `• **Localização:** Paço Municipal (Praça da Bandeira, nº 800 - Centro - Tupã/SP)\n` +
+          `• **Telefones do Gabinete:** (14) 3404-1000 / (14) 3496-3346\n` +
+          `• **E-mail Oficial:** prefeito@tupa.sp.gov.br\n` +
+          `• **Horário de Atendimento:** Segunda a sexta-feira, das 7h30 às 17h00.`;
+      }
+
+      // 3. SECRETARIAS MUNICIPAIS (TODAS AS 18 SECRETARIAS)
+      if (hasAny(q, ['secretarias', 'secretaria', 'secretarios', 'secretario', 'departamentos'])) {
+        return `🏢 **Lista Completa das 18 Secretarias Municipais de Tupã:**\n\n` +
+          `1. **Saúde:** Rosângela de Souza Urel • R. Caetés, 1200 • (14) 3404-2200 • saudeexpediente@tupa.sp.gov.br\n` +
+          `2. **Obras e Infraestrutura:** Leandro Marquezi • R. Nhambiquaras, 1555 • (14) 3404-2233 • obras@tupa.sp.gov.br\n` +
+          `3. **Finanças (IPTU/Tributos):** Laina Lopes Jacob • Praça da Bandeira, 800 • (14) 3404-1000 • financas@tupa.sp.gov.br\n` +
+          `4. **Educação:** Carla Renata Servilha Ortega Brandão • R. Aimorés, 507 • (14) 3404-3550 • educacao@tupa.sp.gov.br\n` +
+          `5. **Desenvolvimento Econômico (PAT):** Marcelo Massao Edamitsu • R. Guaianazes, 70 • (14) 3404-1000 • desenvolvimento@tupa.sp.gov.br\n` +
+          `6. **Turismo:** Nayara Martins Cassolin • R. Guaianazes, 70 - 2º Piso • (14) 3404-1000 • turismo@tupa.sp.gov.br\n` +
+          `7. **Meio Ambiente:** Davi Bondartchuk • R. Francisco Budaibes, 101 • (14) 3496-3346 • meioambiente@tupa.sp.gov.br\n` +
+          `8. **Cultura & Folclore:** Luís Carlos dos Passos Sanches • Av. Tamoios, 1650 • (14) 3491-5013 • cultura@tupa.sp.gov.br\n` +
+          `9. **Esportes:** Fabiano Santos Souza Bocchi • R. Coroados, 1816 • (14) 3491-2558 • esportes@tupa.sp.gov.br\n` +
+          `10. **Desenvolvimento Social:** Paula Carneiro Gonçalves • R. Paiaquás, 609 • (14) 3496-2464 • social@tupa.sp.gov.br\n` +
+          `11. **Planejamento e Gestão:** Beto Saito • Praça da Bandeira, 800 • (14) 3404-1000\n` +
+          `12. **Administração:** Everton Nakashima • Praça da Bandeira, 800 • (14) 3404-1000\n` +
+          `13. **Agricultura e Abastecimento:** Anderson Pereira • R. Adamantina, 60 • (14) 3441-1310\n` +
+          `14. **Assuntos Jurídicos:** Fabio Evandro Porcelli • Praça da Bandeira, 800 • (14) 3404-1000\n` +
+          `15. **Comunicação:** Mariane Gava • Praça da Bandeira, 800 • (14) 3404-1000\n` +
+          `16. **Governo:** Marcos Roberto Caliani • Praça da Bandeira, 800 • (14) 3404-1000\n` +
+          `17. **Gabinete:** Dorival Jeronimo Coquemala • (14) 3496-3346\n` +
+          `18. **Relações Institucionais:** Adriana Rodrigues de Moraes • (14) 3404-1000`;
+      }
+
+      // 4. IPTU, 2ª VIA, TRIBUTOS E ISENÇÃO
+      if (hasAny(q, ['iptu', 'tributo', 'certidao', 'imposto', 'itbi', '2 via', 'segunda via', 'carne', 'divida ativa', 'alvara', 'iss', 'isencao', 'tributacao'])) {
+        return `📄 **Serviços de IPTU e Arrecadação Municipal (Prefeitura de Tupã):**\n\n` +
+          `A Prefeitura disponibiliza a emissão 100% digital e sem filas pelo portal oficial de serviços:\n\n` +
+          `• **Emissão da 2ª Via do IPTU:** Acesse direto [tupa.portalservicos.app.br:2053/home](https://tupa.portalservicos.app.br:2053/home) informando o número do cadastro imobiliário ou CPF/CNPJ do proprietário.\n` +
+          `• **Protocolos Digitais e Certidões:** Pelo sistema [tupa.1doc.com.br/atendimento](https://tupa.1doc.com.br/atendimento).\n` +
+          `• **Isenção do IPTU (+65 anos / Aposentados):** Idosos proprietários de único imóvel residencial e com renda familiar compatível podem solicitar a isenção anual comprovando documentos pessoais e comprovante de renda.\n` +
+          `• **Atendimento Presencial:** Paço Municipal (Praça da Bandeira, 800 - Centro), das 7h30 às 17h00. Fone: **(14) 3404-1000** (Secretaria de Finanças).`;
+      }
+
+      // 5. PAT, VAGAS DE EMPREGO E CURRÍCULO
+      if (hasAny(q, ['pat', 'emprego', 'vaga', 'vagas', 'trabalho', 'curriculo', 'banco do povo', 'carteira de trabalho'])) {
+        return `💼 **PAT de Tupã (Posto de Atendimento ao Trabalhador):**\n\n` +
+          `O PAT conecta trabalhadores e empresas com centenas de oportunidades de emprego em Tupã e região:\n\n` +
+          `• **Endereço:** Rua Guaianazes, nº 70 - 1º Piso (junto à Secretaria de Desenvolvimento Econômico)\n` +
+          `• **Telefone:** (14) 3404-1000\n` +
+          `• **Horário de Atendimento:** Segunda a sexta-feira, das 7h30 às 17h00\n` +
+          `• **Como se candidatar:** Leve RG, CPF, Carteira de Trabalho (física ou digital) e currículo atualizado impresso.\n` +
+          `• **Banco do Povo Paulista:** Também localizado na Rua Guaianazes, oferece microcrédito facilitado para MEIs e pequenos empreendedores com juros subsidiados.`;
+      }
+
+      // 6. CONCURSOS PÚBLICOS E PROCESSOS SELETIVOS
+      if (hasAny(q, ['concurso', 'processo seletivo', 'edital', 'inscricao concurso', 'vaga publica', 'prova'])) {
+        return `📜 **Concursos Públicos & Processos Seletivos de Tupã:**\n\n` +
+          `A Prefeitura de Tupã publica periodicamente editais para preenchimento de vagas efetivas e temporárias:\n\n` +
+          `• **Editais Ativos e Homologações:** Acompanhe em tempo real pelo portal [tupa.sp.gov.br/concurso](https://www.tupa.sp.gov.br/concurso).\n` +
+          `• **Últimos certames:** Processos seletivos para Professores e Profissionais de Apoio Escolar da Rede Municipal, além de Concurso para Agente de Trânsito e cargos operacionais/administrativos.\n` +
+          `• **Diário Oficial do Município:** Consulte as convocações em [imprensaoficialmunicipal.com.br/tupa](https://www.imprensaoficialmunicipal.com.br/tupa).`;
+      }
+
+      // 7. SAÚDE, UPA, SANTA CASA, POSTOS, EXAMES E REMÉDIOS
+      // Importante: 'upa' usa matchKeyword com boundary para não colidir com 'tupaense'
+      if (hasAny(q, ['upa', 'santa casa', 'hospital', 'posto de saude', 'ubs', 'usf', 'semsa', 'pronto socorro', 'emergencia medica', 'saude', 'vacina', 'medicamento', 'farmacia municipal', 'medico', 'exame', 'exames', 'zoonose', 'ccz'])) {
+        return `🏥 **Saúde Pública & Urgência em Tupã (SP):**\n\n` +
+          `• **SAMU (Urgência 24h):** Ligue **192**\n` +
+          `• **UPA 24 Horas (Unidade de Pronto Atendimento):**\n` +
+          `  - *Endereço:* Rua Comendador José da Motta, nº 55\n` +
+          `  - *Telefone:* **(14) 3441-4292** (Atendimento clínico e pediátrico ininterrupto)\n` +
+          `• **Santa Casa de Misericórdia de Tupã (Hospital Geral Regional & UTI):**\n` +
+          `  - *Endereço:* Rua Manoel Ferreira Damião, nº 426 - Vila Abarca\n` +
+          `  - *Telefones:* **(14) 3404-3636** / (14) 3404-5555\n` +
+          `• **Secretaria Municipal de Saúde (SEMSA):**\n` +
+          `  - *Endereço:* Rua Caetés, nº 1200 - Centro\n` +
+          `  - *Telefone:* (14) 3404-2200 • E-mail: saudeexpediente@tupa.sp.gov.br\n` +
+          `• **Consulta Pública de Remédios Disponíveis:** Verifique o estoque da Farmácia Municipal em [sistemas7.mrxtecnologia.com.br/saudetupa/consultapublica.jsp](https://sistemas7.mrxtecnologia.com.br/saudetupa/consultapublica.jsp)\n` +
+          `• **Consulta de Resultados de Exames Online:** Acesse [sistemas7.mrxtecnologia.com.br/saudetupa/consultaexame.jsp](https://sistemas7.mrxtecnologia.com.br/saudetupa/consultaexame.jsp)\n` +
+          `• **CCZ (Centro de Controle de Zoonoses):** Vacinação antirrábica e castração de animais pelo fone (14) 3404-2200.`;
+      }
+
+      // 8. MEIO AMBIENTE, COLETA DE LIXO, PODA DE ÁRVORES E DESCARTE
+      if (hasAny(q, ['lixo', 'coleta', 'coleta de lixo', 'entulho', 'arvore', 'arvores', 'poda', 'corte de arvore', 'descarte', 'meio ambiente'])) {
+        return `🌿 **Serviços de Meio Ambiente & Limpeza Urbana (Tupã/SP):**\n\n` +
+          `• **Secretaria de Meio Ambiente:** Rua Francisco Budaibes, 101 • Telefone: **(14) 3496-3346**\n` +
+          `• **Coleta de Lixo Domiciliar:** Realizada nos bairros em dias alternados (segundas/quartas/sextas ou terças/quintas/sábados) e diária na área comercial central.\n` +
+          `• **Poda e Corte de Árvores:** Solicitação oficial de autorização pelo sistema [tupa.1doc.com.br/atendimento](https://tupa.1doc.com.br/atendimento) no setor de Meio Ambiente.\n` +
+          `• **Denúncia de Descarte Irregular de Entulho:** Registre denúncias com fotos na Ouvidoria pelo 1Doc para notificação e fiscalização de infratores.`;
+      }
+
+      // 9. TRÂNSITO, MULTAS E SF TRÂNSITO
+      if (hasAny(q, ['transito', 'multa', 'multas', 'recurso de multa', 'zona azul', 'cnh', 'sf transito'])) {
+        return `🚦 **Trânsito e Fiscalização Viária de Tupã:**\n\n` +
+          `• **Portal SF Trânsito Tupã:** Acesse direto [tupa.sftransito.com.br](https://tupa.sftransito.com.br/)\n` +
+          `• **Serviços disponíveis:** Consulta de pontuação, verificação de infrações cometidas no município, emissão de 2ª via de notificações e abertura de recursos perante a JARI.\n` +
+          `• **Dúvidas presenciais:** Secretaria de Governo e Trânsito no Paço Municipal (Praça da Bandeira, 800) • (14) 3404-1000.`;
+      }
+
+      // 10. EDUCAÇÃO, CRECHES E AUXÍLIO TRANSPORTE
+      if (hasAny(q, ['escola', 'escolas', 'creche', 'creches', 'cmei', 'emef', 'fila de espera', 'auxilio transporte', 'transporte escolar'])) {
+        return `📚 **Educação Municipal e Fila de Creches:**\n\n` +
+          `• **Secretaria Municipal de Educação:** Rua Aimorés, nº 507 - Jd. Rubiácea • Telefone: **(14) 3404-3550**\n` +
+          `• **Fila de Espera de Creches (Transparência):** Acompanhe a lista de espera em [sistemas.tupa.sp.gov.br:5907/publico/consultarfilacreches/](https://sistemas.tupa.sp.gov.br:5907/publico/consultarfilacreches/)\n` +
+          `• **Auxílio Transporte para Estudantes:** Universitários e estudantes técnicos podem se inscrever semestralmente para o benefício municipal pelo portal da educação.\n` +
+          `• **Rede Municipal:** Composta por dezenas de CMEIs (creches) e EMEFs com merenda de alta qualidade nutricional.`;
+      }
+
+      // 11. OUVIDORIA, 1DOC E PROTOCOLO DIGITAL
+      if (hasAny(q, ['ouvidoria', '1doc', 'reclamacao', 'protocolo', 'tapa buraco', 'lampada', 'iluminacao', 'denuncia', 'elogio', 'zeladoria'])) {
+        return `📢 **Ouvidoria Geral e Protocolo Digital 1Doc de Tupã:**\n\n` +
+          `• **Abertura Online 24h:** Acesse [tupa.1doc.com.br/atendimento](https://tupa.1doc.com.br/atendimento) para registrar demandas com número de protocolo instantâneo.\n` +
+          `• **O que você pode solicitar:** Troca de lâmpadas queimadas (iluminação pública), operação tapa-buracos, limpeza de terrenos baldios, podas e fiscalização de posturas.\n` +
+          `• **E-mail Direto:** ouvidoria@tupa.sp.gov.br\n` +
+          `• **Atendimento Presencial:** Paço Municipal (Praça da Bandeira, 800 - Centro).`;
+      }
+
+      // 12. CEMITÉRIO E GEORREFERENCIAMENTO DE SEPULTURAS
+      if (hasAny(q, ['cemiterio', 'sepultura', 'jazigo', 'falecimento', 'enterro', 'tumulo'])) {
+        return `⚰️ **Cemitérios Municipais & Localização de Sepulturas:**\n\n` +
+          `• Tupã conta com o **Cemitério da Saudade** e o **Cemitério São Pedro**.\n` +
+          `• **Aplicativo de Localização de Sepulturas:** A Prefeitura disponibilizou o sistema de georreferenciamento em [plataforma.nacidade.com.br/ctm-3/sig-web](https://plataforma.nacidade.com.br/ctm-3/sig-web/#/login) onde munícipes podem localizar a quadra e o túmulo exato de entes queridos.\n` +
+          `• Informações administrativas e prazos de reformas pelo fone da Secretaria de Obras: (14) 3404-2233.`;
+      }
+
+      // 13. MUSEU HISTÓRICO E PEDAGÓGICO ÍNDIA VANUÍRE
+      if (hasAny(q, ['museu', 'vanuire', 'india', 'indigena', 'indio', 'kaingang', 'krenak', 'terena'])) {
+        return `🪶 **Museu Histórico e Pedagógico Índia Vanuíre:**\n\n` +
+          `• Considerado um dos mais relevantes museus de cultura indígena do Brasil e da América Latina, gerido em parceria com a Organização Social ACAM Portinari.\n` +
+          `• **Acervo Etnográfico:** Mais de **38.000 peças catalogadas**, abrangendo tradições, plumárias, cerâmicas e armas dos povos Kaingang, Krenak e Terena.\n` +
+          `• **Quem foi Vanuíre?** Mulher indígena Kaingang que atuou como mediadora histórica de paz entre os povos originários e os desbravadores na Alta Paulista no início do século XX.\n` +
+          `• **Endereço:** Rua Coroados, nº 521 - Centro de Tupã/SP\n` +
+          `• **Funcionamento:** Aberto de terça-feira a domingo, das 9h às 18h (às quintas até 20h). **Entrada 100% Gratuita!**`;
+      }
+
+      // 14. DISTRITO HISTÓRICO DE VARPA (COLÔNIA LETÃ)
+      if (hasAny(q, ['varpa', 'leta', 'letoes', 'letao', 'queijo', 'defumado', 'palma', 'cachoeira'])) {
+        return `🌲 **Distrito Histórico de Varpa (Circuito Caminhos da Letônia):**\n\n` +
+          `• Fundado em **1922** por famílias de imigrantes batistas da Letônia que buscaram liberdade religiosa e paz no interior paulista.\n` +
+          `• **Gastronomia Típica Mundialmente Famosa:**\n` +
+          `  - O autêntico **Queijo Suíço Artesanal de Varpa** curado com receita centenária.\n` +
+          `  - Defumados nobres (lombo, copa, bacon e salames) do tradicional **Rancho dos Defumados**.\n` +
+          `  - Pães artesanais assados no forno de tijolos e geleias naturais.\n` +
+          `• **Ecoturismo & Lazer:** A relaxante **Cachoeira da Palma** e trilhas em matas de preservação.\n` +
+          `• **Museu dos Pioneiros (Jānis Erdbergs):** Preserva relíquias, instrumentos de trabalho e fotos dos colonizadores.\n` +
+          `• **Localização:** Fica a apenas 25 km do centro de Tupã com rodovia 100% asfaltada.`;
+      }
+
+      // 15. TURISMO, PONTOS TURÍSTICOS E SOLAR LUIZ DE SOUZA LEÃO
+      if (hasAny(q, ['turismo', 'ponto turistico', 'pontos turisticos', 'o que fazer', 'onde ir', 'passear', 'solar leao', 'solar luiz de souza leao', 'praca da bandeira'])) {
+        return `📸 **Principais Cartões-Postais e Atrações de Tupã:**\n\n` +
+          `1. **Museu Índia Vanuíre:** Maior acervo indígena do Estado de SP (Rua Coroados, 521).\n` +
+          `2. **Distrito de Varpa:** Colônia letã de 1922 com queijos suíços, defumados e a Cachoeira da Palma.\n` +
+          `3. **Solar Luiz de Souza Leão:** Casarão histórico de 1933 do fundador, tombado pelo Condephaat e rodeado pelo Bosque Municipal (Rua Caingangs, 600).\n` +
+          `4. **Praça da Bandeira & Fonte Luminosa:** Palco social de Tupã, sede da Prefeitura e da concorrida Feira da Lua.\n` +
+          `5. **Igreja Matriz de São Pedro:** Monumental templo católico com vitrais de alto valor artístico.`;
+      }
+
+      // 16. POLO UNIVERSITÁRIO: FADAP / FAP, UNESP, FATEC E ETEC
+      if (hasAny(q, ['faculdade', 'universidade', 'fadap', 'fap', 'unesp', 'etec', 'fatec', 'curso', 'direito', 'odontologia', 'biossistemas', 'estudo'])) {
+        return `🎓 **Polo Universitário e Tecnológico de Tupã:**\n\n` +
+          `• **FADAP / FAP (Faculdade da Alta Paulista):** Tradicionalíssima faculdade com dezenas de turmas formadas em **Direito, Odontologia, Enfermagem, Psicologia, Agronomia, Pedagogia** e pós-graduações conceituadas.\n` +
+          `• **UNESP Tupã:** Câmpus público estadual gratuito de ponta, pioneiro nacional na graduação em **Engenharia de Biossistemas** e referência internacional em **Administração**, com mestrado e doutorado.\n` +
+          `• **FATEC Tupã:** Faculdade pública estadual tecnológica voltada para Produção Industrial, Agronegócio e TI.\n` +
+          `• **ETEC Prof. Massuyuki Kawano:** Ensino médio e técnico de excelência reconhecido em todo o Estado de SP.`;
+      }
+
+      // 17. CAPITAL DO AMENDOIM E INDÚSTRIA SOLAR
+      if (hasAny(q, ['amendoim', 'capital do amendoim', 'amendupa', 'fabrica', 'solar', 'industria', 'producao'])) {
+        return `🥜 **Economia & Amendoim (Capital da Alta Paulista):**\n\n` +
+          `• **Capital Nacional do Amendoim:** A região de Tupã é líder absoluta no plantio, colheita, secagem e industrialização de amendoim do Brasil.\n` +
+          `• Empresas renomadas como a **Amendupã** processam derivados (amendoim doce, salgado, paçocas e pastas) e exportam para dezenas de países da Europa e Ásia.\n` +
+          `• **Parques Solares:** Tupã destaca-se como polo pioneiro no Estado na captação de usinas solares fotovoltaicas de grande porte em áreas rurais.`;
+      }
+
+      // 18. TELEFONES DE EMERGÊNCIA E CONCESSIONÁRIAS
+      if (hasAny(q, ['telefone', 'telefones', 'contato', 'contatos', 'bombeiro', 'policia', 'sabesp', 'energisa', 'conselho tutelar', 'ddm', 'procon'])) {
+        return `🚨 **Guia Telefônico de Urgência & Utilidade Pública em Tupã:**\n\n` +
+          `• **SAMU (Ambulância):** 192\n` +
+          `• **Corpo de Bombeiros:** 193 • (14) 3496-1193 *(Rua Tapajós, 214)*\n` +
+          `• **Polícia Militar:** 190\n` +
+          `• **UPA 24 Horas:** (14) 3441-4292\n` +
+          `• **Santa Casa de Tupã:** (14) 3404-3636\n` +
+          `• **Prefeitura Municipal (PABX):** (14) 3404-1000\n` +
+          `• **Delegacia da Mulher (DDM):** (14) 3496-2555\n` +
+          `• **Sabesp (Água e Esgoto 24h):** 0800 055 0195 ou 195\n` +
+          `• **Energisa (Falta de Energia):** 0800 70 10 326\n` +
+          `• **Conselho Tutelar:** (14) 3496-3399\n` +
+          `• **Procon Tupã:** (14) 3496-6101`;
+      }
+
+      // 19. HISTÓRIA, FUNDAÇÃO E LUIZ DE SOUZA LEÃO
+      if (hasAny(q, ['fundador', 'fundou', 'fundacao', 'criacao', 'luiz de souza', 'souza leao', '1929', 'historia', 'quantos anos'])) {
+        return `🏛️ **História Oficial de Tupã (Fonte: tupa.sp.gov.br / IBGE):**\n\n` +
+          `• **Data de Fundação:** 12 de outubro de 1929.\n` +
+          `• **Fundador:** O desbravador pernambucano **Luiz de Souza Leão**, que planejou o traçado urbano em uma clareira na mata entre os rios Aguapeí (Feio) e do Peixe.\n` +
+          `• **Origem do Nome:** *Tupã* presta homenagem ao Deus do Trovão na mitologia tupi-guarani. O fundador determinou que todas as ruas centrais levassem nomes de etnias indígenas (Caingangs, Coroados, Guaranis, Marabás, Potiguaras, Cherentes).\n` +
+          `• **Imigração:** Além dos letões (em Varpa, 1922), Tupã recebeu grandes levas de imigrantes japoneses, italianos, portugueses e espanhóis.\n` +
+          `• **Estância Turística:** Título conferido em 2003 pelo Governo do Estado em reconhecimento ao seu patrimônio cultural e belezas naturais.`;
+      }
+
+      // 20. FESTAS, CARNAVAL, EXAPIT E EVENTOS
+      if (hasAny(q, ['festa', 'evento', 'carnaval', 'tupa folia', 'exapit', 'rodeio', 'feira da lua', 'cerejeira', 'undokai'])) {
+        return `🎉 **Eventos e Festas Populares de Tupã:**\n\n` +
+          `• **EXAPIT:** Exposição Agropecuária e Industrial de Tupã, com rodeio de touros, shows com artistas nacionais e praça de alimentação regional.\n` +
+          `• **Tupã Folia:** Um dos maiores carnavais de rua gratuitos e mais animados do interior paulista.\n` +
+          `• **Feira da Lua:** Encontro gastronômico e cultural semanal na Praça da Bandeira com pastéis quentinhos, artesanato e pratos japoneses.\n` +
+          `• **Festa da Cerejeira e Undokai:** Belíssima celebração esportiva e cultural da atuante comunidade nipo-brasileira local.`;
+      }
+
+      // 21. POPULAÇÃO, GEOGRAFIA, LIMITES E DISTRITOS
+      if (hasAny(q, ['populacao', 'quantos habitantes', 'onde fica', 'altitude', 'distrito', 'mapa', 'tamanho', 'area', 'limites', 'cidades vizinhas'])) {
+        return `🗺️ **Dados Gerais & Geografia de Tupã (SP):**\n\n` +
+          `• **População:** Aproximadamente **65.433 habitantes** (Censo IBGE).\n` +
+          `• **Localização:** Região Alta Paulista, a 514 km da capital São Paulo.\n` +
+          `• **Altitude:** 508 metros de altitude, com clima tropical de verões quentes.\n` +
+          `• **Área Territorial:** 627,98 km².\n` +
+          `• **Distritos Oficiais:** Varpa, Parnaso e Universo.\n` +
+          `• **Cidades Vizinhas:** Bastos, Iacri, Quintana, Herculândia, Quatá, Rancharia, Arco-Íris e Rinópolis.`;
+      }
+
+      // 22. GASTRONOMIA E ONDE COMER
+      if (hasAny(q, ['comer', 'comida', 'culinaria', 'restaurante', 'almoco', 'lanche', 'prato', 'onde comer'])) {
+        return `🍽️ **Gastronomia Típica em Tupã:**\n\n` +
+          `• **Delícias de Varpa:** O autêntico Queijo Suíço curado, lombo defumado, bacon e pães caseiros do Rancho dos Defumados.\n` +
+          `• **Doces de Amendoim:** Paçocas artesanais, amendoins confeitados e crocantes da Capital do Amendoim.\n` +
+          `• **Comida de Rua:** Na **Feira da Lua** (Praça da Bandeira), com pastéis crocantes e pratos tradicionais da colônia japonesa.\n` +
+          `• **Restaurantes:** Excelentes churrascarias, pizzarias e cafeterias tradicionais ao longo da Avenida Tamoios e centro.`;
+      }
+
+      // RESPOSTA PADRÃO INTELIGENTE COM SUGESTÕES ACIONÁVEIS
+      return `Entendi sua pergunta sobre Tupã! 🌟\n\n` +
+        `Nosso sistema está integrado com todos os dados oficiais do portal da Prefeitura (**www.tupa.sp.gov.br**), do **IBGE** e das secretarias municipais. Sobre **"${query}"**, você pode me perguntar com detalhes sobre:\n\n` +
+        `• **Economia & Renda:** PIB per capita (R$ 48.934), salários médios, IDHM (0,771) e fontes de renda.\n` +
+        `• **Prefeito & Secretarias:** Prefeito Renan Pontelli, contatos e titulares das 18 secretarias municipais.\n` +
+        `• **IPTU & Arrecadação:** Emissão de 2ª via online, parcelamentos e isenção para idosos (+65 anos).\n` +
+        `• **PAT & Vagas:** Oportunidades de emprego abertas na Rua Guaianazes, nº 70.\n` +
+        `• **Saúde & Emergências:** Telefones da UPA (3441-4292), Santa Casa (3404-3636), exames online e medicamentos.\n` +
+        `• **Turismo & História:** Museu Índia Vanuíre, Distrito de Varpa, Solar do Fundador e festas (EXAPIT, Tupã Folia).\n` +
+        `• **Ensino Superior:** Cursos da FADAP e da UNESP Tupã.`;
+    }
+  </script>
 </body>
 </html>
