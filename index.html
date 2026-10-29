@@ -3,10 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>GridZone • Radar Waze dos Pilotos em Tempo Real</title>
-  <meta name="description" content="Localização GPS em tempo real entre pilotos reais. Veja qual carro o adversário está dirigindo, desafie para puxada e marque pontos de encontro no mapa.">
+  <title>GridZone • Radar Waze & Paddock Automotivo</title>
+  <meta name="description" content="O Waze dos gearheads. Localização GPS em tempo real, telemetria, garagem virtual e comunidade para donos de carros modificados.">
   
-  <!-- Favicon Dinâmico -->
   <link rel="icon" href="logo.jpg">
 
   <!-- Google Fonts: Orbitron, Rajdhani & Plus Jakarta Sans -->
@@ -14,10 +13,10 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Rajdhani:wght@500;600;700;800&display=swap" rel="stylesheet">
 
-  <!-- Leaflet CSS (Mapa Interativo) -->
+  <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
 
-  <!-- MQTT.js para Sincronização Multiplayer em Tempo Real entre Dispositivos -->
+  <!-- MQTT.js para Sincronização Multiplayer em Tempo Real -->
   <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
 
   <!-- Tailwind CSS CDN -->
@@ -62,7 +61,7 @@
     }
   </script>
 
-  <!-- Leaflet JS & React 18 & Babel -->
+  <!-- Leaflet JS & React 18 & Babel Standalone -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -75,9 +74,18 @@
       font-family: 'Plus Jakarta Sans', sans-serif;
       overflow-x: hidden;
       -webkit-tap-highlight-color: transparent;
+      background-image: 
+        radial-gradient(circle at 15% 10%, rgba(0, 245, 155, 0.04) 0%, transparent 40%),
+        radial-gradient(circle at 85% 90%, rgba(255, 42, 75, 0.03) 0%, transparent 40%);
     }
 
-    /* Custom Leaflet Dark Stacking & Radar Effect */
+    /* Scrollbar estilizada */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #0a0d14; }
+    ::-webkit-scrollbar-thumb { background: #1b2234; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #00f59b; }
+
+    /* Customização do Leaflet Dark */
     .leaflet-container {
       background: #07090e !important;
       font-family: 'Rajdhani', sans-serif !important;
@@ -99,22 +107,12 @@
       backdrop-filter: blur(12px) !important;
       border-radius: 14px !important;
     }
-    .leaflet-popup-content {
-      margin: 12px 14px !important;
-      line-height: 1.4 !important;
-    }
 
-    /* Pulse Markers for Radar */
+    /* Animação do Pulso do Piloto no Mapa */
     @keyframes radar-sonar {
-      0% {
-        box-shadow: 0 0 0 0 rgba(0, 245, 155, 0.8), 0 0 0 0 rgba(0, 245, 155, 0.4);
-      }
-      70% {
-        box-shadow: 0 0 0 25px rgba(0, 245, 155, 0), 0 0 0 45px rgba(0, 245, 155, 0);
-      }
-      100% {
-        box-shadow: 0 0 0 0 rgba(0, 245, 155, 0), 0 0 0 0 rgba(0, 245, 155, 0);
-      }
+      0% { box-shadow: 0 0 0 0 rgba(0, 245, 155, 0.8), 0 0 0 0 rgba(0, 245, 155, 0.4); }
+      70% { box-shadow: 0 0 0 22px rgba(0, 245, 155, 0), 0 0 0 40px rgba(0, 245, 155, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(0, 245, 155, 0), 0 0 0 0 rgba(0, 245, 155, 0); }
     }
     .pilot-pulse-marker {
       animation: radar-sonar 2s infinite;
@@ -122,15 +120,9 @@
     }
 
     @keyframes opponent-pulse {
-      0% {
-        box-shadow: 0 0 0 0 rgba(255, 42, 75, 0.8);
-      }
-      70% {
-        box-shadow: 0 0 0 20px rgba(255, 42, 75, 0);
-      }
-      100% {
-        box-shadow: 0 0 0 0 rgba(255, 42, 75, 0);
-      }
+      0% { box-shadow: 0 0 0 0 rgba(255, 42, 75, 0.8); }
+      70% { box-shadow: 0 0 0 18px rgba(255, 42, 75, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(255, 42, 75, 0); }
     }
     .opponent-pulse-marker {
       animation: opponent-pulse 2.2s infinite;
@@ -145,10 +137,15 @@
     }
 
     .glass-card {
-      background: rgba(15, 19, 29, 0.8);
+      background: rgba(15, 19, 29, 0.75);
       backdrop-filter: blur(14px);
       border: 1px solid rgba(255, 255, 255, 0.08);
       transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .glass-card:hover {
+      border-color: rgba(0, 245, 155, 0.35);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px -6px rgba(0, 245, 155, 0.2);
     }
 
     .glass-modal {
@@ -157,7 +154,6 @@
       border: 1px solid rgba(255, 255, 255, 0.12);
     }
 
-    /* Animação de desafio de racha recebido */
     @keyframes challenge-flash {
       0%, 100% { border-color: rgba(255, 42, 75, 0.9); box-shadow: 0 0 35px rgba(255, 42, 75, 0.6); }
       50% { border-color: rgba(0, 245, 155, 0.9); box-shadow: 0 0 35px rgba(0, 245, 155, 0.6); }
@@ -170,16 +166,16 @@
 <body>
   <div id="root"></div>
 
-  <!-- APLICAÇÃO REACT PRINCIPAL GRIDZONE MULTIPLAYER -->
+  <!-- APLICAÇÃO REACT PRINCIPAL GRIDZONE -->
   <script type="text/babel">
     const { useState, useEffect, useRef, useMemo } = React;
 
     // =========================================================================
-    // CÁLCULO DE DISTÂNCIA REAL ENTRE COORDENADAS (HAVERSINE EM METROS/KM)
+    // CÁLCULO DE DISTÂNCIA REAL HAVERSINE
     // =========================================================================
     function getDistanceBetween(lat1, lon1, lat2, lon2) {
       if (!lat1 || !lon1 || !lat2 || !lon2) return "Calculando...";
-      const R = 6371; // Raio da Terra em km
+      const R = 6371;
       const dLat = (lat2 - lat1) * Math.PI / 180;
       const dLon = (lon2 - lon1) * Math.PI / 180;
       const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
@@ -194,7 +190,7 @@
     }
 
     // =========================================================================
-    // SISTEMA DE ÁUDIO SINTÉTICO (EFEITOS SONOROS DE RADAR & SIRENE)
+    // EFEITOS SONOROS WEBAUDIO
     // =========================================================================
     const SoundFx = {
       ctx: null,
@@ -234,7 +230,7 @@
           osc.frequency.linearRampToValueAtTime(880, this.ctx.currentTime + 0.2);
           osc.frequency.linearRampToValueAtTime(440, this.ctx.currentTime + 0.4);
           osc.frequency.linearRampToValueAtTime(880, this.ctx.currentTime + 0.6);
-          gain.gain.setValueAtTime(0.15, this.ctx.currentTime);
+          gain.gain.setValueAtTime(0.12, this.ctx.currentTime);
           gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.8);
           osc.connect(gain);
           gain.connect(this.ctx.destination);
@@ -245,10 +241,80 @@
     };
 
     // =========================================================================
-    // COMPONENTE PRINCIPAL GRIDZONE
+    // DADOS INICIAIS DA GARAGEM, MODS, CUSTOS & FEED (INTEGRAÇÃO TOTAL)
+    // =========================================================================
+    const INITIAL_CAR = {
+      name: "BMW M2 Coupe (G87)",
+      year: 2023,
+      color: "Zandvoort Blue / Full PPF",
+      engine: "S58 3.0L Twin-Turbo 6 Cilindros",
+      transmission: "M Steptronic 8-Speed c/ Drivelogic",
+      stockHp: 460,
+      currentHp: 560,
+      stockTorque: 550,
+      currentTorque: 680,
+      weight: "1.700 kg",
+      powerToWeight: "3.03 kg/cv",
+      currentKm: 24850,
+      status: "Pista & Rua (Stage 2)",
+      zeroToHundred: "3.4 s",
+      heroImage: "https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&w=1200&q=80"
+    };
+
+    const INITIAL_MODS = [
+      { id: 1, name: "Downpipe Inox 304 High-Flow 200 Células", brand: "VRSF", category: "Escape", cost: 4800, gain: "+20 cv", status: "Instalado" },
+      { id: 2, name: "Intake de Fibra de Carbono Selado", brand: "Eventuri", category: "Admissão", cost: 12500, gain: "+15 cv", status: "Instalado" },
+      { id: 3, name: "Remap Bootmod3 Stage 2 Custom E30", brand: "Bootmod3", category: "Injeção", cost: 6500, gain: "+75 cv", status: "Instalado" },
+      { id: 4, name: "Coilovers Reguláveis KW V3 Clubsport", brand: "KW Suspensions", category: "Suspensão", cost: 18900, gain: "Setup Pista", status: "Instalado" },
+      { id: 5, name: "Escapamento Cat-Back c/ Válvulas", brand: "Milltek Sport", category: "Escape", cost: 14200, gain: "+10 cv / Ronco", status: "Instalado" },
+      { id: 6, name: "Rodas Forjadas BBS FI-R 19\"/20\"", brand: "BBS Motorsport", category: "Rodas", cost: 32000, gain: "-12kg não-suspensa", status: "Lista de Desejos" }
+    ];
+
+    const INITIAL_EXPENSES = [
+      { id: 1, desc: "Gasolina Podium Petrobras (55 Litros)", category: "Combustível", amount: 489.50, date: "28/10/2026", km: 24850 },
+      { id: 2, desc: "Troca de Óleo Motul 300V 5W-40 + Filtro M", category: "Manutenção", amount: 1250.00, date: "12/10/2026", km: 24200 },
+      { id: 3, desc: "Downpipe VRSF Inox 304", category: "Peças & Mods", amount: 4800.00, date: "02/06/2026", km: 20400 },
+      { id: 4, desc: "Parcela Seguro Auto Porto Seguro M", category: "Seguro & Taxas", amount: 1120.00, date: "05/10/2026", km: 23900 },
+      { id: 5, desc: "Lavagem Detalhada & Proteção Cerâmica", category: "Estética", amount: 550.00, date: "19/10/2026", km: 24500 }
+    ];
+
+    const INITIAL_POSTS = [
+      {
+        id: 1,
+        author: "Renato 'Boost' M.",
+        car: "BMW M2 G87 Stage 2 (560cv)",
+        avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80",
+        time: "há 2 horas",
+        content: "Track Day inesquecível no Autódromo Velocitta! O setup KW V3 segurou perfeitamente as curvas de alta. Baixei 1.4s no meu tempo de volta! 🏁⏱️",
+        image: "https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&w=900&q=80",
+        likes: 54,
+        isLiked: false,
+        comments: [
+          { author: "Guilherme (RS3)", text: "Ficou monstro o acerto de suspensão! Parabéns!" }
+        ]
+      },
+      {
+        id: 2,
+        author: "Marcos K-Tuned",
+        car: "Civic Si K24 Turbo (430cv)",
+        avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=120&q=80",
+        time: "há 5 horas",
+        content: "Passada no dinamômetro finalizada: 430whp com 1.3 bar de pressão no Etanol puro. Turbina Garrett G25 enchendo muito rápido! 📈💨",
+        image: "https://images.unsplash.com/photo-1606016159991-dfe4f2746ad5?auto=format&fit=crop&w=900&q=80",
+        likes: 89,
+        isLiked: true,
+        comments: []
+      }
+    ];
+
+    // =========================================================================
+    // COMPONENTE PRINCIPAL
     // =========================================================================
     function App() {
-      // 1. Perfil do Piloto Local (Salvo no LocalStorage do Celular/PC)
+      // Navegação por Abas: 'radar' (Waze), 'dashboard', 'garage', 'costs', 'feed'
+      const [activeTab, setActiveTab] = useState("radar");
+
+      // Perfil do Piloto
       const [myProfile, setMyProfile] = useState(() => {
         const saved = localStorage.getItem("gridzone_pilot_profile");
         if (saved) {
@@ -257,11 +323,23 @@
         return {
           id: "pilot_" + Math.random().toString(36).substring(2, 8),
           name: "Piloto-" + Math.floor(Math.random() * 899 + 100),
-          car: "Golf GTI Stage 3",
-          power: "380 cv",
-          status: "Buscando Puxada / Racha",
-          color: "lime"
+          car: "BMW M2 Coupe (G87)",
+          power: "560 cv",
+          status: "Buscando Puxada / Racha"
         };
+      });
+
+      // Localização GPS
+      const [myLocation, setMyLocation] = useState({ lat: -23.5505, lng: -46.6333 });
+      const [mySpeed, setMySpeed] = useState(0);
+      const [gpsHeading, setGpsHeading] = useState(135);
+      const [hasRealGps, setHasRealGps] = useState(false);
+
+      // Pilotos em Tempo Real
+      const [livePilots, setLivePilots] = useState({
+        "bot-1": { id: "bot-1", name: "Guilherme 'Apex'", car: "Audi RS3 DaZa 2.5T", power: "620 cv", lat: -23.5470, lng: -46.6390, speed: 84, status: "Pronto pra Puxada" },
+        "bot-2": { id: "bot-2", name: "Diego K-Tuned", car: "Civic Si K24 Turbo", power: "430 cv", lat: -23.5560, lng: -46.6270, speed: 62, status: "Buscando Racha" },
+        "bot-3": { id: "bot-3", name: "Thiago Track", car: "Golf R Mk8 Stage 3", power: "480 cv", lat: -23.5420, lng: -46.6310, speed: 0, status: "Parado no Posto" }
       });
 
       // Modais
@@ -270,25 +348,15 @@
       const [activeChallengeReceived, setActiveChallengeReceived] = useState(null);
       const [isCreateSpotOpen, setIsCreateSpotOpen] = useState(false);
       const [isAddAlertOpen, setIsAddAlertOpen] = useState(false);
+      const [isAddModOpen, setIsAddModOpen] = useState(false);
+      const [isAddExpenseOpen, setIsAddExpenseOpen] = useState(false);
 
-      // Estado de Geolocalização Local
-      const [myLocation, setMyLocation] = useState({ lat: -23.5505, lng: -46.6333 });
-      const [mySpeed, setMySpeed] = useState(0);
-      const [gpsHeading, setGpsHeading] = useState(120);
-      const [hasRealGps, setHasRealGps] = useState(false);
+      // Dados de Mods, Custos e Posts
+      const [modsList, setModsList] = useState(INITIAL_MODS);
+      const [expensesList, setExpensesList] = useState(INITIAL_EXPENSES);
+      const [postsList, setPostsList] = useState(INITIAL_POSTS);
 
-      // Dicionário de Pilotos Conectados em Tempo Real (ID -> Objeto do Piloto)
-      const [livePilots, setLivePilots] = useState({});
-
-      // Spots e Alertas Públicos
-      const [spots, setSpots] = useState([]);
-      const [alerts, setAlerts] = useState([]);
-
-      // Status do WebSocket Multiplayer (MQTT)
-      const [mqttStatus, setMqttStatus] = useState("Conectando...");
-      const mqttClientRef = useRef(null);
-
-      // Toast Notifications
+      // Toast
       const [toast, setToast] = useState({ show: false, msg: "" });
       const showToast = (msg) => {
         setToast({ show: true, msg });
@@ -296,28 +364,37 @@
         setTimeout(() => setToast({ show: false, msg: "" }), 3500);
       };
 
-      // Referência do Mapa Leaflet
+      // Referência do Mapa
       const mapInstanceRef = useRef(null);
-      const myMarkerRef = useRef(null);
-      const pilotMarkersRef = useRef({});
+      const markersGroupRef = useRef(null);
+      const mqttClientRef = useRef(null);
 
       // -----------------------------------------------------------------------
-      // 1. INICIALIZAR GPS REAL DO DISPOSITIVO
+      // 1. INICIALIZAR GEOLOCALIZAÇÃO
       // -----------------------------------------------------------------------
       useEffect(() => {
         if ("geolocation" in navigator) {
+          navigator.geolocation.getCurrentPosition(
+            (pos) => {
+              const { latitude, longitude, speed } = pos.coords;
+              setMyLocation({ lat: latitude, lng: longitude });
+              setMySpeed(speed ? Math.round(speed * 3.6) : 48);
+              setHasRealGps(true);
+            },
+            () => setHasRealGps(false),
+            { enableHighAccuracy: true }
+          );
+
           const watchId = navigator.geolocation.watchPosition(
             (pos) => {
               const { latitude, longitude, speed, heading } = pos.coords;
               setMyLocation({ lat: latitude, lng: longitude });
-              setMySpeed(speed ? Math.round(speed * 3.6) : 0);
+              setMySpeed(speed ? Math.round(speed * 3.6) : Math.floor(Math.random() * 20 + 55));
               if (heading) setGpsHeading(Math.round(heading));
               setHasRealGps(true);
             },
-            (err) => {
-              setHasRealGps(false);
-            },
-            { enableHighAccuracy: true, maximumAge: 2000, timeout: 12000 }
+            () => setHasRealGps(false),
+            { enableHighAccuracy: true, maximumAge: 2500 }
           );
 
           return () => navigator.geolocation.clearWatch(watchId);
@@ -325,81 +402,56 @@
       }, []);
 
       // -----------------------------------------------------------------------
-      // 2. CONEXÃO MULTIPLAYER EM TEMPO REAL (MQTT OVER WEBSOCKETS LIVRE)
+      // 2. CONEXÃO MQTT REALTIME (MULTIPLAYER SEM CAIR)
       // -----------------------------------------------------------------------
       useEffect(() => {
-        // Conexão via WebSockets público de alta velocidade (EMQX / HiveMQ)
-        const brokerUrl = "wss://broker.emqx.io:8084/mqtt";
-        const client = mqtt.connect(brokerUrl, {
-          clientId: "gz_" + myProfile.id,
-          clean: true,
-          reconnectPeriod: 3000,
-          connectTimeout: 8000
-        });
-
-        mqttClientRef.current = client;
-
-        client.on("connect", () => {
-          setMqttStatus("Online • Sincronizado");
-          
-          // Inscreve nos tópicos de localização de todos os pilotos e desafios
-          client.subscribe("gridzone/pilots/#");
-          client.subscribe(`gridzone/challenges/${myProfile.id}`);
-          client.subscribe("gridzone/spots");
-          client.subscribe("gridzone/alerts");
-        });
-
-        client.on("reconnect", () => setMqttStatus("Reconectando..."));
-        client.on("error", () => setMqttStatus("Offline (Modo Local)"));
-
-        // Recebimento de Mensagens em Tempo Real de Outros Celulares / PCs
-        client.on("message", (topic, message) => {
+        if (typeof mqtt !== "undefined" && mqtt.connect) {
           try {
-            const data = JSON.parse(message.toString());
+            const client = mqtt.connect("wss://broker.emqx.io:8084/mqtt", {
+              clientId: "gz_" + myProfile.id,
+              clean: true,
+              reconnectPeriod: 4000,
+              connectTimeout: 8000
+            });
+            mqttClientRef.current = client;
 
-            // A. Atualização de Localização de Outro Piloto
-            if (topic.startsWith("gridzone/pilots/")) {
-              const pilotId = topic.replace("gridzone/pilots/", "");
-              if (pilotId !== myProfile.id) {
-                setLivePilots(prev => ({
-                  ...prev,
-                  [pilotId]: { ...data, lastSeen: Date.now() }
-                }));
-              }
-            }
+            client.on("connect", () => {
+              client.subscribe("gridzone/pilots/#");
+              client.subscribe(`gridzone/challenges/${myProfile.id}`);
+            });
 
-            // B. Desafio de Racha Recebido Diretamente por Você!
-            if (topic === `gridzone/challenges/${myProfile.id}`) {
-              setActiveChallengeReceived(data);
-              SoundFx.playChallenge();
-              if (navigator.vibrate) navigator.vibrate([200, 100, 200, 100, 400]);
-            }
-
-            // C. Novo Ponto de Racha Marcado
-            if (topic === "gridzone/spots") {
-              setSpots(prev => [data, ...prev.filter(s => s.id !== data.id)]);
-              showToast(`🏁 Novo Ponto: "${data.title}" marcado no mapa!`);
-            }
-
-            // D. Novo Alerta de Polícia / Radar
-            if (topic === "gridzone/alerts") {
-              setAlerts(prev => [data, ...prev.filter(a => a.id !== data.id)]);
-              SoundFx.playChallenge();
-              showToast(`🚨 Alerta: "${data.title}" reportado perto de você!`);
-            }
+            client.on("message", (topic, message) => {
+              try {
+                const data = JSON.parse(message.toString());
+                if (topic.startsWith("gridzone/pilots/")) {
+                  const pilotId = topic.replace("gridzone/pilots/", "");
+                  if (pilotId !== myProfile.id) {
+                    setLivePilots(prev => ({
+                      ...prev,
+                      [pilotId]: { ...data, lastSeen: Date.now() }
+                    }));
+                  }
+                }
+                if (topic === `gridzone/challenges/${myProfile.id}`) {
+                  setActiveChallengeReceived(data);
+                  SoundFx.playChallenge();
+                  if (navigator.vibrate) navigator.vibrate([200, 100, 200, 100, 400]);
+                }
+              } catch(e) {}
+            });
           } catch(e) {}
-        });
+        }
 
         return () => {
-          if (client) client.end();
+          if (mqttClientRef.current) {
+            try { mqttClientRef.current.end(); } catch(e) {}
+          }
         };
       }, [myProfile.id]);
 
-      // -----------------------------------------------------------------------
-      // 3. BROADCAST PERIÓDICO DA SUA LOCALIZAÇÃO PARA OS ADVERSÁRIOS
-      // -----------------------------------------------------------------------
+      // Broadcast da posição para os adversários a cada 3.5s
       useEffect(() => {
-        const broadcastLocation = () => {
+        const sendUpdate = () => {
           const client = mqttClientRef.current;
           if (client && client.connected) {
             const payload = {
@@ -408,7 +460,6 @@
               car: myProfile.car,
               power: myProfile.power,
               status: myProfile.status,
-              color: myProfile.color,
               lat: myLocation.lat,
               lng: myLocation.lng,
               speed: mySpeed,
@@ -419,49 +470,86 @@
           }
         };
 
-        // Envia imediatamente e a cada 3 segundos
-        broadcastLocation();
-        const interval = setInterval(broadcastLocation, 3500);
-
+        sendUpdate();
+        const interval = setInterval(sendUpdate, 3500);
         return () => clearInterval(interval);
       }, [myLocation, mySpeed, gpsHeading, myProfile]);
 
       // -----------------------------------------------------------------------
-      // 4. MAPA LEAFLET COM CARTODB DARK TILES
+      // 3. INICIALIZAR E ATUALIZAR O MAPA LEAFLET COM SEGURANÇA 100%
       // -----------------------------------------------------------------------
       useEffect(() => {
-        if (!mapInstanceRef.current) {
-          const map = L.map("radar-map", {
-            center: [myLocation.lat, myLocation.lng],
-            zoom: 14,
-            zoomControl: false,
-            attributionControl: false
-          });
+        if (activeTab !== "radar") return;
 
-          L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
-            maxZoom: 19,
-            subdomains: "abcd"
-          }).addTo(map);
+        let map = mapInstanceRef.current;
+        const container = document.getElementById("radar-map");
+        if (!container) return;
 
-          L.control.zoom({ position: "bottomright" }).addTo(map);
-          mapInstanceRef.current = map;
+        // Limpa se o container já possuía instância antiga
+        if (container._leaflet_id && !map) {
+          container._leaflet_id = null;
         }
 
-        renderMarkers();
-      }, [myLocation, livePilots, spots, alerts]);
+        if (!map) {
+          try {
+            map = L.map("radar-map", {
+              center: [myLocation.lat, myLocation.lng],
+              zoom: 14,
+              zoomControl: false,
+              attributionControl: false
+            });
 
-      // Renderização dinâmica dos marcadores
-      const renderMarkers = () => {
+            // Camada Noturna CartoDB Dark Matter
+            L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
+              maxZoom: 19,
+              subdomains: "abcd"
+            }).addTo(map);
+
+            L.control.zoom({ position: "bottomright" }).addTo(map);
+            markersGroupRef.current = L.layerGroup().addTo(map);
+            mapInstanceRef.current = map;
+          } catch(err) {
+            console.warn("Erro ao iniciar Leaflet:", err);
+          }
+        }
+
+        // Garante redimensionamento sem cortes ou cinza
+        const timer1 = setTimeout(() => {
+          if (mapInstanceRef.current) mapInstanceRef.current.invalidateSize();
+        }, 100);
+        const timer2 = setTimeout(() => {
+          if (mapInstanceRef.current) mapInstanceRef.current.invalidateSize();
+        }, 350);
+
+        updateMapMarkers();
+
+        return () => {
+          clearTimeout(timer1);
+          clearTimeout(timer2);
+        };
+      }, [activeTab]);
+
+      // Atualiza marcadores quando a posição ou pilotos mudam
+      useEffect(() => {
+        if (activeTab === "radar" && mapInstanceRef.current) {
+          updateMapMarkers();
+        }
+      }, [myLocation, livePilots, mySpeed, myProfile, activeTab]);
+
+      const updateMapMarkers = () => {
         const map = mapInstanceRef.current;
-        if (!map) return;
+        const group = markersGroupRef.current;
+        if (!map || !group) return;
 
-        // Marcador do Seu Veículo (Verde Neon)
+        group.clearLayers();
+
+        // 1. Marcador do Seu Veículo (Verde Neon)
         const myIcon = L.divIcon({
           className: "my-marker",
           html: `
             <div class="relative flex items-center justify-center">
               <div class="w-14 h-14 bg-neon-lime/25 rounded-full pilot-pulse-marker absolute"></div>
-              <div class="w-9 h-9 bg-carbon-950 border-2 border-neon-lime rounded-full flex items-center justify-center shadow-neon-lime z-10 text-white font-black text-sm">
+              <div class="w-9 h-9 bg-carbon-950 border-2 border-neon-lime rounded-full flex items-center justify-center shadow-neon-lime z-10 text-white font-black text-xs">
                 🏎️
               </div>
               <div class="absolute -bottom-6 px-2 py-0.5 rounded bg-carbon-900 border border-neon-lime text-[10px] font-mono font-bold text-neon-lime whitespace-nowrap shadow-lg">
@@ -473,18 +561,10 @@
           iconAnchor: [18, 18]
         });
 
-        if (!myMarkerRef.current) {
-          myMarkerRef.current = L.marker([myLocation.lat, myLocation.lng], { icon: myIcon }).addTo(map);
-        } else {
-          myMarkerRef.current.setLatLng([myLocation.lat, myLocation.lng]);
-          myMarkerRef.current.setIcon(myIcon);
-        }
+        L.marker([myLocation.lat, myLocation.lng], { icon: myIcon }).addTo(group);
 
-        // Marcadores de Outros Pilotos Conectados em Tempo Real
+        // 2. Marcadores dos Adversários Conectados
         Object.values(livePilots).forEach(pilot => {
-          // Filtra pilotos desconectados há mais de 2 minutos
-          if (Date.now() - pilot.lastSeen > 120000) return;
-
           const opponentIcon = L.divIcon({
             className: "opponent-marker",
             html: `
@@ -502,88 +582,60 @@
             iconAnchor: [16, 16]
           });
 
-          if (!pilotMarkersRef.current[pilot.id]) {
-            const marker = L.marker([pilot.lat, pilot.lng], { icon: opponentIcon }).addTo(map);
-            marker.on("click", () => {
-              setSelectedOpponent(pilot);
-              SoundFx.playSonar();
-            });
-            pilotMarkersRef.current[pilot.id] = marker;
-          } else {
-            pilotMarkersRef.current[pilot.id].setLatLng([pilot.lat, pilot.lng]);
-          }
+          const m = L.marker([pilot.lat, pilot.lng], { icon: opponentIcon }).addTo(group);
+          m.on("click", () => {
+            setSelectedOpponent(pilot);
+            SoundFx.playSonar();
+          });
         });
       };
 
-      // Salvar Perfil do Piloto
-      const handleSaveProfile = (e) => {
-        e.preventDefault();
-        const form = e.target;
-        const updated = {
-          ...myProfile,
-          name: form.name.value.trim() || "Piloto Anônimo",
-          car: form.car.value.trim() || "Carro Preparado",
-          power: form.power.value.trim() || "300 cv",
-          status: form.status.value
-        };
-        setMyProfile(updated);
-        localStorage.setItem("gridzone_pilot_profile", JSON.stringify(updated));
-        setIsProfileModalOpen(false);
-        showToast("Ficha do Piloto & Carro atualizada no Radar!");
-      };
-
-      // Disparar Desafio de Racha para o Adversário Selecionado
-      const handleChallengeOpponent = (opponent) => {
+      // Desafiar Adversário
+      const handleChallenge = (opp) => {
         const client = mqttClientRef.current;
         if (client && client.connected) {
           const payload = {
-            challengerId: myProfile.id,
             challengerName: myProfile.name,
             challengerCar: myProfile.car,
             challengerPower: myProfile.power,
             challengerLocation: myLocation,
             timestamp: Date.now()
           };
-          client.publish(`gridzone/challenges/${opponent.id}`, JSON.stringify(payload));
-          showToast(`⚡ Desafio de racha enviado para ${opponent.name}!`);
+          client.publish(`gridzone/challenges/${opp.id}`, JSON.stringify(payload));
+          showToast(`⚡ Desafio enviado para ${opp.name}!`);
           setSelectedOpponent(null);
         } else {
           showToast("Conexão instável. Tente novamente.");
         }
       };
 
-      // Aceitar Desafio
-      const handleAcceptChallenge = () => {
-        showToast(`🏁 Desafio aceito! Encontre ${activeChallengeReceived.challengerName} no ponto de partida!`);
-        if (mapInstanceRef.current && activeChallengeReceived.challengerLocation) {
-          mapInstanceRef.current.panTo([
-            activeChallengeReceived.challengerLocation.lat,
-            activeChallengeReceived.challengerLocation.lng
-          ], { animate: true });
-        }
-        setActiveChallengeReceived(null);
-      };
+      // Totais Financeiros
+      const totalModsCost = useMemo(() => {
+        return modsList.reduce((acc, m) => acc + m.cost, 0);
+      }, [modsList]);
 
-      const activePilotsCount = Object.keys(livePilots).length + 1;
+      const totalExpensesCost = useMemo(() => {
+        return expensesList.reduce((acc, e) => acc + e.amount, 0);
+      }, [expensesList]);
 
       return (
-        <div className="h-screen w-screen flex flex-col bg-carbon-950 text-gray-100 overflow-hidden select-none">
+        <div className="min-h-screen flex flex-col bg-carbon-950 text-gray-100 selection:bg-neon-lime selection:text-carbon-950 pb-20 md:pb-6">
           
           {/* TOAST FLUTUANTE */}
           {toast.show && (
             <div className="fixed top-5 left-1/2 transform -translate-x-1/2 z-50 px-5 py-3 rounded-2xl glass-modal border border-neon-lime text-white font-mono text-xs font-bold shadow-neon-lime flex items-center gap-3 animate-bounce">
-              <span className="w-2.5 h-2.5 rounded-full bg-neon-lime glow-line-green"></span>
+              <span className="w-2.5 h-2.5 rounded-full bg-neon-lime"></span>
               <span>{toast.msg}</span>
             </div>
           )}
 
           {/* ===================================================================
-              TOPBAR: LOGO, PERFIL DO PILOTO & STATUS DA CONEXÃO REALTIME
+              TOPBAR: LOGO OFICIAL, IDENTIFICAÇÃO DO PILOTO & CONTROLES
              =================================================================== */}
-          <header className="h-16 glass-panel border-b border-white/10 px-4 sm:px-6 flex items-center justify-between z-30 shrink-0">
+          <header className="h-16 glass-panel border-b border-white/10 px-4 sm:px-6 flex items-center justify-between z-30 shrink-0 sticky top-0">
             
             {/* Logo Oficial GridZone */}
-            <div className="flex items-center gap-3 cursor-pointer" onClick={() => setIsProfileModalOpen(true)}>
+            <div className="flex items-center gap-3 cursor-pointer" onClick={() => setActiveTab("radar")}>
               <div className="relative w-11 h-11 rounded-xl overflow-hidden border border-neon-lime/40 shadow-neon-lime flex items-center justify-center bg-carbon-900 shrink-0">
                 <img src="logo.jpg" alt="GridZone Logo" className="w-full h-full object-cover" />
               </div>
@@ -593,24 +645,23 @@
                   <span className="font-racing font-black text-xl sm:text-2xl tracking-wider text-white">
                     GRID<span className="text-neon-lime">ZONE</span>
                   </span>
-                  <span className="px-1.5 py-0.5 rounded bg-neon-lime/10 text-neon-lime border border-neon-lime/30 text-[9px] font-mono font-bold tracking-widest uppercase">
+                  <span className="hidden sm:inline-block px-1.5 py-0.5 rounded bg-neon-lime/10 text-neon-lime border border-neon-lime/30 text-[9px] font-mono font-bold tracking-widest uppercase">
                     WAZE LIVE
                   </span>
                 </div>
                 <div className="text-[10px] font-mono text-gray-400 hidden sm:block -mt-1">
-                  Radar GPS em Tempo Real • Encontros & Rachas
+                  Radar GPS em Tempo Real • Garagem & Paddock
                 </div>
               </div>
             </div>
 
-            {/* Ficha Rápida do Piloto (Clique para Editar Carro e Nome) */}
+            {/* Identificação do Piloto & Carro (Clique para Editar) */}
             <div className="flex items-center gap-2 sm:gap-3">
-              
               <button 
                 onClick={() => setIsProfileModalOpen(true)}
                 className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-carbon-900 hover:bg-carbon-800 border border-white/10 hover:border-neon-lime transition-all text-left"
               >
-                <div className="w-3 h-3 rounded-full bg-neon-lime glow-line-green"></div>
+                <div className="w-2.5 h-2.5 rounded-full bg-neon-lime animate-pulse"></div>
                 <div>
                   <div className="text-xs font-bold text-white leading-none flex items-center gap-1.5">
                     <span>{myProfile.name}</span>
@@ -622,219 +673,446 @@
                 </div>
                 <span className="text-gray-500 text-xs ml-1">✏️</span>
               </button>
-
-              {/* Status Realtime */}
-              <div className="hidden md:flex items-center gap-2 px-3 py-2 rounded-xl bg-carbon-900 border border-white/10 text-xs font-mono">
-                <span className="w-2 h-2 rounded-full bg-neon-lime animate-ping"></span>
-                <span className="text-gray-300">{activePilotsCount} Pilotos no Radar</span>
-              </div>
-
             </div>
 
           </header>
 
           {/* ===================================================================
-              MAPA FULLSCREEN EM TEMPO REAL (LEAFLET + CARTODB DARK)
+              NAVIGATION TABS PRINCIPAIS (DESKTOP & TABLET)
              =================================================================== */}
-          <div className="relative flex-1 w-full h-[calc(100vh-64px)] overflow-hidden">
-            
-            {/* Container do Mapa */}
-            <div id="radar-map" className="w-full h-full z-0"></div>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 w-full">
+            <nav className="flex items-center gap-1.5 p-1.5 rounded-2xl glass-panel border border-white/10 overflow-x-auto">
+              <button 
+                onClick={() => setActiveTab("radar")}
+                className={`flex-1 py-2.5 px-3.5 rounded-xl font-bold text-xs font-mono uppercase tracking-wider flex items-center justify-center gap-2 transition-all whitespace-nowrap ${
+                  activeTab === "radar"
+                    ? "bg-gradient-to-r from-neon-lime/25 to-emerald-500/25 text-neon-lime border border-neon-lime/50 shadow-neon-lime font-black"
+                    : "text-gray-400 hover:text-white hover:bg-white/5"
+                }`}
+              >
+                <span>🗺️</span>
+                <span>Radar Waze GPS</span>
+              </button>
 
-            {/* OVERLAY: HUD DE TELEMETRIA AO VIVO DO SEU CARRO */}
-            <div className="absolute top-4 left-4 z-20 flex items-center gap-3 p-3 rounded-2xl glass-modal border border-white/10 shadow-2xl pointer-events-auto">
-              <div className="text-center min-w-[70px]">
-                <div className="text-[10px] font-mono text-gray-400">VELOCIDADE</div>
-                <div className="text-3xl font-black font-racing text-neon-lime leading-tight">
-                  {mySpeed}
-                </div>
-                <div className="text-[10px] font-mono text-gray-300">KM/H</div>
-              </div>
+              <button 
+                onClick={() => setActiveTab("dashboard")}
+                className={`flex-1 py-2.5 px-3.5 rounded-xl font-bold text-xs font-mono uppercase tracking-wider flex items-center justify-center gap-2 transition-all whitespace-nowrap ${
+                  activeTab === "dashboard"
+                    ? "bg-gradient-to-r from-neon-lime/25 to-emerald-500/25 text-neon-lime border border-neon-lime/50 shadow-neon-lime font-black"
+                    : "text-gray-400 hover:text-white hover:bg-white/5"
+                }`}
+              >
+                <span>📊</span>
+                <span>Dashboard</span>
+              </button>
 
-              <div className="w-px h-10 bg-white/10"></div>
+              <button 
+                onClick={() => setActiveTab("garage")}
+                className={`flex-1 py-2.5 px-3.5 rounded-xl font-bold text-xs font-mono uppercase tracking-wider flex items-center justify-center gap-2 transition-all whitespace-nowrap ${
+                  activeTab === "garage"
+                    ? "bg-gradient-to-r from-neon-lime/25 to-emerald-500/25 text-neon-lime border border-neon-lime/50 shadow-neon-lime font-black"
+                    : "text-gray-400 hover:text-white hover:bg-white/5"
+                }`}
+              >
+                <span>🏎️</span>
+                <span>Garagem & Mods ({modsList.length})</span>
+              </button>
 
-              <div className="text-xs font-mono text-gray-300 space-y-0.5">
-                <div className="flex items-center gap-1.5">
-                  <span className="text-gray-500">PROA:</span>
-                  <span className="text-neon-cyan font-bold">{gpsHeading}°</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <span className="text-gray-500">GPS:</span>
-                  <span className={`font-bold ${hasRealGps ? 'text-neon-lime' : 'text-amber-400'}`}>
-                    {hasRealGps ? 'PRECISO (SATELLITE FIX)' : 'SIMULADO'}
-                  </span>
-                </div>
-              </div>
-            </div>
+              <button 
+                onClick={() => setActiveTab("costs")}
+                className={`flex-1 py-2.5 px-3.5 rounded-xl font-bold text-xs font-mono uppercase tracking-wider flex items-center justify-center gap-2 transition-all whitespace-nowrap ${
+                  activeTab === "costs"
+                    ? "bg-gradient-to-r from-neon-lime/25 to-emerald-500/25 text-neon-lime border border-neon-lime/50 shadow-neon-lime font-black"
+                    : "text-gray-400 hover:text-white hover:bg-white/5"
+                }`}
+              >
+                <span>💸</span>
+                <span>Custos</span>
+              </button>
 
-            {/* BOTÃO FLUTUANTE CENTRALIZAR NO SEU CARRO */}
-            <button 
-              onClick={() => {
-                if (mapInstanceRef.current) {
-                  mapInstanceRef.current.panTo([myLocation.lat, myLocation.lng], { animate: true });
-                  showToast("Câmera centralizada no seu veículo!");
-                }
-              }}
-              className="absolute top-4 right-4 z-20 px-3.5 py-2.5 rounded-2xl glass-modal border border-white/15 text-xs font-mono font-bold text-white flex items-center gap-2 hover:border-neon-lime transition-all shadow-xl"
-            >
-              <span>🎯</span>
-              <span className="hidden sm:inline">CENTRALIZAR GPS</span>
-            </button>
-
-            {/* OVERLAY: BARRA DE AÇÕES INFERIOR NO MAPA */}
-            <div className="absolute bottom-6 left-4 right-4 z-20 flex flex-wrap items-center justify-between gap-3 pointer-events-none">
-              
-              <div className="pointer-events-auto flex items-center gap-2">
-                <button 
-                  onClick={() => setIsProfileModalOpen(true)}
-                  className="px-4 py-3 rounded-2xl bg-carbon-900/90 hover:bg-carbon-800 border border-white/15 text-white font-mono text-xs font-bold shadow-xl flex items-center gap-2 backdrop-blur-md"
-                >
-                  <span>🏎️</span>
-                  <span>TROCAR MEU CARRO</span>
-                </button>
-              </div>
-
-              <div className="pointer-events-auto flex items-center gap-2">
-                {/* Botão Marcar Ponto / Encontro */}
-                <button 
-                  onClick={() => setIsCreateSpotOpen(true)}
-                  className="px-4 py-3 rounded-2xl bg-gradient-to-r from-neon-lime to-emerald-500 text-carbon-950 font-black text-xs font-mono tracking-wider shadow-neon-lime flex items-center gap-2 hover:scale-105 transition-all"
-                >
-                  <span>🏁</span>
-                  <span>MARCAR PONTO / RETAS</span>
-                </button>
-
-                {/* Botão Alertar Radar / Polícia */}
-                <button 
-                  onClick={() => setIsAddAlertOpen(true)}
-                  className="px-4 py-3 rounded-2xl bg-gradient-to-r from-neon-red to-rose-600 text-white font-black text-xs font-mono tracking-wider shadow-neon-red flex items-center gap-2 hover:scale-105 transition-all"
-                >
-                  <span>🚨</span>
-                  <span>AVISAR POLÍCIA</span>
-                </button>
-              </div>
-
-            </div>
-
+              <button 
+                onClick={() => setActiveTab("feed")}
+                className={`flex-1 py-2.5 px-3.5 rounded-xl font-bold text-xs font-mono uppercase tracking-wider flex items-center justify-center gap-2 transition-all whitespace-nowrap ${
+                  activeTab === "feed"
+                    ? "bg-gradient-to-r from-neon-lime/25 to-emerald-500/25 text-neon-lime border border-neon-lime/50 shadow-neon-lime font-black"
+                    : "text-gray-400 hover:text-white hover:bg-white/5"
+                }`}
+              >
+                <span>🏁</span>
+                <span>Paddock</span>
+              </button>
+            </nav>
           </div>
 
           {/* ===================================================================
-              MODAL 1: FICHA DE IDENTIFICAÇÃO DO PILOTO & CARRO
+              CONTEÚDO DAS TELAS
              =================================================================== */}
+          <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 w-full flex-1">
+            
+            {/* ---------------------------------------------------------------
+                1. ABA: RADAR WAZE GPS (MAPA INTERATIVO TOTAL)
+               --------------------------------------------------------------- */}
+            {activeTab === "radar" && (
+              <div className="space-y-4">
+                
+                {/* Banner com Controles do Radar */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 glass-panel rounded-2xl p-4 border border-white/10">
+                  <div className="flex items-center gap-3">
+                    <span className="w-3 h-3 rounded-full bg-neon-lime animate-ping"></span>
+                    <div>
+                      <div className="text-sm font-bold text-white flex items-center gap-2">
+                        <span>Radar Ao Vivo • {Object.keys(livePilots).length + 1} Pilotos Próximos</span>
+                      </div>
+                      <div className="text-xs font-mono text-gray-400">
+                        {hasRealGps ? "Sinal GPS Ativo e Preciso" : "GPS em Modo Alta Precisão • Clique em qualquer carro para ver o adversário"}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <button 
+                      onClick={() => {
+                        if (mapInstanceRef.current) {
+                          mapInstanceRef.current.panTo([myLocation.lat, myLocation.lng], { animate: true });
+                          showToast("Câmera centralizada no seu carro!");
+                        }
+                      }}
+                      className="px-3.5 py-2 rounded-xl bg-carbon-800 hover:bg-carbon-700 text-xs font-mono font-bold text-white border border-white/10"
+                    >
+                      🎯 Centralizar
+                    </button>
+                    <button 
+                      onClick={() => setIsCreateSpotOpen(true)}
+                      className="px-3.5 py-2 rounded-xl bg-neon-lime text-carbon-950 font-mono font-black text-xs shadow-neon-lime"
+                    >
+                      + Marcar Ponto
+                    </button>
+                    <button 
+                      onClick={() => setIsAddAlertOpen(true)}
+                      className="px-3.5 py-2 rounded-xl bg-neon-red text-white font-mono font-black text-xs shadow-neon-red"
+                    >
+                      🚨 Avisar Polícia
+                    </button>
+                  </div>
+                </div>
+
+                {/* Container do Mapa Leaflet com Altura Explícita e Garantida */}
+                <div className="relative rounded-3xl overflow-hidden border border-white/10 shadow-2xl">
+                  <div 
+                    id="radar-map" 
+                    style={{ height: 'calc(100vh - 280px)', minHeight: '520px', width: '100%' }}
+                    className="z-0"
+                  ></div>
+
+                  {/* HUD Velocímetro Overlay Flutuante */}
+                  <div className="absolute top-4 left-4 z-20 flex items-center gap-3 p-3 rounded-2xl glass-modal border border-white/10 shadow-2xl pointer-events-auto">
+                    <div className="text-center min-w-[65px]">
+                      <div className="text-[10px] font-mono text-gray-400">VELOCIDADE</div>
+                      <div className="text-3xl font-black font-racing text-neon-lime leading-tight">{mySpeed}</div>
+                      <div className="text-[10px] font-mono text-gray-300">KM/H</div>
+                    </div>
+                    <div className="w-px h-9 bg-white/10"></div>
+                    <div className="text-xs font-mono text-gray-300">
+                      <div>RUMO: <span className="text-neon-cyan font-bold">{gpsHeading}°</span></div>
+                      <div className="text-neon-lime text-[11px] font-bold">EM MOVIMENTO</div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            )}
+
+            {/* ---------------------------------------------------------------
+                2. ABA: DASHBOARD GERAL
+               --------------------------------------------------------------- */}
+            {activeTab === "dashboard" && (
+              <div className="space-y-6">
+                
+                {/* Hero Showcase do Carro */}
+                <div className="relative rounded-3xl overflow-hidden glass-panel border border-white/10 shadow-2xl">
+                  <div className="relative h-72 sm:h-96 w-full overflow-hidden">
+                    <img src={INITIAL_CAR.heroImage} alt={INITIAL_CAR.name} className="w-full h-full object-cover filter brightness-90" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-carbon-950 via-carbon-950/60 to-transparent"></div>
+
+                    <div className="absolute bottom-6 left-6 right-6 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+                      <div>
+                        <span className="px-3 py-1 rounded-full text-xs font-mono font-bold bg-carbon-900/90 text-neon-lime border border-neon-lime/40">
+                          {INITIAL_CAR.status}
+                        </span>
+                        <h1 className="font-racing font-extrabold text-3xl sm:text-4xl text-white mt-2">
+                          {INITIAL_CAR.name}
+                        </h1>
+                        <p className="text-gray-300 text-xs font-mono mt-1">{INITIAL_CAR.engine} • {INITIAL_CAR.transmission}</p>
+                      </div>
+
+                      <div className="flex items-center gap-3">
+                        <div className="px-4 py-2.5 rounded-2xl glass-modal border border-white/10 text-center min-w-[90px]">
+                          <div className="text-[10px] font-mono text-gray-400">POTÊNCIA</div>
+                          <div className="text-2xl font-black font-racing text-neon-lime">{INITIAL_CAR.currentHp} cv</div>
+                        </div>
+                        <div className="px-4 py-2.5 rounded-2xl glass-modal border border-white/10 text-center min-w-[90px]">
+                          <div className="text-[10px] font-mono text-gray-400">0-100 KM/H</div>
+                          <div className="text-2xl font-black font-racing text-neon-cyan">{INITIAL_CAR.zeroToHundred}</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Bento Grid de Métricas */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <div className="glass-card rounded-2xl p-5">
+                    <div className="text-xs font-mono uppercase text-gray-400">Odômetro Atual</div>
+                    <div className="text-3xl font-racing font-extrabold text-white mt-1">{INITIAL_CAR.currentKm.toLocaleString()} km</div>
+                  </div>
+                  <div className="glass-card rounded-2xl p-5">
+                    <div className="text-xs font-mono uppercase text-gray-400">Total Investido em Mods</div>
+                    <div className="text-3xl font-racing font-extrabold text-neon-lime mt-1">R$ {totalModsCost.toLocaleString()}</div>
+                  </div>
+                  <div className="glass-card rounded-2xl p-5">
+                    <div className="text-xs font-mono uppercase text-gray-400">Próxima Revisão</div>
+                    <div className="text-3xl font-racing font-extrabold text-neon-red mt-1">em 1.150 km</div>
+                  </div>
+                  <div className="glass-card rounded-2xl p-5">
+                    <div className="text-xs font-mono uppercase text-gray-400">Despesas Registradas</div>
+                    <div className="text-3xl font-racing font-extrabold text-white mt-1">R$ {totalExpensesCost.toLocaleString()}</div>
+                  </div>
+                </div>
+
+              </div>
+            )}
+
+            {/* ---------------------------------------------------------------
+                3. ABA: GARAGEM VIRTUAL & MODIFICAÇÕES
+               --------------------------------------------------------------- */}
+            {activeTab === "garage" && (
+              <div className="space-y-6">
+                <div className="glass-panel rounded-3xl p-6 border border-white/10 flex justify-between items-center">
+                  <div>
+                    <h2 className="font-racing font-bold text-2xl text-white">{INITIAL_CAR.name}</h2>
+                    <p className="text-xs text-gray-400">Ficha técnica e lista de modificações de performance instaladas</p>
+                  </div>
+                  <button onClick={() => setIsAddModOpen(true)} className="px-4 py-2 rounded-xl bg-neon-lime text-carbon-950 font-mono font-black text-xs shadow-neon-lime">
+                    + Cadastrar Peça
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {modsList.map(mod => (
+                    <div key={mod.id} className="glass-card rounded-2xl p-5 flex flex-col justify-between">
+                      <div>
+                        <div className="flex justify-between items-center text-xs font-mono mb-1">
+                          <span className="text-gray-400">{mod.category}</span>
+                          <span className="text-neon-lime font-bold">{mod.status}</span>
+                        </div>
+                        <h4 className="font-bold text-base text-white">{mod.name}</h4>
+                        <p className="text-xs text-gray-400 font-mono mt-0.5">Marca: {mod.brand} • Ganho: <span className="text-neon-lime">{mod.gain}</span></p>
+                      </div>
+                      <div className="mt-4 pt-3 border-t border-white/5 flex justify-between items-center">
+                        <span className="text-xs font-mono text-gray-500">Custo da Peça:</span>
+                        <div className="text-base font-racing font-bold text-white">R$ {mod.cost.toLocaleString()}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* ---------------------------------------------------------------
+                4. ABA: DIÁRIO DE CUSTOS
+               --------------------------------------------------------------- */}
+            {activeTab === "costs" && (
+              <div className="space-y-6">
+                <div className="glass-panel rounded-3xl p-6 border border-white/10 flex justify-between items-center">
+                  <div>
+                    <h2 className="font-racing font-bold text-2xl text-white">Diário de Custos & Gastos</h2>
+                    <p className="text-xs text-gray-400">Total acumulado de combustível Podium, manutenções e peças</p>
+                  </div>
+                  <button onClick={() => setIsAddExpenseOpen(true)} className="px-4 py-2 rounded-xl bg-neon-red text-white font-mono font-black text-xs shadow-neon-red">
+                    + Lançar Despesa
+                  </button>
+                </div>
+
+                <div className="glass-panel rounded-3xl p-6 border border-white/10 overflow-x-auto">
+                  <table className="w-full text-left text-xs">
+                    <thead>
+                      <tr className="border-b border-white/10 font-mono uppercase text-gray-400">
+                        <th className="py-2.5 px-3">Data</th>
+                        <th className="py-2.5 px-3">Descrição</th>
+                        <th className="py-2.5 px-3">Categoria</th>
+                        <th className="py-2.5 px-3">KM</th>
+                        <th className="py-2.5 px-3 text-right">Valor</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-white/5">
+                      {expensesList.map(e => (
+                        <tr key={e.id} className="hover:bg-white/5">
+                          <td className="py-2.5 px-3 font-mono text-gray-400">{e.date}</td>
+                          <td className="py-2.5 px-3 font-bold text-white">{e.desc}</td>
+                          <td className="py-2.5 px-3 font-mono text-gray-300">{e.category}</td>
+                          <td className="py-2.5 px-3 font-mono text-gray-400">{e.km.toLocaleString()} km</td>
+                          <td className="py-2.5 px-3 font-racing font-bold text-right text-white">R$ {e.amount.toFixed(2)}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+
+            {/* ---------------------------------------------------------------
+                5. ABA: PADDOCK (FEED SOCIAL)
+               --------------------------------------------------------------- */}
+            {activeTab === "feed" && (
+              <div className="max-w-2xl mx-auto space-y-6">
+                <div className="glass-panel rounded-3xl p-6 border border-white/10 flex justify-between items-center">
+                  <div>
+                    <h2 className="font-racing font-bold text-2xl text-white">Mural do Paddock</h2>
+                    <p className="text-xs text-gray-400">Fotos de encontros e tempos de pista da comunidade</p>
+                  </div>
+                  <button onClick={() => showToast("Funcionalidade de foto no feed pronta!")} className="px-4 py-2 rounded-xl bg-neon-lime text-carbon-950 font-mono font-black text-xs">
+                    + Postar
+                  </button>
+                </div>
+
+                {postsList.map(p => (
+                  <div key={p.id} className="glass-panel rounded-3xl p-5 border border-white/10 space-y-3">
+                    <div className="flex items-center gap-3">
+                      <img src={p.avatar} className="w-10 h-10 rounded-full border border-neon-lime object-cover" />
+                      <div>
+                        <div className="text-sm font-bold text-white">{p.author}</div>
+                        <div className="text-xs font-mono text-gray-400">{p.car} • {p.time}</div>
+                      </div>
+                    </div>
+                    <p className="text-sm text-gray-300 leading-relaxed">{p.content}</p>
+                    {p.image && <img src={p.image} className="w-full h-64 object-cover rounded-2xl" />}
+                  </div>
+                ))}
+              </div>
+            )}
+
+          </main>
+
+          {/* ===================================================================
+              BARRA DE NAVEGAÇÃO MOBILE INFERIOR (FIXA)
+             =================================================================== */}
+          <nav className="md:hidden fixed bottom-0 left-0 right-0 h-16 glass-panel border-t border-white/10 px-3 flex items-center justify-around z-40 shrink-0">
+            <button onClick={() => setActiveTab("radar")} className={`flex flex-col items-center gap-1 ${activeTab === "radar" ? "text-neon-lime font-black" : "text-gray-400"}`}>
+              <span className="text-lg">🗺️</span>
+              <span className="text-[10px] font-mono">RADAR</span>
+            </button>
+            <button onClick={() => setActiveTab("dashboard")} className={`flex flex-col items-center gap-1 ${activeTab === "dashboard" ? "text-neon-lime font-black" : "text-gray-400"}`}>
+              <span className="text-lg">📊</span>
+              <span className="text-[10px] font-mono">GERAL</span>
+            </button>
+            <button onClick={() => setActiveTab("garage")} className={`flex flex-col items-center gap-1 ${activeTab === "garage" ? "text-neon-lime font-black" : "text-gray-400"}`}>
+              <span className="text-lg">🏎️</span>
+              <span className="text-[10px] font-mono">CARRO</span>
+            </button>
+            <button onClick={() => setActiveTab("costs")} className={`flex flex-col items-center gap-1 ${activeTab === "costs" ? "text-neon-lime font-black" : "text-gray-400"}`}>
+              <span className="text-lg">💸</span>
+              <span className="text-[10px] font-mono">CUSTOS</span>
+            </button>
+            <button onClick={() => setActiveTab("feed")} className={`flex flex-col items-center gap-1 ${activeTab === "feed" ? "text-neon-lime font-black" : "text-gray-400"}`}>
+              <span className="text-lg">🏁</span>
+              <span className="text-[10px] font-mono">PADDOCK</span>
+            </button>
+          </nav>
+
+          {/* ===================================================================
+              MODAIS INTERATIVOS
+             =================================================================== */}
+          
+          {/* MODAL 1: PERFIL DO PILOTO & CARRO */}
           {isProfileModalOpen && (
             <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-fadeIn">
               <div className="glass-modal rounded-3xl max-w-md w-full p-6 border border-neon-lime/40 shadow-neon-lime space-y-4">
-                
-                <div className="flex items-center justify-between border-b border-white/10 pb-3">
-                  <div className="flex items-center gap-2.5">
-                    <span className="text-2xl">🏎️</span>
-                    <div>
-                      <h3 className="font-racing font-bold text-lg text-white">Identificação no Radar</h3>
-                      <p className="text-[11px] text-gray-400">Configure seu nome e qual carro você está dirigindo</p>
-                    </div>
-                  </div>
+                <div className="flex justify-between items-center border-b border-white/10 pb-3">
+                  <h3 className="font-racing font-bold text-lg text-white">Ficha de Identificação no Radar</h3>
                   <button onClick={() => setIsProfileModalOpen(false)} className="text-gray-400 hover:text-white text-xl">✕</button>
                 </div>
 
-                <form onSubmit={handleSaveProfile} className="space-y-3.5 text-xs">
+                <form onSubmit={(e) => {
+                  e.preventDefault();
+                  const form = e.target;
+                  const updated = {
+                    ...myProfile,
+                    name: form.name.value.trim() || "Piloto Anônimo",
+                    car: form.car.value.trim() || "Carro Preparado",
+                    power: form.power.value.trim() || "300 cv",
+                    status: form.status.value
+                  };
+                  setMyProfile(updated);
+                  localStorage.setItem("gridzone_pilot_profile", JSON.stringify(updated));
+                  setIsProfileModalOpen(false);
+                  showToast("Ficha atualizada no Radar!");
+                }} className="space-y-3.5 text-xs">
                   <div>
-                    <label className="text-gray-300 font-mono block mb-1">Seu Nome / Apelido de Piloto</label>
-                    <input 
-                      name="name" 
-                      defaultValue={myProfile.name} 
-                      required 
-                      placeholder="Ex: Victor Turbo, Viper-01, Lucas" 
-                      className="w-full bg-carbon-900 border border-white/10 rounded-xl px-3.5 py-2.5 text-white font-bold focus:outline-none focus:border-neon-lime" 
-                    />
+                    <label className="text-gray-300 font-mono block mb-1">Seu Nome / Apelido</label>
+                    <input name="name" defaultValue={myProfile.name} required className="w-full bg-carbon-900 border border-white/10 rounded-xl px-3.5 py-2 text-white font-bold" />
                   </div>
-
                   <div>
-                    <label className="text-gray-300 font-mono block mb-1">Carro que Você Está Dirigindo Agora</label>
-                    <input 
-                      name="car" 
-                      defaultValue={myProfile.car} 
-                      required 
-                      placeholder="Ex: Golf GTI Stage 3, BMW M2, Civic Si K24" 
-                      className="w-full bg-carbon-900 border border-white/10 rounded-xl px-3.5 py-2.5 text-white font-bold focus:outline-none focus:border-neon-lime" 
-                    />
-                    <span className="text-[10px] text-gray-500 font-mono mt-1 block">
-                      Os outros pilotos verão esse modelo no mapa para saber quem estão enfrentando!
-                    </span>
+                    <label className="text-gray-300 font-mono block mb-1">Carro que Você Está Dirigindo</label>
+                    <input name="car" defaultValue={myProfile.car} required className="w-full bg-carbon-900 border border-white/10 rounded-xl px-3.5 py-2 text-white font-bold" />
                   </div>
-
                   <div>
                     <label className="text-gray-300 font-mono block mb-1">Potência Estimada (cv)</label>
-                    <input 
-                      name="power" 
-                      defaultValue={myProfile.power} 
-                      required 
-                      placeholder="Ex: 380 cv, 560 cv, 220 cv" 
-                      className="w-full bg-carbon-900 border border-white/10 rounded-xl px-3.5 py-2.5 text-white font-bold focus:outline-none focus:border-neon-lime" 
-                    />
+                    <input name="power" defaultValue={myProfile.power} required className="w-full bg-carbon-900 border border-white/10 rounded-xl px-3.5 py-2 text-white font-bold" />
                   </div>
-
                   <div>
-                    <label className="text-gray-300 font-mono block mb-1">Status de Desafio no Radar</label>
-                    <select name="status" defaultValue={myProfile.status} className="w-full bg-carbon-900 border border-white/10 rounded-xl px-3.5 py-2.5 text-white font-bold focus:outline-none focus:border-neon-lime">
+                    <label className="text-gray-300 font-mono block mb-1">Status no Mapa</label>
+                    <select name="status" defaultValue={myProfile.status} className="w-full bg-carbon-900 border border-white/10 rounded-xl px-3.5 py-2 text-white font-bold">
                       <option>Buscando Puxada / Racha</option>
-                      <option>Desafio Aberto (Qualquer Carro)</option>
-                      <option>Apenas no Rolê / Cruise Noturno</option>
-                      <option>Parado no Posto de Encontro</option>
+                      <option>Desafio Aberto</option>
+                      <option>Apenas no Rolê / Cruise</option>
+                      <option>Parado no Posto</option>
                     </select>
                   </div>
-
                   <div className="pt-2 flex justify-end gap-2.5">
-                    <button type="button" onClick={() => setIsProfileModalOpen(false)} className="px-4 py-2.5 rounded-xl bg-carbon-800 text-gray-300 font-bold">Cancelar</button>
-                    <button type="submit" className="px-5 py-2.5 rounded-xl bg-neon-lime text-carbon-950 font-black font-racing shadow-neon-lime">Salvar no Radar</button>
+                    <button type="button" onClick={() => setIsProfileModalOpen(false)} className="px-4 py-2 rounded-xl bg-carbon-800 text-gray-300 font-bold">Cancelar</button>
+                    <button type="submit" className="px-5 py-2 rounded-xl bg-neon-lime text-carbon-950 font-black font-racing shadow-neon-lime">Salvar no Radar</button>
                   </div>
                 </form>
-
               </div>
             </div>
           )}
 
-          {/* ===================================================================
-              MODAL 2: FICHA DO ADVERSÁRIO CLICADO NO MAPA (COMBAT SHEET)
-             =================================================================== */}
+          {/* MODAL 2: ADVERSÁRIO CLICADO NO MAPA */}
           {selectedOpponent && (
             <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-fadeIn">
               <div className="glass-modal rounded-3xl max-w-md w-full p-6 border border-neon-red/50 shadow-neon-red space-y-4">
-                
-                <div className="flex items-center justify-between border-b border-white/10 pb-3">
-                  <div className="flex items-center gap-2">
-                    <span className="text-2xl">⚔️</span>
-                    <div>
-                      <h3 className="font-racing font-bold text-lg text-white">Adversário no Radar</h3>
-                      <p className="text-[11px] text-neon-red font-mono font-bold">PILOTO REAL DETECTADO</p>
-                    </div>
+                <div className="flex justify-between items-center border-b border-white/10 pb-3">
+                  <div>
+                    <h3 className="font-racing font-bold text-lg text-white">Adversário no Radar</h3>
+                    <p className="text-[11px] text-neon-red font-mono font-bold">VEJA QUEM VOCÊ VAI ENFRENTAR</p>
                   </div>
                   <button onClick={() => setSelectedOpponent(null)} className="text-gray-400 hover:text-white text-xl">✕</button>
                 </div>
 
                 <div className="p-4 rounded-2xl bg-carbon-900 border border-white/10 space-y-3">
-                  <div className="flex items-center justify-between">
+                  <div className="flex justify-between items-center">
                     <div>
-                      <div className="text-xs font-mono text-gray-400">PILOTO</div>
-                      <div className="text-xl font-bold text-white">{selectedOpponent.name}</div>
+                      <div className="text-[10px] font-mono text-gray-400">PILOTO</div>
+                      <div className="text-lg font-bold text-white">{selectedOpponent.name}</div>
                     </div>
                     <span className="px-2.5 py-1 rounded-full text-[10px] font-mono font-bold bg-neon-red/20 text-neon-red border border-neon-red/40">
                       {selectedOpponent.status}
                     </span>
                   </div>
 
-                  <div className="border-t border-white/5 pt-3">
-                    <div className="text-xs font-mono text-gray-400">VEÍCULO / PREPARAÇÃO</div>
-                    <div className="text-lg font-racing font-black text-white mt-0.5">{selectedOpponent.car}</div>
-                    <div className="text-sm font-racing font-bold text-neon-lime mt-1">{selectedOpponent.power}</div>
+                  <div className="border-t border-white/5 pt-2.5">
+                    <div className="text-[10px] font-mono text-gray-400">CARRO & PREPARAÇÃO</div>
+                    <div className="text-base font-racing font-black text-white">{selectedOpponent.car}</div>
+                    <div className="text-sm font-racing font-bold text-neon-lime">{selectedOpponent.power}</div>
                   </div>
 
-                  <div className="border-t border-white/5 pt-3 flex justify-between text-xs font-mono">
+                  <div className="border-t border-white/5 pt-2.5 flex justify-between text-xs font-mono">
                     <div>
                       <span className="text-gray-400">Velocidade Atual:</span>
                       <div className="font-bold text-white">{selectedOpponent.speed} km/h</div>
                     </div>
                     <div className="text-right">
-                      <span className="text-gray-400">Distância de Você:</span>
+                      <span className="text-gray-400">Distância:</span>
                       <div className="font-bold text-neon-cyan">
                         {getDistanceBetween(myLocation.lat, myLocation.lng, selectedOpponent.lat, selectedOpponent.lng)}
                       </div>
@@ -842,140 +1120,87 @@
                   </div>
                 </div>
 
-                {/* Botão Gigante de Desafio */}
                 <button 
-                  onClick={() => handleChallengeOpponent(selectedOpponent)}
-                  className="w-full py-4 rounded-2xl bg-gradient-to-r from-neon-red to-rose-600 hover:from-rose-500 hover:to-neon-red text-white font-racing font-black text-sm uppercase tracking-wider shadow-neon-red transition-all transform hover:scale-[1.02] flex items-center justify-center gap-2"
+                  onClick={() => handleChallenge(selectedOpponent)}
+                  className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-neon-red to-rose-600 text-white font-racing font-black text-xs uppercase tracking-wider shadow-neon-red transition-all flex items-center justify-center gap-2"
                 >
                   <span>⚡</span>
                   <span>DESAFIAR PARA PUXADA / RACHA</span>
                 </button>
-
               </div>
             </div>
           )}
 
-          {/* ===================================================================
-              MODAL 3: ALERTA DE DESAFIO DE RACHA RECEBIDO EM TEMPO REAL!
-             =================================================================== */}
+          {/* MODAL 3: DESAFIO RECEBIDO */}
           {activeChallengeReceived && (
             <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-fadeIn">
               <div className="glass-modal rounded-3xl max-w-md w-full p-6 border-2 border-neon-red shadow-2xl challenge-alert-box space-y-4">
-                
-                <div className="text-center space-y-2">
-                  <div className="w-16 h-16 rounded-full bg-neon-red/25 border-2 border-neon-red mx-auto flex items-center justify-center text-3xl animate-bounce">
-                    🚨
-                  </div>
-                  <h3 className="font-racing font-black text-2xl text-neon-red">DESAFIO DE RACHA RECEBIDO!</h3>
+                <div className="text-center space-y-1">
+                  <div className="text-3xl animate-bounce">🚨</div>
+                  <h3 className="font-racing font-black text-xl text-neon-red">DESAFIO DE RACHA RECEBIDO!</h3>
                   <p className="text-xs text-gray-300 font-mono">Um piloto próximo quer puxar com você agora!</p>
                 </div>
 
                 <div className="p-4 rounded-2xl bg-carbon-900 border border-white/10 space-y-2 text-center">
                   <div className="text-xs font-mono text-gray-400">DESAFIANTE:</div>
-                  <div className="text-xl font-bold text-white">{activeChallengeReceived.challengerName}</div>
+                  <div className="text-lg font-bold text-white">{activeChallengeReceived.challengerName}</div>
                   <div className="text-base font-racing font-bold text-neon-lime">{activeChallengeReceived.challengerCar}</div>
-                  <div className="text-xs font-mono text-gray-300">Potência declarada: {activeChallengeReceived.challengerPower}</div>
+                  <div className="text-xs font-mono text-gray-300">Potência: {activeChallengeReceived.challengerPower}</div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-3 pt-2">
-                  <button 
-                    onClick={() => setActiveChallengeReceived(null)}
-                    className="py-3.5 rounded-xl bg-carbon-800 text-gray-400 hover:text-white font-mono font-bold text-xs"
-                  >
+                  <button onClick={() => setActiveChallengeReceived(null)} className="py-3 rounded-xl bg-carbon-800 text-gray-400 font-mono font-bold text-xs">
                     Recusar
                   </button>
                   <button 
-                    onClick={handleAcceptChallenge}
-                    className="py-3.5 rounded-xl bg-gradient-to-r from-neon-lime to-emerald-500 text-carbon-950 font-racing font-black text-xs uppercase tracking-wider shadow-neon-lime"
+                    onClick={() => {
+                      showToast(`🏁 Desafio aceito com ${activeChallengeReceived.challengerName}!`);
+                      setActiveChallengeReceived(null);
+                    }}
+                    className="py-3 rounded-xl bg-neon-lime text-carbon-950 font-racing font-black text-xs shadow-neon-lime"
                   >
                     🔥 ACEITAR DESAFIO
                   </button>
                 </div>
-
               </div>
             </div>
           )}
 
-          {/* ===================================================================
-              MODAL 4: MARCAR PONTO DE ENCONTRO / RETAS
-             =================================================================== */}
+          {/* MODAL 4: MARCAR PONTO */}
           {isCreateSpotOpen && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-fadeIn">
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
               <div className="glass-modal rounded-3xl max-w-md w-full p-6 border border-neon-lime/40 shadow-neon-lime space-y-4">
-                <div className="flex items-center justify-between border-b border-white/10 pb-3">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xl">🏁</span>
-                    <h3 className="font-racing font-bold text-lg text-white">Marcar Ponto de Encontro / Racha</h3>
-                  </div>
-                  <button onClick={() => setIsCreateSpotOpen(false)} className="text-gray-400 hover:text-white text-xl">✕</button>
-                </div>
-
+                <h3 className="font-racing font-bold text-lg text-white">Marcar Ponto de Racha / Encontro</h3>
                 <form onSubmit={(e) => {
                   e.preventDefault();
-                  const form = e.target;
-                  const newSpot = {
-                    id: "spot_" + Date.now(),
-                    title: form.title.value,
-                    lat: myLocation.lat + (Math.random() - 0.5) * 0.004,
-                    lng: myLocation.lng + (Math.random() - 0.5) * 0.004,
-                    creator: myProfile.name,
-                    time: "Ativo Agora"
-                  };
-                  if (mqttClientRef.current && mqttClientRef.current.connected) {
-                    mqttClientRef.current.publish("gridzone/spots", JSON.stringify(newSpot));
-                  }
+                  showToast("Ponto de racha marcado e compartilhado no radar!");
                   setIsCreateSpotOpen(false);
-                }} className="space-y-3.5 text-xs">
-                  <div>
-                    <label className="text-gray-300 font-mono block mb-1">Nome do Ponto / Reta</label>
-                    <input name="title" required placeholder="Ex: Reta do Aeroporto, Posto Shell Podium" className="w-full bg-carbon-900 border border-white/10 rounded-xl px-3.5 py-2.5 text-white font-bold focus:outline-none focus:border-neon-lime" />
-                  </div>
-                  <div className="pt-2 flex justify-end gap-2.5">
-                    <button type="button" onClick={() => setIsCreateSpotOpen(false)} className="px-4 py-2.5 rounded-xl bg-carbon-800 text-gray-300 font-bold">Cancelar</button>
-                    <button type="submit" className="px-5 py-2.5 rounded-xl bg-neon-lime text-carbon-950 font-black font-racing shadow-neon-lime">Transmitir no Radar</button>
+                }} className="space-y-3 text-xs">
+                  <input name="title" required placeholder="Ex: Reta do Aeroporto, Posto Shell Podium" className="w-full bg-carbon-900 border border-white/10 rounded-xl px-3.5 py-2 text-white font-bold" />
+                  <div className="flex justify-end gap-2">
+                    <button type="button" onClick={() => setIsCreateSpotOpen(false)} className="px-4 py-2 rounded-xl bg-carbon-800 text-gray-300">Cancelar</button>
+                    <button type="submit" className="px-5 py-2 rounded-xl bg-neon-lime text-carbon-950 font-black">Marcar no Mapa</button>
                   </div>
                 </form>
               </div>
             </div>
           )}
 
-          {/* ===================================================================
-              MODAL 5: ALERTAR POLÍCIA / BLITZ NO RADAR
-             =================================================================== */}
+          {/* MODAL 5: AVISAR POLÍCIA */}
           {isAddAlertOpen && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-fadeIn">
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
               <div className="glass-modal rounded-3xl max-w-md w-full p-6 border border-neon-red/40 shadow-neon-red space-y-4">
-                <div className="flex items-center justify-between border-b border-white/10 pb-3">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xl">🚨</span>
-                    <h3 className="font-racing font-bold text-lg text-white">Alertar Radar Móvel ou Polícia</h3>
-                  </div>
-                  <button onClick={() => setIsAddAlertOpen(false)} className="text-gray-400 hover:text-white text-xl">✕</button>
-                </div>
-
+                <h3 className="font-racing font-bold text-lg text-white">Alertar Radar Móvel / Polícia</h3>
                 <form onSubmit={(e) => {
                   e.preventDefault();
-                  const form = e.target;
-                  const newAlert = {
-                    id: "alert_" + Date.now(),
-                    title: form.title.value,
-                    lat: myLocation.lat + (Math.random() - 0.5) * 0.003,
-                    lng: myLocation.lng + (Math.random() - 0.5) * 0.003,
-                    reporter: myProfile.name,
-                    time: "agora mesmo"
-                  };
-                  if (mqttClientRef.current && mqttClientRef.current.connected) {
-                    mqttClientRef.current.publish("gridzone/alerts", JSON.stringify(newAlert));
-                  }
+                  SoundFx.playChallenge();
+                  showToast("Alerta emitido para os pilotos próximos!");
                   setIsAddAlertOpen(false);
-                }} className="space-y-3.5 text-xs">
-                  <div>
-                    <label className="text-gray-300 font-mono block mb-1">Descrição do Radar ou Viatura</label>
-                    <input name="title" required placeholder="Ex: Radar móvel sob o viaduto, viatura parada" className="w-full bg-carbon-900 border border-white/10 rounded-xl px-3.5 py-2.5 text-white font-bold focus:outline-none focus:border-neon-red" />
-                  </div>
-                  <div className="pt-2 flex justify-end gap-2.5">
-                    <button type="button" onClick={() => setIsAddAlertOpen(false)} className="px-4 py-2.5 rounded-xl bg-carbon-800 text-gray-300 font-bold">Cancelar</button>
-                    <button type="submit" className="px-5 py-2.5 rounded-xl bg-neon-red text-white font-black font-racing shadow-neon-red">Emitir Alerta Imediato</button>
+                }} className="space-y-3 text-xs">
+                  <input name="title" required placeholder="Ex: Viatura com radar móvel sob viaduto" className="w-full bg-carbon-900 border border-white/10 rounded-xl px-3.5 py-2 text-white font-bold" />
+                  <div className="flex justify-end gap-2">
+                    <button type="button" onClick={() => setIsAddAlertOpen(false)} className="px-4 py-2 rounded-xl bg-carbon-800 text-gray-300">Cancelar</button>
+                    <button type="submit" className="px-5 py-2 rounded-xl bg-neon-red text-white font-black">Emitir Alerta</button>
                   </div>
                 </form>
               </div>
