@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>GridZone • Radar Live & Paddock Automotivo</title>
-  <meta name="description" content="O Waze dos gearheads e pilotos de rua. Mapa de encontros em tempo real, telemetria ao vivo, garagem virtual e comunidade de modificados.">
+  <title>GridZone • Radar Waze dos Pilotos em Tempo Real</title>
+  <meta name="description" content="Localização GPS em tempo real entre pilotos reais. Veja qual carro o adversário está dirigindo, desafie para puxada e marque pontos de encontro no mapa.">
   
-  <!-- Favicon Dinâmico SVG Neon -->
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><polygon points='16,2 29,8 29,24 16,30 3,24 3,8' fill='%2307080c' stroke='%2300f59b' stroke-width='2.5'/><path d='M10 16h6l-3 7 9-10h-6l3-7z' fill='%2300f59b'/></svg>">
+  <!-- Favicon Dinâmico -->
+  <link rel="icon" href="logo.jpg">
 
   <!-- Google Fonts: Orbitron, Rajdhani & Plus Jakarta Sans -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -16,6 +16,9 @@
 
   <!-- Leaflet CSS (Mapa Interativo) -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+
+  <!-- MQTT.js para Sincronização Multiplayer em Tempo Real entre Dispositivos -->
+  <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
 
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -53,7 +56,6 @@
             'neon-lime': '0 0 25px -4px rgba(0, 245, 155, 0.45)',
             'neon-red': '0 0 25px -4px rgba(255, 42, 75, 0.45)',
             'neon-cyan': '0 0 25px -4px rgba(0, 210, 255, 0.45)',
-            'radar-pulse': '0 0 0 15px rgba(0, 245, 155, 0.15)',
           }
         }
       }
@@ -115,60 +117,84 @@
       }
     }
     .pilot-pulse-marker {
-      animation: radar-sonar 2.2s infinite;
+      animation: radar-sonar 2s infinite;
       border-radius: 50%;
     }
 
-    @keyframes police-flash {
-      0%, 100% { box-shadow: 0 0 15px 4px #ff2a4b; }
-      50% { box-shadow: 0 0 15px 4px #00d2ff; }
+    @keyframes opponent-pulse {
+      0% {
+        box-shadow: 0 0 0 0 rgba(255, 42, 75, 0.8);
+      }
+      70% {
+        box-shadow: 0 0 0 20px rgba(255, 42, 75, 0);
+      }
+      100% {
+        box-shadow: 0 0 0 0 rgba(255, 42, 75, 0);
+      }
     }
-    .police-marker-glow {
-      animation: police-flash 1s infinite alternate;
+    .opponent-pulse-marker {
+      animation: opponent-pulse 2.2s infinite;
       border-radius: 50%;
     }
 
     .glass-panel {
-      background: rgba(10, 13, 20, 0.82);
+      background: rgba(10, 13, 20, 0.85);
       backdrop-filter: blur(18px);
       -webkit-backdrop-filter: blur(18px);
       border: 1px solid rgba(255, 255, 255, 0.08);
     }
 
     .glass-card {
-      background: rgba(15, 19, 29, 0.75);
+      background: rgba(15, 19, 29, 0.8);
       backdrop-filter: blur(14px);
-      border: 1px solid rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(255, 255, 255, 0.08);
       transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    .glass-card:hover {
-      border-color: rgba(0, 245, 155, 0.4);
-      transform: translateY(-2px);
-      box-shadow: 0 8px 24px -6px rgba(0, 245, 155, 0.2);
     }
 
     .glass-modal {
-      background: rgba(8, 10, 15, 0.96);
+      background: rgba(8, 10, 15, 0.97);
       backdrop-filter: blur(24px);
       border: 1px solid rgba(255, 255, 255, 0.12);
     }
 
-    /* Radar scan grid line */
-    .radar-grid-sweep {
-      background: radial-gradient(circle, rgba(0, 245, 155, 0.1) 0%, transparent 70%);
-      pointer-events: none;
+    /* Animação de desafio de racha recebido */
+    @keyframes challenge-flash {
+      0%, 100% { border-color: rgba(255, 42, 75, 0.9); box-shadow: 0 0 35px rgba(255, 42, 75, 0.6); }
+      50% { border-color: rgba(0, 245, 155, 0.9); box-shadow: 0 0 35px rgba(0, 245, 155, 0.6); }
+    }
+    .challenge-alert-box {
+      animation: challenge-flash 1s infinite alternate;
     }
   </style>
 </head>
 <body>
   <div id="root"></div>
 
-  <!-- APLICAÇÃO REACT PRINCIPAL GRIDZONE -->
+  <!-- APLICAÇÃO REACT PRINCIPAL GRIDZONE MULTIPLAYER -->
   <script type="text/babel">
     const { useState, useEffect, useRef, useMemo } = React;
 
     // =========================================================================
-    // SOM / EFEITOS SONOROS WEBAUDIO (SEM DEPENDÊNCIAS EXTERNAS)
+    // CÁLCULO DE DISTÂNCIA REAL ENTRE COORDENADAS (HAVERSINE EM METROS/KM)
+    // =========================================================================
+    function getDistanceBetween(lat1, lon1, lat2, lon2) {
+      if (!lat1 || !lon1 || !lat2 || !lon2) return "Calculando...";
+      const R = 6371; // Raio da Terra em km
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLon = (lon2 - lon1) * Math.PI / 180;
+      const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                Math.sin(dLon/2) * Math.sin(dLon/2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+      const distKm = R * c;
+      if (distKm < 1) {
+        return `${Math.round(distKm * 1000)} metros`;
+      }
+      return `${distKm.toFixed(1)} km`;
+    }
+
+    // =========================================================================
+    // SISTEMA DE ÁUDIO SINTÉTICO (EFEITOS SONOROS DE RADAR & SIRENE)
     // =========================================================================
     const SoundFx = {
       ctx: null,
@@ -178,7 +204,7 @@
           this.ctx = new (window.AudioContext || window.webkitAudioContext)();
         }
       },
-      playPing() {
+      playSonar() {
         if (this.muted) return;
         try {
           this.init();
@@ -186,17 +212,17 @@
           const osc = this.ctx.createOscillator();
           const gain = this.ctx.createGain();
           osc.type = "sine";
-          osc.frequency.setValueAtTime(880, this.ctx.currentTime);
-          osc.frequency.exponentialRampToValueAtTime(1760, this.ctx.currentTime + 0.15);
+          osc.frequency.setValueAtTime(800, this.ctx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(1600, this.ctx.currentTime + 0.15);
           gain.gain.setValueAtTime(0.08, this.ctx.currentTime);
-          gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.25);
+          gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.3);
           osc.connect(gain);
           gain.connect(this.ctx.destination);
           osc.start();
-          osc.stop(this.ctx.currentTime + 0.25);
+          osc.stop(this.ctx.currentTime + 0.3);
         } catch(e) {}
       },
-      playAlert() {
+      playChallenge() {
         if (this.muted) return;
         try {
           this.init();
@@ -204,275 +230,242 @@
           const osc = this.ctx.createOscillator();
           const gain = this.ctx.createGain();
           osc.type = "sawtooth";
-          osc.frequency.setValueAtTime(520, this.ctx.currentTime);
-          osc.frequency.setValueAtTime(740, this.ctx.currentTime + 0.1);
-          gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
-          gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.3);
+          osc.frequency.setValueAtTime(440, this.ctx.currentTime);
+          osc.frequency.linearRampToValueAtTime(880, this.ctx.currentTime + 0.2);
+          osc.frequency.linearRampToValueAtTime(440, this.ctx.currentTime + 0.4);
+          osc.frequency.linearRampToValueAtTime(880, this.ctx.currentTime + 0.6);
+          gain.gain.setValueAtTime(0.15, this.ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.8);
           osc.connect(gain);
           gain.connect(this.ctx.destination);
           osc.start();
-          osc.stop(this.ctx.currentTime + 0.3);
+          osc.stop(this.ctx.currentTime + 0.8);
         } catch(e) {}
       }
     };
 
     // =========================================================================
-    // DADOS MOCKADOS INICIAIS DO RADAR (PILOTOS PRÓXIMOS, SPOTS, ALERTAS)
-    // =========================================================================
-    // Coordenadas centrais padrão (São Paulo - Rod. dos Imigrantes / Marginal / Interlagos)
-    const DEFAULT_COORDS = { lat: -23.5505, lng: -46.6333 };
-
-    const INITIAL_PILOTS = [
-      {
-        id: "pilot-1",
-        name: "Renato 'Boost' M.",
-        car: "BMW M2 G87 Stage 2 (560cv)",
-        lat: -23.5480,
-        lng: -46.6380,
-        speed: 84,
-        status: "Em Deslocamento",
-        statusColor: "emerald",
-        callsign: "Viper-01",
-        avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80"
-      },
-      {
-        id: "pilot-2",
-        name: "Guilherme 'Apex'",
-        car: "Audi RS3 DaZa 2.5T (620cv)",
-        lat: -23.5560,
-        lng: -46.6290,
-        speed: 112,
-        status: "Testando Puxada",
-        statusColor: "red",
-        callsign: "Quattro-X",
-        avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=120&q=80"
-      },
-      {
-        id: "pilot-3",
-        name: "Diego K-Tuned",
-        car: "Civic Si Turbo (430cv)",
-        lat: -23.5430,
-        lng: -46.6310,
-        speed: 65,
-        status: "Indo pro Ponto",
-        statusColor: "cyan",
-        callsign: "Redline-Si",
-        avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=120&q=80"
-      },
-      {
-        id: "pilot-4",
-        name: "Thiago Track",
-        car: "Golf R Mk8 Stage 3 (480cv)",
-        lat: -23.5590,
-        lng: -46.6420,
-        speed: 0,
-        status: "Parado no Posto",
-        statusColor: "amber",
-        callsign: "Haldex-99",
-        avatar: "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?auto=format&fit=crop&w=120&q=80"
-      }
-    ];
-
-    const INITIAL_SPOTS = [
-      {
-        id: "spot-1",
-        title: "Reta do Aeroporto / Racha Seguro",
-        category: "Ponto de Encontro / Puxada",
-        lat: -23.5520,
-        lng: -46.6450,
-        carsCount: 8,
-        desc: "Asfalto novo e duplicado, reta longa de 1.200m com ampla visão.",
-        time: "Ativo agora (23h às 03h)",
-        verified: true
-      },
-      {
-        id: "spot-2",
-        title: "Posto Shell Podium 24h",
-        category: "Concentração & Abastecimento",
-        lat: -23.5410,
-        lng: -46.6260,
-        carsCount: 14,
-        desc: "Ponto de encontro oficial do comboio. Conveniência aberta e calibrador.",
-        time: "Concentração 22:30",
-        verified: true
-      }
-    ];
-
-    const INITIAL_ALERTS = [
-      {
-        id: "alert-1",
-        type: "police",
-        title: "Radar Móvel / Fiscalização",
-        lat: -23.5540,
-        lng: -46.6350,
-        desc: "Viatura com radar móvel sob o viaduto. Diminuam a velocidade!",
-        reporter: "Viper-01",
-        time: "há 4 min"
-      },
-      {
-        id: "alert-2",
-        type: "hazard",
-        title: "Óleo na Pista na Curva 3",
-        lat: -23.5460,
-        lng: -46.6400,
-        desc: "Mancha de fluido recente na faixa da direita. Cuidado!",
-        reporter: "Quattro-X",
-        time: "há 12 min"
-      }
-    ];
-
-    const INITIAL_RADIO_CHAT = [
-      { id: 1, user: "Renato (M2)", callsign: "Viper-01", text: "Alguém no Posto Shell? Chegando em 5 minutos com a M2!", time: "23:14" },
-      { id: 2, user: "Guilherme (RS3)", callsign: "Quattro-X", text: "Já estamos em 6 carros aqui. Gasolina Podium abastecida, vamos subir a serra!", time: "23:16" },
-      { id: 3, user: "Diego (Civic)", callsign: "Redline-Si", text: "Cuidado na alça de acesso, tem viatura parada no acostamento avisada no radar!", time: "23:18" }
-    ];
-
-    // =========================================================================
     // COMPONENTE PRINCIPAL GRIDZONE
     // =========================================================================
     function App() {
-      // Aba Ativa (Radar é o destaque principal!)
-      const [activeTab, setActiveTab] = useState("radar"); // radar, garage, costs, feed
-
-      // Estado de Geolocalização
-      const [userLocation, setUserLocation] = useState(DEFAULT_COORDS);
-      const [userSpeed, setUserSpeed] = useState(0);
-      const [gpsHeading, setGpsHeading] = useState(140);
-      const [gpsAccuracy, setGpsAccuracy] = useState(4);
-      const [isGpsActive, setIsGpsActive] = useState(false);
-      const [isTrackingLocked, setIsTrackingLocked] = useState(true);
-
-      // Dados do Radar
-      const [pilots, setPilots] = useState(INITIAL_PILOTS);
-      const [spots, setSpots] = useState(INITIAL_SPOTS);
-      const [alerts, setAlerts] = useState(INITIAL_ALERTS);
-      const [radioChat, setRadioChat] = useState(INITIAL_RADIO_CHAT);
-      const [radioMessage, setRadioMessage] = useState("");
+      // 1. Perfil do Piloto Local (Salvo no LocalStorage do Celular/PC)
+      const [myProfile, setMyProfile] = useState(() => {
+        const saved = localStorage.getItem("gridzone_pilot_profile");
+        if (saved) {
+          try { return JSON.parse(saved); } catch(e) {}
+        }
+        return {
+          id: "pilot_" + Math.random().toString(36).substring(2, 8),
+          name: "Piloto-" + Math.floor(Math.random() * 899 + 100),
+          car: "Golf GTI Stage 3",
+          power: "380 cv",
+          status: "Buscando Puxada / Racha",
+          color: "lime"
+        };
+      });
 
       // Modais
+      const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+      const [selectedOpponent, setSelectedOpponent] = useState(null);
+      const [activeChallengeReceived, setActiveChallengeReceived] = useState(null);
       const [isCreateSpotOpen, setIsCreateSpotOpen] = useState(false);
       const [isAddAlertOpen, setIsAddAlertOpen] = useState(false);
-      const [isRadioOpen, setIsRadioOpen] = useState(false);
-      const [soundMuted, setSoundMuted] = useState(false);
 
-      // Toast
+      // Estado de Geolocalização Local
+      const [myLocation, setMyLocation] = useState({ lat: -23.5505, lng: -46.6333 });
+      const [mySpeed, setMySpeed] = useState(0);
+      const [gpsHeading, setGpsHeading] = useState(120);
+      const [hasRealGps, setHasRealGps] = useState(false);
+
+      // Dicionário de Pilotos Conectados em Tempo Real (ID -> Objeto do Piloto)
+      const [livePilots, setLivePilots] = useState({});
+
+      // Spots e Alertas Públicos
+      const [spots, setSpots] = useState([]);
+      const [alerts, setAlerts] = useState([]);
+
+      // Status do WebSocket Multiplayer (MQTT)
+      const [mqttStatus, setMqttStatus] = useState("Conectando...");
+      const mqttClientRef = useRef(null);
+
+      // Toast Notifications
       const [toast, setToast] = useState({ show: false, msg: "" });
       const showToast = (msg) => {
         setToast({ show: true, msg });
-        SoundFx.playPing();
+        SoundFx.playSonar();
         setTimeout(() => setToast({ show: false, msg: "" }), 3500);
       };
 
       // Referência do Mapa Leaflet
-      const mapRef = useRef(null);
       const mapInstanceRef = useRef(null);
-      const userMarkerRef = useRef(null);
-      const otherMarkersRef = useRef({});
+      const myMarkerRef = useRef(null);
+      const pilotMarkersRef = useRef({});
 
       // -----------------------------------------------------------------------
-      // 1. INICIALIZAR GEOLOCALIZAÇÃO REAL DO NAVEGADOR
+      // 1. INICIALIZAR GPS REAL DO DISPOSITIVO
       // -----------------------------------------------------------------------
       useEffect(() => {
         if ("geolocation" in navigator) {
           const watchId = navigator.geolocation.watchPosition(
             (pos) => {
-              const { latitude, longitude, speed, heading, accuracy } = pos.coords;
-              setUserLocation({ lat: latitude, lng: longitude });
-              setUserSpeed(speed ? Math.round(speed * 3.6) : Math.floor(Math.random() * 25 + 45));
+              const { latitude, longitude, speed, heading } = pos.coords;
+              setMyLocation({ lat: latitude, lng: longitude });
+              setMySpeed(speed ? Math.round(speed * 3.6) : 0);
               if (heading) setGpsHeading(Math.round(heading));
-              if (accuracy) setGpsAccuracy(Math.round(accuracy));
-              setIsGpsActive(true);
+              setHasRealGps(true);
             },
             (err) => {
-              // Se permissão negada, ativa simulação para funcionar sempre
-              setIsGpsActive(false);
+              setHasRealGps(false);
             },
-            { enableHighAccuracy: true, maximumAge: 1500, timeout: 10000 }
+            { enableHighAccuracy: true, maximumAge: 2000, timeout: 12000 }
           );
 
           return () => navigator.geolocation.clearWatch(watchId);
         }
       }, []);
 
-      // Simulação de movimento contínuo caso GPS parado (efeito imersivo de telemetria)
+      // -----------------------------------------------------------------------
+      // 2. CONEXÃO MULTIPLAYER EM TEMPO REAL (MQTT OVER WEBSOCKETS LIVRE)
+      // -----------------------------------------------------------------------
       useEffect(() => {
-        const interval = setInterval(() => {
-          // Atualiza velocidade mockada dinamicamente entre 60 e 115 km/h
-          setUserSpeed(prev => {
-            const delta = Math.floor(Math.random() * 7) - 3;
-            const newSpeed = Math.max(50, Math.min(135, (prev || 75) + delta));
-            return newSpeed;
-          });
+        // Conexão via WebSockets público de alta velocidade (EMQX / HiveMQ)
+        const brokerUrl = "wss://broker.emqx.io:8084/mqtt";
+        const client = mqtt.connect(brokerUrl, {
+          clientId: "gz_" + myProfile.id,
+          clean: true,
+          reconnectPeriod: 3000,
+          connectTimeout: 8000
+        });
 
-          // Move ligeiramente os outros pilotos próximos simulando tráfego real
-          setPilots(prev => prev.map(p => ({
-            ...p,
-            lat: p.lat + (Math.random() - 0.5) * 0.0004,
-            lng: p.lng + (Math.random() - 0.5) * 0.0004,
-            speed: Math.max(0, p.speed + Math.floor(Math.random() * 5 - 2))
-          })));
-        }, 3000);
+        mqttClientRef.current = client;
+
+        client.on("connect", () => {
+          setMqttStatus("Online • Sincronizado");
+          
+          // Inscreve nos tópicos de localização de todos os pilotos e desafios
+          client.subscribe("gridzone/pilots/#");
+          client.subscribe(`gridzone/challenges/${myProfile.id}`);
+          client.subscribe("gridzone/spots");
+          client.subscribe("gridzone/alerts");
+        });
+
+        client.on("reconnect", () => setMqttStatus("Reconectando..."));
+        client.on("error", () => setMqttStatus("Offline (Modo Local)"));
+
+        // Recebimento de Mensagens em Tempo Real de Outros Celulares / PCs
+        client.on("message", (topic, message) => {
+          try {
+            const data = JSON.parse(message.toString());
+
+            // A. Atualização de Localização de Outro Piloto
+            if (topic.startsWith("gridzone/pilots/")) {
+              const pilotId = topic.replace("gridzone/pilots/", "");
+              if (pilotId !== myProfile.id) {
+                setLivePilots(prev => ({
+                  ...prev,
+                  [pilotId]: { ...data, lastSeen: Date.now() }
+                }));
+              }
+            }
+
+            // B. Desafio de Racha Recebido Diretamente por Você!
+            if (topic === `gridzone/challenges/${myProfile.id}`) {
+              setActiveChallengeReceived(data);
+              SoundFx.playChallenge();
+              if (navigator.vibrate) navigator.vibrate([200, 100, 200, 100, 400]);
+            }
+
+            // C. Novo Ponto de Racha Marcado
+            if (topic === "gridzone/spots") {
+              setSpots(prev => [data, ...prev.filter(s => s.id !== data.id)]);
+              showToast(`🏁 Novo Ponto: "${data.title}" marcado no mapa!`);
+            }
+
+            // D. Novo Alerta de Polícia / Radar
+            if (topic === "gridzone/alerts") {
+              setAlerts(prev => [data, ...prev.filter(a => a.id !== data.id)]);
+              SoundFx.playChallenge();
+              showToast(`🚨 Alerta: "${data.title}" reportado perto de você!`);
+            }
+          } catch(e) {}
+        });
+
+        return () => {
+          if (client) client.end();
+        };
+      }, [myProfile.id]);
+
+      // -----------------------------------------------------------------------
+      // 3. BROADCAST PERIÓDICO DA SUA LOCALIZAÇÃO PARA OS ADVERSÁRIOS
+      // -----------------------------------------------------------------------
+      useEffect(() => {
+        const broadcastLocation = () => {
+          const client = mqttClientRef.current;
+          if (client && client.connected) {
+            const payload = {
+              id: myProfile.id,
+              name: myProfile.name,
+              car: myProfile.car,
+              power: myProfile.power,
+              status: myProfile.status,
+              color: myProfile.color,
+              lat: myLocation.lat,
+              lng: myLocation.lng,
+              speed: mySpeed,
+              heading: gpsHeading,
+              timestamp: Date.now()
+            };
+            client.publish(`gridzone/pilots/${myProfile.id}`, JSON.stringify(payload));
+          }
+        };
+
+        // Envia imediatamente e a cada 3 segundos
+        broadcastLocation();
+        const interval = setInterval(broadcastLocation, 3500);
 
         return () => clearInterval(interval);
-      }, []);
+      }, [myLocation, mySpeed, gpsHeading, myProfile]);
 
       // -----------------------------------------------------------------------
-      // 2. INICIALIZAR MAPA LEAFLET COM CARTODB DARK TILES
+      // 4. MAPA LEAFLET COM CARTODB DARK TILES
       // -----------------------------------------------------------------------
       useEffect(() => {
-        if (activeTab !== "radar") return;
+        if (!mapInstanceRef.current) {
+          const map = L.map("radar-map", {
+            center: [myLocation.lat, myLocation.lng],
+            zoom: 14,
+            zoomControl: false,
+            attributionControl: false
+          });
 
-        // Aguarda container estar pronto
-        const timer = setTimeout(() => {
-          const container = document.getElementById("radar-map");
-          if (!container) return;
+          L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
+            maxZoom: 19,
+            subdomains: "abcd"
+          }).addTo(map);
 
-          if (!mapInstanceRef.current) {
-            const map = L.map("radar-map", {
-              center: [userLocation.lat, userLocation.lng],
-              zoom: 14,
-              zoomControl: false,
-              attributionControl: false
-            });
+          L.control.zoom({ position: "bottomright" }).addTo(map);
+          mapInstanceRef.current = map;
+        }
 
-            // Camada de Mapa Noturno de Alta Velocidade (CartoDB Dark Matter)
-            L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
-              maxZoom: 19,
-              subdomains: "abcd"
-            }).addTo(map);
+        renderMarkers();
+      }, [myLocation, livePilots, spots, alerts]);
 
-            // Adiciona controle de zoom na direita inferior
-            L.control.zoom({ position: "bottomright" }).addTo(map);
-
-            mapInstanceRef.current = map;
-          } else {
-            mapInstanceRef.current.invalidateSize();
-          }
-
-          renderMapLayers();
-        }, 150);
-
-        return () => clearTimeout(timer);
-      }, [activeTab]);
-
-      // -----------------------------------------------------------------------
-      // 3. ATUALIZAR MARCADORES NO MAPA (PILOTO PRINCIPAL, AMIGOS, SPOTS, ALERTAS)
-      // -----------------------------------------------------------------------
-      const renderMapLayers = () => {
+      // Renderização dinâmica dos marcadores
+      const renderMarkers = () => {
         const map = mapInstanceRef.current;
         if (!map) return;
 
-        // A. Marcador do Piloto Atual (Você)
-        const userIcon = L.divIcon({
-          className: "user-radar-pin",
+        // Marcador do Seu Veículo (Verde Neon)
+        const myIcon = L.divIcon({
+          className: "my-marker",
           html: `
             <div class="relative flex items-center justify-center">
-              <div class="w-12 h-12 bg-neon-lime/25 rounded-full pilot-pulse-marker absolute"></div>
-              <div class="w-8 h-8 bg-carbon-950 border-2 border-neon-lime rounded-full flex items-center justify-center shadow-neon-lime z-10 text-white font-black text-xs">
+              <div class="w-14 h-14 bg-neon-lime/25 rounded-full pilot-pulse-marker absolute"></div>
+              <div class="w-9 h-9 bg-carbon-950 border-2 border-neon-lime rounded-full flex items-center justify-center shadow-neon-lime z-10 text-white font-black text-sm">
                 🏎️
               </div>
-              <div class="absolute -bottom-6 px-2 py-0.5 rounded bg-carbon-900 border border-neon-lime/40 text-[10px] font-mono font-bold text-neon-lime whitespace-nowrap shadow-lg">
-                VOCÊ • ${userSpeed} km/h
+              <div class="absolute -bottom-6 px-2 py-0.5 rounded bg-carbon-900 border border-neon-lime text-[10px] font-mono font-bold text-neon-lime whitespace-nowrap shadow-lg">
+                ${myProfile.name} • ${myProfile.car}
               </div>
             </div>
           `,
@@ -480,155 +473,98 @@
           iconAnchor: [18, 18]
         });
 
-        if (!userMarkerRef.current) {
-          userMarkerRef.current = L.marker([userLocation.lat, userLocation.lng], { icon: userIcon }).addTo(map);
-          userMarkerRef.current.bindPopup(`
-            <div class="p-1 text-xs">
-              <div class="font-racing font-bold text-neon-lime text-sm">SEU VEÍCULO</div>
-              <div class="text-gray-300 font-mono mt-1">BMW M2 G87 Stage 2</div>
-              <div class="text-xs text-white font-bold mt-1">Velocidade: ${userSpeed} km/h</div>
-              <div class="text-[10px] text-gray-400 font-mono mt-1">GPS Fix: 3D • Heading ${gpsHeading}°</div>
-            </div>
-          `);
+        if (!myMarkerRef.current) {
+          myMarkerRef.current = L.marker([myLocation.lat, myLocation.lng], { icon: myIcon }).addTo(map);
         } else {
-          userMarkerRef.current.setLatLng([userLocation.lat, userLocation.lng]);
-          userMarkerRef.current.setIcon(userIcon);
+          myMarkerRef.current.setLatLng([myLocation.lat, myLocation.lng]);
+          myMarkerRef.current.setIcon(myIcon);
         }
 
-        if (isTrackingLocked) {
-          map.panTo([userLocation.lat, userLocation.lng], { animate: true, duration: 1 });
-        }
+        // Marcadores de Outros Pilotos Conectados em Tempo Real
+        Object.values(livePilots).forEach(pilot => {
+          // Filtra pilotos desconectados há mais de 2 minutos
+          if (Date.now() - pilot.lastSeen > 120000) return;
 
-        // B. Marcadores dos Outros Pilotos
-        pilots.forEach(pilot => {
-          const pilotIcon = L.divIcon({
-            className: "other-pilot-pin",
+          const opponentIcon = L.divIcon({
+            className: "opponent-marker",
             html: `
-              <div class="relative flex items-center justify-center">
-                <div class="w-7 h-7 bg-carbon-900 border-2 border-neon-cyan rounded-full flex items-center justify-center shadow-neon-cyan text-xs">
+              <div class="relative flex items-center justify-center cursor-pointer">
+                <div class="w-12 h-12 bg-neon-red/30 rounded-full opponent-pulse-marker absolute"></div>
+                <div class="w-8 h-8 bg-carbon-900 border-2 border-neon-red rounded-full flex items-center justify-center shadow-neon-red text-white text-xs font-bold">
                   ⚡
                 </div>
-                <div class="absolute -bottom-5 px-1.5 py-0.5 rounded bg-carbon-950/90 border border-white/10 text-[9px] font-mono font-bold text-neon-cyan whitespace-nowrap">
-                  ${pilot.callsign} (${pilot.speed} km/h)
+                <div class="absolute -bottom-6 px-2 py-0.5 rounded bg-carbon-950 border border-neon-red/60 text-[9px] font-mono font-bold text-white whitespace-nowrap shadow-lg">
+                  ${pilot.name} • <span class="text-neon-red">${pilot.car}</span>
                 </div>
               </div>
             `,
-            iconSize: [28, 28],
-            iconAnchor: [14, 14]
+            iconSize: [32, 32],
+            iconAnchor: [16, 16]
           });
 
-          if (!otherMarkersRef.current[pilot.id]) {
-            const marker = L.marker([pilot.lat, pilot.lng], { icon: pilotIcon }).addTo(map);
-            marker.bindPopup(`
-              <div class="p-1 text-xs space-y-1">
-                <div class="font-bold text-white flex items-center justify-between">
-                  <span>${pilot.name}</span>
-                  <span class="text-[10px] font-mono text-neon-cyan">${pilot.callsign}</span>
-                </div>
-                <div class="text-gray-300 font-mono text-[11px]">${pilot.car}</div>
-                <div class="flex items-center justify-between text-[10px] pt-1 border-t border-white/10 font-mono">
-                  <span class="text-neon-lime font-bold">${pilot.speed} km/h</span>
-                  <span class="text-gray-400">${pilot.status}</span>
-                </div>
-              </div>
-            `);
-            otherMarkersRef.current[pilot.id] = marker;
+          if (!pilotMarkersRef.current[pilot.id]) {
+            const marker = L.marker([pilot.lat, pilot.lng], { icon: opponentIcon }).addTo(map);
+            marker.on("click", () => {
+              setSelectedOpponent(pilot);
+              SoundFx.playSonar();
+            });
+            pilotMarkersRef.current[pilot.id] = marker;
           } else {
-            otherMarkersRef.current[pilot.id].setLatLng([pilot.lat, pilot.lng]);
-          }
-        });
-
-        // C. Marcadores de Spots & Encontros
-        spots.forEach(spot => {
-          if (!otherMarkersRef.current[spot.id]) {
-            const spotIcon = L.divIcon({
-              className: "spot-pin",
-              html: `
-                <div class="flex flex-col items-center">
-                  <div class="px-2 py-0.5 rounded-full bg-neon-lime text-carbon-950 font-black text-[10px] font-mono shadow-neon-lime uppercase flex items-center gap-1 border border-white/20">
-                    🏁 ${spot.carsCount} Carros
-                  </div>
-                  <div class="w-3 h-3 bg-neon-lime rotate-45 -mt-1.5"></div>
-                </div>
-              `,
-              iconSize: [80, 30],
-              iconAnchor: [40, 25]
-            });
-
-            const marker = L.marker([spot.lat, spot.lng], { icon: spotIcon }).addTo(map);
-            marker.bindPopup(`
-              <div class="p-1 text-xs">
-                <span class="text-[10px] font-mono uppercase text-neon-lime font-bold">${spot.category}</span>
-                <div class="font-racing font-bold text-white text-sm mt-0.5">${spot.title}</div>
-                <p class="text-gray-300 text-[11px] mt-1">${spot.desc}</p>
-                <div class="mt-2 flex items-center justify-between text-[10px] font-mono border-t border-white/10 pt-1">
-                  <span class="text-white font-bold">🏁 ${spot.carsCount} pilotos no local</span>
-                  <span class="text-neon-lime">${spot.time}</span>
-                </div>
-              </div>
-            `);
-            otherMarkersRef.current[spot.id] = marker;
-          }
-        });
-
-        // D. Marcadores de Alertas (Radar de Polícia e Perigos)
-        alerts.forEach(alert => {
-          if (!otherMarkersRef.current[alert.id]) {
-            const alertIcon = L.divIcon({
-              className: "alert-pin",
-              html: `
-                <div class="w-8 h-8 rounded-full flex items-center justify-center text-sm ${
-                  alert.type === 'police' 
-                    ? 'bg-neon-red/30 border-2 border-neon-red police-marker-glow' 
-                    : 'bg-amber-500/30 border-2 border-amber-400'
-                }">
-                  ${alert.type === 'police' ? '🚨' : '⚠️'}
-                </div>
-              `,
-              iconSize: [32, 32],
-              iconAnchor: [16, 16]
-            });
-
-            const marker = L.marker([alert.lat, alert.lng], { icon: alertIcon }).addTo(map);
-            marker.bindPopup(`
-              <div class="p-1 text-xs">
-                <span class="text-[10px] font-mono uppercase font-bold ${alert.type === 'police' ? 'text-neon-red' : 'text-amber-400'}">
-                  ${alert.type === 'police' ? 'BLITZ / RADAR MÓVEL' : 'ALERTA NA PISTA'}
-                </span>
-                <div class="font-bold text-white text-sm mt-0.5">${alert.title}</div>
-                <p class="text-gray-300 text-[11px] mt-1">${alert.desc}</p>
-                <div class="mt-2 text-[10px] font-mono text-gray-400">
-                  Reportado por <span class="text-white">${alert.reporter}</span> • ${alert.time}
-                </div>
-              </div>
-            `);
-            otherMarkersRef.current[alert.id] = marker;
+            pilotMarkersRef.current[pilot.id].setLatLng([pilot.lat, pilot.lng]);
           }
         });
       };
 
-      // Recarrega marcadores sempre que lista muda
-      useEffect(() => {
-        if (activeTab === "radar") {
-          renderMapLayers();
-        }
-      }, [pilots, spots, alerts, userLocation, userSpeed, isTrackingLocked]);
-
-      // Enviar mensagem no Rádio
-      const handleSendRadio = (e) => {
+      // Salvar Perfil do Piloto
+      const handleSaveProfile = (e) => {
         e.preventDefault();
-        if (!radioMessage.trim()) return;
-        const newMsg = {
-          id: Date.now(),
-          user: "Você (M2)",
-          callsign: "Viper-01",
-          text: radioMessage.trim(),
-          time: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+        const form = e.target;
+        const updated = {
+          ...myProfile,
+          name: form.name.value.trim() || "Piloto Anônimo",
+          car: form.car.value.trim() || "Carro Preparado",
+          power: form.power.value.trim() || "300 cv",
+          status: form.status.value
         };
-        setRadioChat(prev => [...prev, newMsg]);
-        setRadioMessage("");
-        SoundFx.playPing();
+        setMyProfile(updated);
+        localStorage.setItem("gridzone_pilot_profile", JSON.stringify(updated));
+        setIsProfileModalOpen(false);
+        showToast("Ficha do Piloto & Carro atualizada no Radar!");
       };
+
+      // Disparar Desafio de Racha para o Adversário Selecionado
+      const handleChallengeOpponent = (opponent) => {
+        const client = mqttClientRef.current;
+        if (client && client.connected) {
+          const payload = {
+            challengerId: myProfile.id,
+            challengerName: myProfile.name,
+            challengerCar: myProfile.car,
+            challengerPower: myProfile.power,
+            challengerLocation: myLocation,
+            timestamp: Date.now()
+          };
+          client.publish(`gridzone/challenges/${opponent.id}`, JSON.stringify(payload));
+          showToast(`⚡ Desafio de racha enviado para ${opponent.name}!`);
+          setSelectedOpponent(null);
+        } else {
+          showToast("Conexão instável. Tente novamente.");
+        }
+      };
+
+      // Aceitar Desafio
+      const handleAcceptChallenge = () => {
+        showToast(`🏁 Desafio aceito! Encontre ${activeChallengeReceived.challengerName} no ponto de partida!`);
+        if (mapInstanceRef.current && activeChallengeReceived.challengerLocation) {
+          mapInstanceRef.current.panTo([
+            activeChallengeReceived.challengerLocation.lat,
+            activeChallengeReceived.challengerLocation.lng
+          ], { animate: true });
+        }
+        setActiveChallengeReceived(null);
+      };
+
+      const activePilotsCount = Object.keys(livePilots).length + 1;
 
       return (
         <div className="h-screen w-screen flex flex-col bg-carbon-950 text-gray-100 overflow-hidden select-none">
@@ -642,377 +578,334 @@
           )}
 
           {/* ===================================================================
-              TOPBAR COM LOGO OFICIAL VETORIAL DE ALTA PERFORMANCE GRIDZONE
+              TOPBAR: LOGO, PERFIL DO PILOTO & STATUS DA CONEXÃO REALTIME
              =================================================================== */}
           <header className="h-16 glass-panel border-b border-white/10 px-4 sm:px-6 flex items-center justify-between z-30 shrink-0">
             
-            {/* Logo Oficial Vetorial GridZone */}
-            <div className="flex items-center gap-3 cursor-pointer" onClick={() => setActiveTab("radar")}>
-              
-              {/* Badge da Logo Oficial Gerada */}
+            {/* Logo Oficial GridZone */}
+            <div className="flex items-center gap-3 cursor-pointer" onClick={() => setIsProfileModalOpen(true)}>
               <div className="relative w-11 h-11 rounded-xl overflow-hidden border border-neon-lime/40 shadow-neon-lime flex items-center justify-center bg-carbon-900 shrink-0">
                 <img src="logo.jpg" alt="GridZone Logo" className="w-full h-full object-cover" />
               </div>
 
-              {/* Tipografia da Marca */}
               <div>
                 <div className="flex items-center gap-2">
                   <span className="font-racing font-black text-xl sm:text-2xl tracking-wider text-white">
                     GRID<span className="text-neon-lime">ZONE</span>
                   </span>
-                  <span className="hidden sm:inline-block px-1.5 py-0.5 rounded bg-neon-lime/10 text-neon-lime border border-neon-lime/30 text-[9px] font-mono font-bold tracking-widest">
-                    RADAR LIVE
+                  <span className="px-1.5 py-0.5 rounded bg-neon-lime/10 text-neon-lime border border-neon-lime/30 text-[9px] font-mono font-bold tracking-widest uppercase">
+                    WAZE LIVE
                   </span>
                 </div>
                 <div className="text-[10px] font-mono text-gray-400 hidden sm:block -mt-1">
-                  Waze dos Pilotos & Encontros Automotivos
+                  Radar GPS em Tempo Real • Encontros & Rachas
                 </div>
               </div>
-
             </div>
 
-            {/* Status do Radar & Indicador de Satélite */}
-            <div className="flex items-center gap-2 sm:gap-4">
+            {/* Ficha Rápida do Piloto (Clique para Editar Carro e Nome) */}
+            <div className="flex items-center gap-2 sm:gap-3">
               
-              {/* Satélite GPS Indicator */}
-              <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-carbon-900 border border-white/10 text-xs font-mono">
-                <span className={`w-2 h-2 rounded-full ${isGpsActive ? 'bg-neon-lime glow-line-green' : 'bg-neon-cyan animate-pulse'}`}></span>
-                <span className="hidden md:inline text-gray-300">
-                  {isGpsActive ? `GPS FIX (${gpsAccuracy}m)` : "RADAR ATIVO"}
-                </span>
-                <span className="text-neon-lime font-bold">{pilots.length + 1} PILOTOS</span>
+              <button 
+                onClick={() => setIsProfileModalOpen(true)}
+                className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-carbon-900 hover:bg-carbon-800 border border-white/10 hover:border-neon-lime transition-all text-left"
+              >
+                <div className="w-3 h-3 rounded-full bg-neon-lime glow-line-green"></div>
+                <div>
+                  <div className="text-xs font-bold text-white leading-none flex items-center gap-1.5">
+                    <span>{myProfile.name}</span>
+                    <span className="text-[10px] font-mono text-neon-lime font-bold">({myProfile.power})</span>
+                  </div>
+                  <div className="text-[10px] font-mono text-gray-400 truncate max-w-[130px] sm:max-w-[180px]">
+                    {myProfile.car}
+                  </div>
+                </div>
+                <span className="text-gray-500 text-xs ml-1">✏️</span>
+              </button>
+
+              {/* Status Realtime */}
+              <div className="hidden md:flex items-center gap-2 px-3 py-2 rounded-xl bg-carbon-900 border border-white/10 text-xs font-mono">
+                <span className="w-2 h-2 rounded-full bg-neon-lime animate-ping"></span>
+                <span className="text-gray-300">{activePilotsCount} Pilotos no Radar</span>
               </div>
-
-              {/* Botão de Som / Mudo */}
-              <button 
-                onClick={() => {
-                  SoundFx.muted = !soundMuted;
-                  setSoundMuted(!soundMuted);
-                  showToast(!soundMuted ? "Áudio do Radar Silenciado" : "Áudio do Radar Ativado");
-                }}
-                className={`p-2 rounded-xl border transition-all ${soundMuted ? 'bg-carbon-900 border-white/10 text-gray-500' : 'bg-neon-lime/10 border-neon-lime/40 text-neon-lime'}`}
-                title="Efeitos sonoros do radar"
-              >
-                {soundMuted ? "🔇" : "🔊"}
-              </button>
-
-              {/* Botão Rádio / Chat do Comboio */}
-              <button 
-                onClick={() => setIsRadioOpen(!isRadioOpen)}
-                className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-neon-cyan/15 hover:bg-neon-cyan/25 border border-neon-cyan/40 text-neon-cyan text-xs font-mono font-bold transition-all shadow-neon-cyan"
-              >
-                <span>📻</span>
-                <span className="hidden sm:inline">RÁDIO ({radioChat.length})</span>
-              </button>
 
             </div>
 
           </header>
 
           {/* ===================================================================
-              CORPO DA APLICAÇÃO (MAPA WAZE FULLSCREEN OU ABAS DE GESTÃO)
+              MAPA FULLSCREEN EM TEMPO REAL (LEAFLET + CARTODB DARK)
              =================================================================== */}
           <div className="relative flex-1 w-full h-[calc(100vh-64px)] overflow-hidden">
             
-            {/* ---------------------------------------------------------------
-                TELA 1: MAPA RADAR AO VIVO (WAZE AUTOMOTIVO)
-               --------------------------------------------------------------- */}
-            <div className={`absolute inset-0 w-full h-full ${activeTab === 'radar' ? 'block' : 'hidden'}`}>
-              
-              {/* Container do Mapa Leaflet */}
-              <div id="radar-map" className="w-full h-full z-0"></div>
+            {/* Container do Mapa */}
+            <div id="radar-map" className="w-full h-full z-0"></div>
 
-              {/* OVERLAY 1: HUD SUPERIOR DE TELEMETRIA AO VIVO */}
-              <div className="absolute top-4 left-4 right-4 z-20 flex flex-wrap items-center justify-between gap-3 pointer-events-none">
-                
-                {/* Velocímetro Digital & G-Force */}
-                <div className="pointer-events-auto flex items-center gap-3 p-3 rounded-2xl glass-modal border border-white/10 shadow-2xl">
-                  {/* Gauge de Velocidade */}
-                  <div className="text-center min-w-[70px]">
-                    <div className="text-[10px] font-mono text-gray-400">VELOCIDADE</div>
-                    <div className="text-3xl font-black font-racing text-neon-lime leading-tight">
-                      {userSpeed}
-                    </div>
-                    <div className="text-[10px] font-mono text-gray-300">KM/H</div>
-                  </div>
-
-                  <div className="w-px h-10 bg-white/10"></div>
-
-                  {/* Bússola & Altitude */}
-                  <div className="text-xs font-mono text-gray-300 space-y-0.5">
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-gray-500">PROA:</span>
-                      <span className="text-neon-cyan font-bold">{gpsHeading}° SSE</span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-gray-500">STATUS:</span>
-                      <span className="text-neon-lime font-bold">EM CRUISE</span>
-                    </div>
-                  </div>
+            {/* OVERLAY: HUD DE TELEMETRIA AO VIVO DO SEU CARRO */}
+            <div className="absolute top-4 left-4 z-20 flex items-center gap-3 p-3 rounded-2xl glass-modal border border-white/10 shadow-2xl pointer-events-auto">
+              <div className="text-center min-w-[70px]">
+                <div className="text-[10px] font-mono text-gray-400">VELOCIDADE</div>
+                <div className="text-3xl font-black font-racing text-neon-lime leading-tight">
+                  {mySpeed}
                 </div>
-
-                {/* Controles de Visão do Mapa (Recentrar e Alertas) */}
-                <div className="pointer-events-auto flex items-center gap-2">
-                  <button 
-                    onClick={() => {
-                      setIsTrackingLocked(true);
-                      if (mapInstanceRef.current) {
-                        mapInstanceRef.current.panTo([userLocation.lat, userLocation.lng], { animate: true });
-                        showToast("Visão travada no seu veículo!");
-                      }
-                    }}
-                    className={`px-3.5 py-2.5 rounded-xl text-xs font-mono font-bold flex items-center gap-2 transition-all ${
-                      isTrackingLocked 
-                        ? 'bg-neon-lime text-carbon-950 font-black shadow-neon-lime' 
-                        : 'glass-modal text-white border border-white/15'
-                    }`}
-                  >
-                    <span>📍</span>
-                    <span>CENTRALIZE GPS</span>
-                  </button>
-                </div>
-
+                <div className="text-[10px] font-mono text-gray-300">KM/H</div>
               </div>
 
-              {/* OVERLAY 2: BOTÕES DE AÇÃO RÁPIDA (REPORTAR RADAR & SPOTS NO MAPA) */}
-              <div className="absolute bottom-20 md:bottom-8 right-4 z-20 flex flex-col gap-2.5">
-                
-                {/* Botão Marcar Ponto de Racha / Encontro */}
+              <div className="w-px h-10 bg-white/10"></div>
+
+              <div className="text-xs font-mono text-gray-300 space-y-0.5">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-gray-500">PROA:</span>
+                  <span className="text-neon-cyan font-bold">{gpsHeading}°</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-gray-500">GPS:</span>
+                  <span className={`font-bold ${hasRealGps ? 'text-neon-lime' : 'text-amber-400'}`}>
+                    {hasRealGps ? 'PRECISO (SATELLITE FIX)' : 'SIMULADO'}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* BOTÃO FLUTUANTE CENTRALIZAR NO SEU CARRO */}
+            <button 
+              onClick={() => {
+                if (mapInstanceRef.current) {
+                  mapInstanceRef.current.panTo([myLocation.lat, myLocation.lng], { animate: true });
+                  showToast("Câmera centralizada no seu veículo!");
+                }
+              }}
+              className="absolute top-4 right-4 z-20 px-3.5 py-2.5 rounded-2xl glass-modal border border-white/15 text-xs font-mono font-bold text-white flex items-center gap-2 hover:border-neon-lime transition-all shadow-xl"
+            >
+              <span>🎯</span>
+              <span className="hidden sm:inline">CENTRALIZAR GPS</span>
+            </button>
+
+            {/* OVERLAY: BARRA DE AÇÕES INFERIOR NO MAPA */}
+            <div className="absolute bottom-6 left-4 right-4 z-20 flex flex-wrap items-center justify-between gap-3 pointer-events-none">
+              
+              <div className="pointer-events-auto flex items-center gap-2">
+                <button 
+                  onClick={() => setIsProfileModalOpen(true)}
+                  className="px-4 py-3 rounded-2xl bg-carbon-900/90 hover:bg-carbon-800 border border-white/15 text-white font-mono text-xs font-bold shadow-xl flex items-center gap-2 backdrop-blur-md"
+                >
+                  <span>🏎️</span>
+                  <span>TROCAR MEU CARRO</span>
+                </button>
+              </div>
+
+              <div className="pointer-events-auto flex items-center gap-2">
+                {/* Botão Marcar Ponto / Encontro */}
                 <button 
                   onClick={() => setIsCreateSpotOpen(true)}
-                  className="px-4 py-3 rounded-2xl bg-gradient-to-r from-neon-lime to-emerald-500 text-carbon-950 font-black text-xs font-mono tracking-wider shadow-neon-lime flex items-center gap-2.5 hover:scale-105 transition-all"
+                  className="px-4 py-3 rounded-2xl bg-gradient-to-r from-neon-lime to-emerald-500 text-carbon-950 font-black text-xs font-mono tracking-wider shadow-neon-lime flex items-center gap-2 hover:scale-105 transition-all"
                 >
-                  <span className="text-base">🏁</span>
-                  <span>MARCAR PONTO / ENCONTRO</span>
+                  <span>🏁</span>
+                  <span>MARCAR PONTO / RETAS</span>
                 </button>
 
-                {/* Botão Alertar Polícia / Radar */}
+                {/* Botão Alertar Radar / Polícia */}
                 <button 
                   onClick={() => setIsAddAlertOpen(true)}
-                  className="px-4 py-3 rounded-2xl bg-gradient-to-r from-neon-red to-rose-600 text-white font-black text-xs font-mono tracking-wider shadow-neon-red flex items-center gap-2.5 hover:scale-105 transition-all"
+                  className="px-4 py-3 rounded-2xl bg-gradient-to-r from-neon-red to-rose-600 text-white font-black text-xs font-mono tracking-wider shadow-neon-red flex items-center gap-2 hover:scale-105 transition-all"
                 >
-                  <span className="text-base">🚨</span>
-                  <span>ALERTAR RADAR / BLITZ</span>
+                  <span>🚨</span>
+                  <span>AVISAR POLÍCIA</span>
                 </button>
-
               </div>
 
-              {/* OVERLAY 3: PAINEL LATERAL DO RÁDIO / CHAT DE PROXIMIDADE */}
-              {isRadioOpen && (
-                <div className="absolute top-20 right-4 bottom-24 w-80 sm:w-96 glass-modal rounded-3xl p-4 border border-neon-cyan/30 shadow-2xl flex flex-col z-30 animate-fadeIn">
-                  <div className="flex items-center justify-between border-b border-white/10 pb-2.5">
-                    <div className="flex items-center gap-2">
-                      <span className="text-neon-cyan">📻</span>
-                      <span className="font-racing font-bold text-xs text-white">CANAL DO COMBOIO (27.185 MHz)</span>
-                    </div>
-                    <button onClick={() => setIsRadioOpen(false)} className="text-gray-400 hover:text-white text-sm">✕</button>
-                  </div>
-
-                  {/* Mensagens do Rádio */}
-                  <div className="flex-1 overflow-y-auto space-y-2.5 py-3 pr-1 text-xs">
-                    {radioChat.map(msg => (
-                      <div key={msg.id} className="p-2.5 rounded-xl bg-carbon-900/80 border border-white/5 space-y-1">
-                        <div className="flex justify-between items-center text-[10px] font-mono">
-                          <span className="font-bold text-neon-cyan">{msg.user} [{msg.callsign}]</span>
-                          <span className="text-gray-500">{msg.time}</span>
-                        </div>
-                        <p className="text-gray-200">{msg.text}</p>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Input do Rádio */}
-                  <form onSubmit={handleSendRadio} className="flex gap-2 pt-2 border-t border-white/10">
-                    <input 
-                      type="text" 
-                      value={radioMessage}
-                      onChange={(e) => setRadioMessage(e.target.value)}
-                      placeholder="Falar no rádio do comboio..." 
-                      className="flex-1 bg-carbon-900 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-neon-cyan"
-                    />
-                    <button type="submit" className="px-3 py-2 rounded-xl bg-neon-cyan text-carbon-950 font-black text-xs font-mono shadow-neon-cyan">
-                      PTT 🎙️
-                    </button>
-                  </form>
-                </div>
-              )}
-
-            </div>
-
-            {/* ---------------------------------------------------------------
-                TELA 2: GARAGEM VIRTUAL & TELEMETRIA DETALHADA
-               --------------------------------------------------------------- */}
-            <div className={`absolute inset-0 w-full h-full overflow-y-auto p-4 sm:p-8 ${activeTab === 'garage' ? 'block' : 'hidden'}`}>
-              <div className="max-w-6xl mx-auto space-y-6">
-                
-                {/* Header da Garagem */}
-                <div className="glass-panel rounded-3xl p-6 border border-white/10 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                  <div>
-                    <span className="text-xs font-mono font-bold text-neon-lime uppercase tracking-widest">GARAGEM ATIVA NO RADAR</span>
-                    <h2 className="font-racing font-extrabold text-3xl text-white mt-1">BMW M2 Coupe (G87) Stage 2</h2>
-                    <p className="text-xs text-gray-400">Setup de Rua & Pista • Transmissão ao vivo para o Radar</p>
-                  </div>
-                  <button 
-                    onClick={() => setActiveTab("radar")} 
-                    className="px-4 py-2.5 rounded-xl bg-neon-lime text-carbon-950 font-black text-xs uppercase tracking-wider font-mono shadow-neon-lime"
-                  >
-                    Voltar ao Mapa Waze →
-                  </button>
-                </div>
-
-                {/* Grid Técnico */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div className="glass-card rounded-3xl p-6">
-                    <div className="text-xs font-mono text-gray-400">POTÊNCIA ATUAL</div>
-                    <div className="text-4xl font-racing font-black text-neon-lime mt-1">560 cv</div>
-                    <div className="text-xs font-mono text-emerald-400 mt-1">+100 cv vs Original (460 cv)</div>
-                  </div>
-
-                  <div className="glass-card rounded-3xl p-6">
-                    <div className="text-xs font-mono text-gray-400">TORQUE MÁXIMO</div>
-                    <div className="text-4xl font-racing font-black text-white mt-1">680 Nm</div>
-                    <div className="text-xs font-mono text-emerald-400 mt-1">+130 Nm de curva plena</div>
-                  </div>
-
-                  <div className="glass-card rounded-3xl p-6">
-                    <div className="text-xs font-mono text-gray-400">PRESSÃO DE TURBO</div>
-                    <div className="text-4xl font-racing font-black text-neon-cyan mt-1">1.8 bar</div>
-                    <div className="text-xs font-mono text-gray-300 mt-1">Mapa Bootmod3 Custom E30</div>
-                  </div>
-                </div>
-
-                {/* Modificações Instaladas */}
-                <div className="glass-panel rounded-3xl p-6 border border-white/10 space-y-3">
-                  <h3 className="font-racing font-bold text-lg text-white">Mods de Performance Instalados</h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div className="p-3.5 rounded-xl bg-carbon-900 border border-white/5 flex justify-between items-center">
-                      <div>
-                        <div className="text-sm font-bold text-white">Downpipe Inox 304 High-Flow</div>
-                        <div className="text-xs text-gray-400">VRSF Motorsport • +20 cv</div>
-                      </div>
-                      <span className="text-xs font-mono text-neon-lime font-bold">R$ 4.800</span>
-                    </div>
-
-                    <div className="p-3.5 rounded-xl bg-carbon-900 border border-white/5 flex justify-between items-center">
-                      <div>
-                        <div className="text-sm font-bold text-white">Intake de Fibra de Carbono</div>
-                        <div className="text-xs text-gray-400">Eventuri • Arrefecimento de Admissão</div>
-                      </div>
-                      <span className="text-xs font-mono text-neon-lime font-bold">R$ 12.500</span>
-                    </div>
-
-                    <div className="p-3.5 rounded-xl bg-carbon-900 border border-white/5 flex justify-between items-center">
-                      <div>
-                        <div className="text-sm font-bold text-white">Coilovers KW V3 Clubsport</div>
-                        <div className="text-xs text-gray-400">KW Suspensions • Setup Pista</div>
-                      </div>
-                      <span className="text-xs font-mono text-neon-lime font-bold">R$ 18.900</span>
-                    </div>
-
-                    <div className="p-3.5 rounded-xl bg-carbon-900 border border-white/5 flex justify-between items-center">
-                      <div>
-                        <div className="text-sm font-bold text-white">Escapamento Cat-Back c/ Válvulas</div>
-                        <div className="text-xs text-gray-400">Milltek Sport • Ronco Encorpado</div>
-                      </div>
-                      <span className="text-xs font-mono text-neon-lime font-bold">R$ 14.200</span>
-                    </div>
-                  </div>
-                </div>
-
-              </div>
-            </div>
-
-            {/* ---------------------------------------------------------------
-                TELA 3: FEED & RELATOS DO PADDOCK
-               --------------------------------------------------------------- */}
-            <div className={`absolute inset-0 w-full h-full overflow-y-auto p-4 sm:p-8 ${activeTab === 'feed' ? 'block' : 'hidden'}`}>
-              <div className="max-w-2xl mx-auto space-y-6">
-                <div className="glass-panel rounded-3xl p-6 border border-white/10 flex justify-between items-center">
-                  <div>
-                    <h2 className="font-racing font-bold text-2xl text-white">Mural do Paddock</h2>
-                    <p className="text-xs text-gray-400">Fotos de encontros e tempos de volta dos pilotos</p>
-                  </div>
-                  <button onClick={() => setActiveTab("radar")} className="px-3.5 py-2 rounded-xl bg-neon-lime text-carbon-950 font-black text-xs font-mono">
-                    Ver no Radar
-                  </button>
-                </div>
-
-                <div className="glass-panel rounded-3xl p-5 border border-white/10 space-y-4">
-                  <div className="flex items-center gap-3">
-                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80" className="w-10 h-10 rounded-full border border-neon-lime" />
-                    <div>
-                      <div className="text-sm font-bold text-white">Renato M. (Viper-01)</div>
-                      <div className="text-xs font-mono text-gray-400">Posto Shell • há 18 minutos</div>
-                    </div>
-                  </div>
-                  <p className="text-sm text-gray-300">
-                    Racha amistoso com o RS3 DaZa na subida da serra foi insano! Tracionou lindo de 2ª e 3ª marcha com a pressão em 1.8 bar. Nos encontramos agora no posto para esfriar as turbinas! 🏁🔥
-                  </p>
-                  <img src="https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&w=800&q=80" className="w-full h-64 object-cover rounded-2xl" />
-                </div>
-              </div>
             </div>
 
           </div>
 
           {/* ===================================================================
-              BARRA DE NAVEGAÇÃO INFERIOR ESTILO HUD WAZE (FIXA)
+              MODAL 1: FICHA DE IDENTIFICAÇÃO DO PILOTO & CARRO
              =================================================================== */}
-          <nav className="h-16 glass-panel border-t border-white/10 px-4 flex items-center justify-around z-30 shrink-0">
-            
-            {/* Aba 1: Radar Live */}
-            <button 
-              onClick={() => setActiveTab("radar")}
-              className={`flex flex-col items-center gap-1 px-4 py-1.5 rounded-xl transition-all ${
-                activeTab === "radar" 
-                  ? "text-neon-lime font-black" 
-                  : "text-gray-400 hover:text-white"
-              }`}
-            >
-              <div className="text-lg">🗺️</div>
-              <span className="text-[11px] font-mono tracking-wider">RADAR LIVE</span>
-            </button>
+          {isProfileModalOpen && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-fadeIn">
+              <div className="glass-modal rounded-3xl max-w-md w-full p-6 border border-neon-lime/40 shadow-neon-lime space-y-4">
+                
+                <div className="flex items-center justify-between border-b border-white/10 pb-3">
+                  <div className="flex items-center gap-2.5">
+                    <span className="text-2xl">🏎️</span>
+                    <div>
+                      <h3 className="font-racing font-bold text-lg text-white">Identificação no Radar</h3>
+                      <p className="text-[11px] text-gray-400">Configure seu nome e qual carro você está dirigindo</p>
+                    </div>
+                  </div>
+                  <button onClick={() => setIsProfileModalOpen(false)} className="text-gray-400 hover:text-white text-xl">✕</button>
+                </div>
 
-            {/* Aba 2: Garagem & Carro */}
-            <button 
-              onClick={() => setActiveTab("garage")}
-              className={`flex flex-col items-center gap-1 px-4 py-1.5 rounded-xl transition-all ${
-                activeTab === "garage" 
-                  ? "text-neon-lime font-black" 
-                  : "text-gray-400 hover:text-white"
-              }`}
-            >
-              <div className="text-lg">🏎️</div>
-              <span className="text-[11px] font-mono tracking-wider">MEU CARRO</span>
-            </button>
+                <form onSubmit={handleSaveProfile} className="space-y-3.5 text-xs">
+                  <div>
+                    <label className="text-gray-300 font-mono block mb-1">Seu Nome / Apelido de Piloto</label>
+                    <input 
+                      name="name" 
+                      defaultValue={myProfile.name} 
+                      required 
+                      placeholder="Ex: Victor Turbo, Viper-01, Lucas" 
+                      className="w-full bg-carbon-900 border border-white/10 rounded-xl px-3.5 py-2.5 text-white font-bold focus:outline-none focus:border-neon-lime" 
+                    />
+                  </div>
 
-            {/* Aba 3: Feed & Paddock */}
-            <button 
-              onClick={() => setActiveTab("feed")}
-              className={`flex flex-col items-center gap-1 px-4 py-1.5 rounded-xl transition-all ${
-                activeTab === "feed" 
-                  ? "text-neon-lime font-black" 
-                  : "text-gray-400 hover:text-white"
-              }`}
-            >
-              <div className="text-lg">🏁</div>
-              <span className="text-[11px] font-mono tracking-wider">PADDOCK</span>
-            </button>
+                  <div>
+                    <label className="text-gray-300 font-mono block mb-1">Carro que Você Está Dirigindo Agora</label>
+                    <input 
+                      name="car" 
+                      defaultValue={myProfile.car} 
+                      required 
+                      placeholder="Ex: Golf GTI Stage 3, BMW M2, Civic Si K24" 
+                      className="w-full bg-carbon-900 border border-white/10 rounded-xl px-3.5 py-2.5 text-white font-bold focus:outline-none focus:border-neon-lime" 
+                    />
+                    <span className="text-[10px] text-gray-500 font-mono mt-1 block">
+                      Os outros pilotos verão esse modelo no mapa para saber quem estão enfrentando!
+                    </span>
+                  </div>
 
-          </nav>
+                  <div>
+                    <label className="text-gray-300 font-mono block mb-1">Potência Estimada (cv)</label>
+                    <input 
+                      name="power" 
+                      defaultValue={myProfile.power} 
+                      required 
+                      placeholder="Ex: 380 cv, 560 cv, 220 cv" 
+                      className="w-full bg-carbon-900 border border-white/10 rounded-xl px-3.5 py-2.5 text-white font-bold focus:outline-none focus:border-neon-lime" 
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-gray-300 font-mono block mb-1">Status de Desafio no Radar</label>
+                    <select name="status" defaultValue={myProfile.status} className="w-full bg-carbon-900 border border-white/10 rounded-xl px-3.5 py-2.5 text-white font-bold focus:outline-none focus:border-neon-lime">
+                      <option>Buscando Puxada / Racha</option>
+                      <option>Desafio Aberto (Qualquer Carro)</option>
+                      <option>Apenas no Rolê / Cruise Noturno</option>
+                      <option>Parado no Posto de Encontro</option>
+                    </select>
+                  </div>
+
+                  <div className="pt-2 flex justify-end gap-2.5">
+                    <button type="button" onClick={() => setIsProfileModalOpen(false)} className="px-4 py-2.5 rounded-xl bg-carbon-800 text-gray-300 font-bold">Cancelar</button>
+                    <button type="submit" className="px-5 py-2.5 rounded-xl bg-neon-lime text-carbon-950 font-black font-racing shadow-neon-lime">Salvar no Radar</button>
+                  </div>
+                </form>
+
+              </div>
+            </div>
+          )}
 
           {/* ===================================================================
-              MODAIS INTERATIVOS (CRIAR SPOT E ALERTAR POLÍCIA)
+              MODAL 2: FICHA DO ADVERSÁRIO CLICADO NO MAPA (COMBAT SHEET)
              =================================================================== */}
-          
-          {/* MODAL: CRIAR NOVO PONTO DE ENCONTRO / RACHA */}
+          {selectedOpponent && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-fadeIn">
+              <div className="glass-modal rounded-3xl max-w-md w-full p-6 border border-neon-red/50 shadow-neon-red space-y-4">
+                
+                <div className="flex items-center justify-between border-b border-white/10 pb-3">
+                  <div className="flex items-center gap-2">
+                    <span className="text-2xl">⚔️</span>
+                    <div>
+                      <h3 className="font-racing font-bold text-lg text-white">Adversário no Radar</h3>
+                      <p className="text-[11px] text-neon-red font-mono font-bold">PILOTO REAL DETECTADO</p>
+                    </div>
+                  </div>
+                  <button onClick={() => setSelectedOpponent(null)} className="text-gray-400 hover:text-white text-xl">✕</button>
+                </div>
+
+                <div className="p-4 rounded-2xl bg-carbon-900 border border-white/10 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="text-xs font-mono text-gray-400">PILOTO</div>
+                      <div className="text-xl font-bold text-white">{selectedOpponent.name}</div>
+                    </div>
+                    <span className="px-2.5 py-1 rounded-full text-[10px] font-mono font-bold bg-neon-red/20 text-neon-red border border-neon-red/40">
+                      {selectedOpponent.status}
+                    </span>
+                  </div>
+
+                  <div className="border-t border-white/5 pt-3">
+                    <div className="text-xs font-mono text-gray-400">VEÍCULO / PREPARAÇÃO</div>
+                    <div className="text-lg font-racing font-black text-white mt-0.5">{selectedOpponent.car}</div>
+                    <div className="text-sm font-racing font-bold text-neon-lime mt-1">{selectedOpponent.power}</div>
+                  </div>
+
+                  <div className="border-t border-white/5 pt-3 flex justify-between text-xs font-mono">
+                    <div>
+                      <span className="text-gray-400">Velocidade Atual:</span>
+                      <div className="font-bold text-white">{selectedOpponent.speed} km/h</div>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-gray-400">Distância de Você:</span>
+                      <div className="font-bold text-neon-cyan">
+                        {getDistanceBetween(myLocation.lat, myLocation.lng, selectedOpponent.lat, selectedOpponent.lng)}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Botão Gigante de Desafio */}
+                <button 
+                  onClick={() => handleChallengeOpponent(selectedOpponent)}
+                  className="w-full py-4 rounded-2xl bg-gradient-to-r from-neon-red to-rose-600 hover:from-rose-500 hover:to-neon-red text-white font-racing font-black text-sm uppercase tracking-wider shadow-neon-red transition-all transform hover:scale-[1.02] flex items-center justify-center gap-2"
+                >
+                  <span>⚡</span>
+                  <span>DESAFIAR PARA PUXADA / RACHA</span>
+                </button>
+
+              </div>
+            </div>
+          )}
+
+          {/* ===================================================================
+              MODAL 3: ALERTA DE DESAFIO DE RACHA RECEBIDO EM TEMPO REAL!
+             =================================================================== */}
+          {activeChallengeReceived && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-fadeIn">
+              <div className="glass-modal rounded-3xl max-w-md w-full p-6 border-2 border-neon-red shadow-2xl challenge-alert-box space-y-4">
+                
+                <div className="text-center space-y-2">
+                  <div className="w-16 h-16 rounded-full bg-neon-red/25 border-2 border-neon-red mx-auto flex items-center justify-center text-3xl animate-bounce">
+                    🚨
+                  </div>
+                  <h3 className="font-racing font-black text-2xl text-neon-red">DESAFIO DE RACHA RECEBIDO!</h3>
+                  <p className="text-xs text-gray-300 font-mono">Um piloto próximo quer puxar com você agora!</p>
+                </div>
+
+                <div className="p-4 rounded-2xl bg-carbon-900 border border-white/10 space-y-2 text-center">
+                  <div className="text-xs font-mono text-gray-400">DESAFIANTE:</div>
+                  <div className="text-xl font-bold text-white">{activeChallengeReceived.challengerName}</div>
+                  <div className="text-base font-racing font-bold text-neon-lime">{activeChallengeReceived.challengerCar}</div>
+                  <div className="text-xs font-mono text-gray-300">Potência declarada: {activeChallengeReceived.challengerPower}</div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3 pt-2">
+                  <button 
+                    onClick={() => setActiveChallengeReceived(null)}
+                    className="py-3.5 rounded-xl bg-carbon-800 text-gray-400 hover:text-white font-mono font-bold text-xs"
+                  >
+                    Recusar
+                  </button>
+                  <button 
+                    onClick={handleAcceptChallenge}
+                    className="py-3.5 rounded-xl bg-gradient-to-r from-neon-lime to-emerald-500 text-carbon-950 font-racing font-black text-xs uppercase tracking-wider shadow-neon-lime"
+                  >
+                    🔥 ACEITAR DESAFIO
+                  </button>
+                </div>
+
+              </div>
+            </div>
+          )}
+
+          {/* ===================================================================
+              MODAL 4: MARCAR PONTO DE ENCONTRO / RETAS
+             =================================================================== */}
           {isCreateSpotOpen && (
             <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-fadeIn">
               <div className="glass-modal rounded-3xl max-w-md w-full p-6 border border-neon-lime/40 shadow-neon-lime space-y-4">
                 <div className="flex items-center justify-between border-b border-white/10 pb-3">
                   <div className="flex items-center gap-2">
                     <span className="text-xl">🏁</span>
-                    <h3 className="font-racing font-bold text-lg text-white">Marcar Ponto de Racha / Encontro</h3>
+                    <h3 className="font-racing font-bold text-lg text-white">Marcar Ponto de Encontro / Racha</h3>
                   </div>
                   <button onClick={() => setIsCreateSpotOpen(false)} className="text-gray-400 hover:text-white text-xl">✕</button>
                 </div>
@@ -1021,56 +914,34 @@
                   e.preventDefault();
                   const form = e.target;
                   const newSpot = {
-                    id: "spot-" + Date.now(),
+                    id: "spot_" + Date.now(),
                     title: form.title.value,
-                    category: form.category.value,
-                    lat: userLocation.lat + (Math.random() - 0.5) * 0.005,
-                    lng: userLocation.lng + (Math.random() - 0.5) * 0.005,
-                    carsCount: parseInt(form.cars.value) || 3,
-                    desc: form.desc.value,
-                    time: "Ativo Agora",
-                    verified: true
+                    lat: myLocation.lat + (Math.random() - 0.5) * 0.004,
+                    lng: myLocation.lng + (Math.random() - 0.5) * 0.004,
+                    creator: myProfile.name,
+                    time: "Ativo Agora"
                   };
-                  setSpots([newSpot, ...spots]);
+                  if (mqttClientRef.current && mqttClientRef.current.connected) {
+                    mqttClientRef.current.publish("gridzone/spots", JSON.stringify(newSpot));
+                  }
                   setIsCreateSpotOpen(false);
-                  showToast("Ponto de encontro criado e transmitido no Radar!");
                 }} className="space-y-3.5 text-xs">
                   <div>
-                    <label className="text-gray-400 font-mono block mb-1">Nome do Ponto / Reta</label>
-                    <input name="title" required placeholder="Ex: Reta do Polo Industrial / Posto Shell" className="w-full bg-carbon-900 border border-white/10 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-neon-lime" />
+                    <label className="text-gray-300 font-mono block mb-1">Nome do Ponto / Reta</label>
+                    <input name="title" required placeholder="Ex: Reta do Aeroporto, Posto Shell Podium" className="w-full bg-carbon-900 border border-white/10 rounded-xl px-3.5 py-2.5 text-white font-bold focus:outline-none focus:border-neon-lime" />
                   </div>
-
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="text-gray-400 font-mono block mb-1">Tipo de Encontro</label>
-                      <select name="category" className="w-full bg-carbon-900 border border-white/10 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-neon-lime">
-                        <option>Puxada / Reta Segura</option>
-                        <option>Concentração de Comboio</option>
-                        <option>Posto com Gasolina Podium</option>
-                        <option>Subida de Serra (Touge)</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label className="text-gray-400 font-mono block mb-1">Carros Estimados</label>
-                      <input name="cars" type="number" defaultValue="5" className="w-full bg-carbon-900 border border-white/10 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-neon-lime" />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="text-gray-400 font-mono block mb-1">Descrição / Instruções aos Pilotos</label>
-                    <textarea name="desc" rows="2" placeholder="Ex: Pista vazia, asfalto liso sem buracos, bom recuo..." className="w-full bg-carbon-900 border border-white/10 rounded-xl px-3.5 py-2 text-white focus:outline-none focus:border-neon-lime"></textarea>
-                  </div>
-
                   <div className="pt-2 flex justify-end gap-2.5">
                     <button type="button" onClick={() => setIsCreateSpotOpen(false)} className="px-4 py-2.5 rounded-xl bg-carbon-800 text-gray-300 font-bold">Cancelar</button>
-                    <button type="submit" className="px-5 py-2.5 rounded-xl bg-neon-lime text-carbon-950 font-black shadow-neon-lime">Transmitir no Radar</button>
+                    <button type="submit" className="px-5 py-2.5 rounded-xl bg-neon-lime text-carbon-950 font-black font-racing shadow-neon-lime">Transmitir no Radar</button>
                   </div>
                 </form>
               </div>
             </div>
           )}
 
-          {/* MODAL: ALERTAR POLÍCIA / RADAR MÓVEL */}
+          {/* ===================================================================
+              MODAL 5: ALERTAR POLÍCIA / BLITZ NO RADAR
+             =================================================================== */}
           {isAddAlertOpen && (
             <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-fadeIn">
               <div className="glass-modal rounded-3xl max-w-md w-full p-6 border border-neon-red/40 shadow-neon-red space-y-4">
@@ -1086,43 +957,25 @@
                   e.preventDefault();
                   const form = e.target;
                   const newAlert = {
-                    id: "alert-" + Date.now(),
-                    type: form.type.value,
+                    id: "alert_" + Date.now(),
                     title: form.title.value,
-                    lat: userLocation.lat + (Math.random() - 0.5) * 0.003,
-                    lng: userLocation.lng + (Math.random() - 0.5) * 0.003,
-                    desc: form.desc.value,
-                    reporter: "Você (M2)",
+                    lat: myLocation.lat + (Math.random() - 0.5) * 0.003,
+                    lng: myLocation.lng + (Math.random() - 0.5) * 0.003,
+                    reporter: myProfile.name,
                     time: "agora mesmo"
                   };
-                  setAlerts([newAlert, ...alerts]);
+                  if (mqttClientRef.current && mqttClientRef.current.connected) {
+                    mqttClientRef.current.publish("gridzone/alerts", JSON.stringify(newAlert));
+                  }
                   setIsAddAlertOpen(false);
-                  SoundFx.playAlert();
-                  showToast("Alerta emitido para todos os pilotos do radar!");
                 }} className="space-y-3.5 text-xs">
                   <div>
-                    <label className="text-gray-400 font-mono block mb-1">Tipo de Alerta</label>
-                    <select name="type" className="w-full bg-carbon-900 border border-white/10 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-neon-red">
-                      <option value="police">Viatura com Radar Móvel</option>
-                      <option value="police">Comando / Blitz Policial</option>
-                      <option value="hazard">Óleo ou Cascalho na Pista</option>
-                      <option value="hazard">Câmera de Velocidade Nova</option>
-                    </select>
+                    <label className="text-gray-300 font-mono block mb-1">Descrição do Radar ou Viatura</label>
+                    <input name="title" required placeholder="Ex: Radar móvel sob o viaduto, viatura parada" className="w-full bg-carbon-900 border border-white/10 rounded-xl px-3.5 py-2.5 text-white font-bold focus:outline-none focus:border-neon-red" />
                   </div>
-
-                  <div>
-                    <label className="text-gray-400 font-mono block mb-1">Título Rápido</label>
-                    <input name="title" required placeholder="Ex: Radar sob o viaduto da Marginal" className="w-full bg-carbon-900 border border-white/10 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-neon-red" />
-                  </div>
-
-                  <div>
-                    <label className="text-gray-400 font-mono block mb-1">Detalhes do Ponto</label>
-                    <textarea name="desc" rows="2" placeholder="Ex: Escondidos atrás da mureta, sentido bairro..." className="w-full bg-carbon-900 border border-white/10 rounded-xl px-3.5 py-2 text-white focus:outline-none focus:border-neon-red"></textarea>
-                  </div>
-
                   <div className="pt-2 flex justify-end gap-2.5">
                     <button type="button" onClick={() => setIsAddAlertOpen(false)} className="px-4 py-2.5 rounded-xl bg-carbon-800 text-gray-300 font-bold">Cancelar</button>
-                    <button type="submit" className="px-5 py-2.5 rounded-xl bg-neon-red text-white font-black shadow-neon-red">Emitir Alerta Imediato</button>
+                    <button type="submit" className="px-5 py-2.5 rounded-xl bg-neon-red text-white font-black font-racing shadow-neon-red">Emitir Alerta Imediato</button>
                   </div>
                 </form>
               </div>
