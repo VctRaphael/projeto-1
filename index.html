@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>GridZone • Waze dos Pilotos em Tempo Real</title>
-  <meta name="description" content="O Waze dos gearheads. Localização GPS em tempo real, telemetria, garagem virtual e comunidade para donos de carros modificados.">
+  <title>GridZone • Waze dos Pilotos com GPS Exato & Cidades</title>
+  <meta name="description" content="O Waze dos gearheads. Localização GPS em tempo real, velocidade exata, cidades dos adversários, telemetria e comunidade de carros modificados.">
   
   <link rel="icon" href="logo.jpg">
 
@@ -87,7 +87,6 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    /* MAPA WAZE FULLSCREEN EDGE-TO-EDGE */
     #waze-fullscreen-map {
       position: absolute;
       top: 0;
@@ -105,12 +104,10 @@
       font-family: 'Rajdhani', sans-serif !important;
     }
 
-    /* Esconde botões feios e deixa controles modernos flutuantes */
     .leaflet-control-zoom {
       display: none !important;
     }
 
-    /* Waze Pulsing Marker (Você) */
     @keyframes waze-halo {
       0% { box-shadow: 0 0 0 0 rgba(0, 245, 155, 0.8), 0 0 0 0 rgba(0, 245, 155, 0.4); }
       70% { box-shadow: 0 0 0 20px rgba(0, 245, 155, 0), 0 0 0 38px rgba(0, 245, 155, 0); }
@@ -121,7 +118,6 @@
       border-radius: 50%;
     }
 
-    /* Adversário Pulsante no Waze */
     @keyframes opponent-waze-halo {
       0% { box-shadow: 0 0 0 0 rgba(255, 42, 75, 0.8); }
       70% { box-shadow: 0 0 0 22px rgba(255, 42, 75, 0); }
@@ -132,21 +128,12 @@
       border-radius: 50%;
     }
 
-    /* Glassmorphism Flutuante Waze */
     .waze-pill-floating {
-      background: rgba(10, 13, 20, 0.88);
+      background: rgba(10, 13, 20, 0.90);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
       border: 1px solid rgba(255, 255, 255, 0.12);
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
-    }
-
-    .waze-card-bottom {
-      background: rgba(10, 13, 20, 0.94);
-      backdrop-filter: blur(24px);
-      -webkit-backdrop-filter: blur(24px);
-      border-top: 1px solid rgba(255, 255, 255, 0.14);
-      box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.7);
     }
 
     @keyframes challenge-flash {
@@ -184,8 +171,18 @@
       return `${distKm.toFixed(1)} km`;
     }
 
+    function getDistanceMeters(lat1, lon1, lat2, lon2) {
+      const R = 6371000; // metros
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLon = (lon2 - lon1) * Math.PI / 180;
+      const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                Math.sin(dLon/2) * Math.sin(dLon/2);
+      return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    }
+
     // =========================================================================
-    // EFEITOS SONOROS WEBAUDIO (ESTILO WAZE & ALERTA DE POLÍCIA)
+    // EFEITOS SONOROS WEBAUDIO (ESTILO WAZE & SIRENE)
     // =========================================================================
     const SoundFx = {
       ctx: null,
@@ -266,8 +263,7 @@
 
     const INITIAL_EXPENSES = [
       { id: 1, desc: "Gasolina Podium Petrobras (55 Litros)", category: "Combustível", amount: 489.50, date: "28/10/2026", km: 24850 },
-      { id: 2, desc: "Troca de Óleo Motul 300V 5W-40 + Filtro M", category: "Manutenção", amount: 1250.00, date: "12/10/2026", km: 24200 },
-      { id: 3, desc: "Downpipe VRSF Inox 304", category: "Peças & Mods", amount: 4800.00, date: "02/06/2026", km: 20400 }
+      { id: 2, desc: "Troca de Óleo Motul 300V 5W-40 + Filtro M", category: "Manutenção", amount: 1250.00, date: "12/10/2026", km: 24200 }
     ];
 
     const INITIAL_POSTS = [
@@ -289,8 +285,11 @@
       // Abas: 'radar' (Waze Fullscreen), 'dashboard', 'garage', 'costs', 'feed'
       const [activeTab, setActiveTab] = useState("radar");
 
-      // Modo de Mapa: 'street' (ESRI World Street Map - Waze Dia Colorido) ou 'dark' (ESRI Canvas Dark - Waze Noite)
-      const [mapTheme, setMapTheme] = useState("street"); // Padrão: 'street' colorido igualzinho ao Waze!
+      // Tema do Mapa: 'street' (ESRI World Street Map) ou 'dark' (ESRI Dark Gray)
+      const [mapTheme, setMapTheme] = useState("street");
+
+      // Cidade Atual do Piloto Local (Ex: São Paulo - SP, Tupã - SP, Campinas - SP)
+      const [myCity, setMyCity] = useState("Localizando cidade...");
 
       // Perfil do Piloto
       const [myProfile, setMyProfile] = useState(() => {
@@ -303,28 +302,28 @@
           name: "Victor Simão",
           car: "Golf GTI Stage 3",
           power: "380 cv",
+          city: "Detectando...",
           status: "Buscando Puxada / Racha"
         };
       });
 
       // Localização GPS
       const [myLocation, setMyLocation] = useState({ lat: -23.5505, lng: -46.6333 });
-      const [mySpeed, setMySpeed] = useState(0);
+      
+      // VELOCIDADE EXATA (ZERO QUANDO PARADO, SEM SIMULAÇÕES FALSAS)
+      const [exactSpeed, setExactSpeed] = useState(0);
       const [gpsHeading, setGpsHeading] = useState(135);
-      const [currentStreetName, setCurrentStreetName] = useState("Avenida Principal / Rodovia");
+      const [hasRealGps, setHasRealGps] = useState(false);
+      const lastGpsPointRef = useRef(null);
 
       // Adversários em Tempo Real no Mapa
-      const [livePilots, setLivePilots] = useState({
-        "bot-1": { id: "bot-1", name: "Guilherme 'Apex'", car: "Audi RS3 DaZa 2.5T", power: "620 cv", lat: -23.5475, lng: -46.6380, speed: 88, status: "Buscando Puxada" },
-        "bot-2": { id: "bot-2", name: "Diego K-Tuned", car: "Civic Si K24 Turbo", power: "430 cv", lat: -23.5550, lng: -46.6280, speed: 64, status: "Pronto pro Racha" },
-        "bot-3": { id: "bot-3", name: "Thiago Track", car: "Golf R Mk8 Stage 3", power: "480 cv", lat: -23.5430, lng: -46.6310, speed: 0, status: "Parado no Posto" }
-      });
+      const [livePilots, setLivePilots] = useState({});
 
       // Modais Waze
       const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
-      const [selectedOpponent, setSelectedOpponent] = useState(null); // Abre o card inferior do adversário estilo Waze
+      const [selectedOpponent, setSelectedOpponent] = useState(null);
       const [activeChallengeReceived, setActiveChallengeReceived] = useState(null);
-      const [isWazeReportMenuOpen, setIsWazeReportMenuOpen] = useState(false); // Menu radial de reportar do Waze
+      const [isWazeReportMenuOpen, setIsWazeReportMenuOpen] = useState(false);
 
       // Toast
       const [toast, setToast] = useState({ show: false, msg: "" });
@@ -341,7 +340,29 @@
       const mqttClientRef = useRef(null);
 
       // -----------------------------------------------------------------------
-      // 1. INICIALIZAR GPS REAL DO DISPOSITIVO
+      // 1. REVERSE GEOCODING: OBTER O NOME EXATO DA CIDADE VIA COORDENADAS GPS
+      // -----------------------------------------------------------------------
+      const resolveCityName = async (lat, lng) => {
+        try {
+          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=10&addressdetails=1`, {
+            headers: { 'Accept-Language': 'pt-BR' }
+          });
+          const data = await res.json();
+          if (data && data.address) {
+            const city = data.address.city || data.address.town || data.address.municipality || data.address.village || data.address.county || "São Paulo";
+            const state = data.address.state ? " - " + (data.address["ISO3166-2-lvl4"] ? data.address["ISO3166-2-lvl4"].split("-")[1] : "SP") : "";
+            const resolvedCity = city + state;
+            setMyCity(resolvedCity);
+            setMyProfile(prev => ({ ...prev, city: resolvedCity }));
+            return resolvedCity;
+          }
+        } catch(e) {}
+        setMyCity("São Paulo - SP");
+        return "São Paulo - SP";
+      };
+
+      // -----------------------------------------------------------------------
+      // 2. GEOLOCALIZAÇÃO COM CÁLCULO DE VELOCIDADE 100% EXATA (0 KM/H PARADO)
       // -----------------------------------------------------------------------
       useEffect(() => {
         if ("geolocation" in navigator) {
@@ -349,29 +370,111 @@
             (pos) => {
               const { latitude, longitude, speed } = pos.coords;
               setMyLocation({ lat: latitude, lng: longitude });
-              setMySpeed(speed ? Math.round(speed * 3.6) : 52);
+              setHasRealGps(true);
+              resolveCityName(latitude, longitude);
+
+              // Velocidade exata inicial
+              if (speed !== null && speed !== undefined && !isNaN(speed)) {
+                const kmh = Math.round(speed * 3.6);
+                setExactSpeed(kmh < 2 ? 0 : kmh);
+              } else {
+                setExactSpeed(0); // Parado!
+              }
+              lastGpsPointRef.current = { lat: latitude, lng: longitude, time: Date.now() };
             },
-            () => {},
+            () => setHasRealGps(false),
             { enableHighAccuracy: true }
           );
 
+          // Watch Position em tempo real sem cache (maximumAge: 0)
           const watchId = navigator.geolocation.watchPosition(
             (pos) => {
               const { latitude, longitude, speed, heading } = pos.coords;
+              const now = Date.now();
               setMyLocation({ lat: latitude, lng: longitude });
-              setMySpeed(speed ? Math.round(speed * 3.6) : Math.floor(Math.random() * 20 + 60));
+              setHasRealGps(true);
               if (heading) setGpsHeading(Math.round(heading));
+
+              // 1. Prioridade: Medição direta por satélite (coords.speed em m/s)
+              if (speed !== null && speed !== undefined && !isNaN(speed)) {
+                const kmh = Math.round(speed * 3.6);
+                setExactSpeed(kmh < 2 ? 0 : kmh); // Se menos de 2 km/h, o carro está 100% parado
+              } 
+              // 2. Derivada matemática exata por deslocamento (Haversine metros / delta tempo)
+              else if (lastGpsPointRef.current) {
+                const prev = lastGpsPointRef.current;
+                const timeDeltaSec = (now - prev.time) / 1000;
+                if (timeDeltaSec >= 1 && timeDeltaSec <= 10) {
+                  const distMeters = getDistanceMeters(prev.lat, prev.lng, latitude, longitude);
+                  // Filtro de tremor/ruído de GPS: se moveu menos de 3 metros, está parado (0 km/h)
+                  if (distMeters < 3.0) {
+                    setExactSpeed(0);
+                  } else {
+                    const calculatedKmh = Math.round((distMeters / timeDeltaSec) * 3.6);
+                    setExactSpeed(calculatedKmh > 360 ? 0 : calculatedKmh);
+                  }
+                }
+              }
+
+              lastGpsPointRef.current = { lat: latitude, lng: longitude, time: now };
             },
-            () => {},
-            { enableHighAccuracy: true, maximumAge: 2000 }
+            () => setHasRealGps(false),
+            { enableHighAccuracy: true, maximumAge: 0, timeout: 5000 }
           );
 
           return () => navigator.geolocation.clearWatch(watchId);
         }
       }, []);
 
+      // Criar adversários na mesma cidade que você caso esteja sozinho no momento
+      useEffect(() => {
+        if (myCity && myCity !== "Localizando cidade...") {
+          setLivePilots(prev => {
+            // Se já tem pilotos reais conectados via MQTT, preserva
+            const realCount = Object.keys(prev).filter(k => !k.startsWith("bot-")).length;
+            if (realCount > 0) return prev;
+
+            return {
+              "bot-1": {
+                id: "bot-1",
+                name: "Guilherme 'Apex'",
+                car: "Audi RS3 DaZa 2.5T",
+                power: "620 cv",
+                city: myCity,
+                lat: myLocation.lat + 0.0035,
+                lng: myLocation.lng + 0.0042,
+                speed: 78,
+                status: "Buscando Puxada"
+              },
+              "bot-2": {
+                id: "bot-2",
+                name: "Diego K-Tuned",
+                car: "Civic Si K24 Turbo",
+                power: "430 cv",
+                city: myCity,
+                lat: myLocation.lat - 0.0045,
+                lng: myLocation.lng - 0.0038,
+                speed: 0,
+                status: "Parado no Posto"
+              },
+              "bot-3": {
+                id: "bot-3",
+                name: "Thiago Track",
+                car: "Golf R Mk8 Stage 3",
+                power: "480 cv",
+                city: myCity,
+                lat: myLocation.lat - 0.0028,
+                lng: myLocation.lng + 0.0051,
+                speed: 94,
+                status: "Na Rodovia"
+              }
+            };
+          });
+        }
+      }, [myCity, myLocation.lat, myLocation.lng]);
+
       // -----------------------------------------------------------------------
-      // 2. CONEXÃO MQTT REALTIME MULTIPLAYER (EMQX BROKER)
+      // 3. CONEXÃO MQTT REALTIME MULTIPLAYER (EMQX BROKER)
       // -----------------------------------------------------------------------
       useEffect(() => {
         if (typeof mqtt !== "undefined" && mqtt.connect) {
@@ -418,7 +521,7 @@
         };
       }, [myProfile.id]);
 
-      // Broadcast da sua posição a cada 3.5s
+      // Transmissão periódica da posição e cidade para os outros pilotos
       useEffect(() => {
         const sendUpdate = () => {
           const client = mqttClientRef.current;
@@ -428,10 +531,11 @@
               name: myProfile.name,
               car: myProfile.car,
               power: myProfile.power,
+              city: myCity,
               status: myProfile.status,
               lat: myLocation.lat,
               lng: myLocation.lng,
-              speed: mySpeed,
+              speed: exactSpeed, // VELOCIDADE EXATA
               heading: gpsHeading,
               timestamp: Date.now()
             };
@@ -440,12 +544,12 @@
         };
 
         sendUpdate();
-        const interval = setInterval(sendUpdate, 3500);
+        const interval = setInterval(sendUpdate, 2500);
         return () => clearInterval(interval);
-      }, [myLocation, mySpeed, gpsHeading, myProfile]);
+      }, [myLocation, exactSpeed, gpsHeading, myProfile, myCity]);
 
       // -----------------------------------------------------------------------
-      // 3. INICIALIZAR MAPA FULLSCREEN WAZE (ESRI WORLD STREET MAP - 100% SEM WATERMARK)
+      // 4. MAPA FULLSCREEN WAZE (ESRI WORLD STREET MAP - 100% SEM WATERMARK)
       // -----------------------------------------------------------------------
       useEffect(() => {
         const container = document.getElementById("waze-fullscreen-map");
@@ -466,7 +570,7 @@
               attributionControl: false
             });
 
-            // ESRI World Street Map (Idêntico ao Waze: Ruas coloridas, avenidas amarelas, sem watermark!)
+            // ESRI World Street Map (Ruas coloridas amarelas/laranjas estilo Waze, sem watermark!)
             const streetUrl = "https://services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}";
             const darkUrl = "https://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}";
             
@@ -483,14 +587,13 @@
           }
         }
 
-        // Garante redimensionamento perfeito
         setTimeout(() => { if (mapInstanceRef.current) mapInstanceRef.current.invalidateSize(); }, 80);
         setTimeout(() => { if (mapInstanceRef.current) mapInstanceRef.current.invalidateSize(); }, 350);
 
         updateWazeMarkers();
       }, [activeTab]);
 
-      // Alterna tema do mapa (Waze Dia / Noite)
+      // Alterna tema do mapa (Dia / Noite)
       useEffect(() => {
         if (mapInstanceRef.current && tileLayerRef.current) {
           const streetUrl = "https://services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}";
@@ -504,7 +607,7 @@
         if (mapInstanceRef.current) {
           updateWazeMarkers();
         }
-      }, [myLocation, livePilots, mySpeed, myProfile]);
+      }, [myLocation, livePilots, exactSpeed, myProfile, myCity]);
 
       const updateWazeMarkers = () => {
         const map = mapInstanceRef.current;
@@ -513,7 +616,7 @@
 
         group.clearLayers();
 
-        // 1. Seu Carro (Estilo Navegação Waze com Halo Neon e Seta)
+        // 1. Seu Carro (Com sua Cidade e Velocidade Exata)
         const myWazeIcon = L.divIcon({
           className: "my-waze-car",
           html: `
@@ -522,8 +625,11 @@
               <div class="w-11 h-11 bg-carbon-950 border-3 border-neon-lime rounded-full flex items-center justify-center shadow-waze-glow z-10 text-xl font-black">
                 🏎️
               </div>
-              <div class="absolute -bottom-6 px-2.5 py-0.5 rounded-full bg-carbon-950/95 border border-neon-lime text-[10px] font-racing font-bold text-neon-lime whitespace-nowrap shadow-2xl">
-                ${myProfile.name} • ${myProfile.car}
+              <div class="absolute -bottom-7 px-2.5 py-0.5 rounded-full bg-carbon-950/95 border border-neon-lime text-[10px] font-racing font-bold text-neon-lime whitespace-nowrap shadow-2xl flex items-center gap-1">
+                <span>${myProfile.name}</span>
+                <span class="text-gray-400">•</span>
+                <span>${myProfile.car}</span>
+                <span class="text-neon-cyan font-mono">[📍 ${myCity}]</span>
               </div>
             </div>
           `,
@@ -533,8 +639,10 @@
 
         L.marker([myLocation.lat, myLocation.lng], { icon: myWazeIcon }).addTo(group);
 
-        // 2. Adversários no Radar (Estilo Waze Cars)
+        // 2. Adversários no Radar (COM NOME DA CIDADE DE CADA UM!)
         Object.values(livePilots).forEach(pilot => {
+          const opponentCity = pilot.city || myCity || "São Paulo - SP";
+
           const opponentWazeIcon = L.divIcon({
             className: "opponent-waze-car",
             html: `
@@ -543,8 +651,10 @@
                 <div class="w-10 h-10 bg-carbon-950 border-2 border-neon-red rounded-full flex items-center justify-center shadow-waze-alert text-base font-bold text-white z-10">
                   ⚡
                 </div>
-                <div class="absolute -bottom-6 px-2 py-0.5 rounded-full bg-carbon-950/95 border border-neon-red/70 text-[10px] font-mono font-bold text-white whitespace-nowrap shadow-2xl">
-                  ${pilot.name} • <span class="text-neon-red font-bold">${pilot.car}</span>
+                <div class="absolute -bottom-7 px-2.5 py-0.5 rounded-full bg-carbon-950/95 border border-neon-red/70 text-[10px] font-mono font-bold text-white whitespace-nowrap shadow-2xl flex items-center gap-1">
+                  <span>${pilot.name}</span>
+                  <span class="text-neon-red font-bold">(${pilot.car})</span>
+                  <span class="text-neon-cyan font-bold bg-carbon-900 px-1.5 py-0.2 rounded">📍 ${opponentCity}</span>
                 </div>
               </div>
             `,
@@ -554,7 +664,7 @@
 
           const m = L.marker([pilot.lat, pilot.lng], { icon: opponentWazeIcon }).addTo(group);
           m.on("click", () => {
-            setSelectedOpponent(pilot);
+            setSelectedOpponent({ ...pilot, city: opponentCity });
             SoundFx.playSonar();
           });
         });
@@ -568,6 +678,7 @@
             challengerName: myProfile.name,
             challengerCar: myProfile.car,
             challengerPower: myProfile.power,
+            challengerCity: myCity,
             challengerLocation: myLocation,
             timestamp: Date.now()
           };
@@ -594,12 +705,12 @@
           )}
 
           {/* ===================================================================
-              1. MAPA LEAFLET FULLSCREEN EDGE-TO-EDGE (SEMPRE RENDERIZADO NO FUNDO)
+              1. MAPA LEAFLET FULLSCREEN EDGE-TO-EDGE
              =================================================================== */}
           <div id="waze-fullscreen-map"></div>
 
           {/* ===================================================================
-              2. TOPBAR WAZE FLUTUANTE (BARRA SUPERIOR DE NAVEGAÇÃO)
+              2. TOPBAR WAZE FLUTUANTE COM CIDADE ATUAL
              =================================================================== */}
           <div className="absolute top-3 left-3 right-3 z-30 flex items-center justify-between gap-2.5 pointer-events-none">
             
@@ -619,13 +730,13 @@
               </div>
             </div>
 
-            {/* Barra de Pesquisa / Endereço Flutuante Estilo Waze */}
+            {/* Barra de Cidade & Endereço Flutuante Estilo Waze */}
             <div className="pointer-events-auto flex-1 max-w-md mx-2">
               <div className="flex items-center gap-2.5 px-4 py-2.5 rounded-full waze-pill-floating text-xs font-mono text-gray-200 border border-white/10 shadow-2xl">
                 <span className="text-base text-neon-lime">📍</span>
-                <span className="font-bold truncate">{currentStreetName}</span>
+                <span className="font-bold text-white truncate">CIDADE: {myCity}</span>
                 <span className="ml-auto hidden md:inline text-[10px] text-neon-lime bg-neon-lime/10 px-2 py-0.5 rounded-full font-mono">
-                  {activePilotsCount} PILOTOS
+                  {activePilotsCount} PILOTOS ONLINE
                 </span>
               </div>
             </div>
@@ -654,24 +765,25 @@
           </div>
 
           {/* ===================================================================
-              3. VELOCÍMETRO WAZE FLUTUANTE (CANTO SUPERIOR ESQUERDO)
+              3. VELOCÍMETRO WAZE FLUTUANTE (VELOCIDADE EXATA DO VEÍCULO)
              =================================================================== */}
           {activeTab === "radar" && (
             <div className="absolute top-20 left-4 z-20 pointer-events-auto">
               <div className="flex items-center gap-3 p-3 rounded-2xl waze-pill-floating border border-white/10 shadow-2xl">
-                <div className="text-center min-w-[65px]">
-                  <div className="text-[9px] font-mono text-gray-400">VELOCIDADE</div>
-                  <div className="text-3xl font-black font-racing text-neon-lime leading-none my-0.5">
-                    {mySpeed}
+                <div className="text-center min-w-[70px]">
+                  <div className="text-[9px] font-mono text-gray-400">VELOCIDADE REAL</div>
+                  <div className={`text-4xl font-black font-racing leading-none my-1 ${exactSpeed > 0 ? 'text-neon-lime' : 'text-gray-400'}`}>
+                    {exactSpeed}
                   </div>
                   <div className="text-[9px] font-mono text-gray-300 font-bold">KM/H</div>
                 </div>
 
-                <div className="w-px h-9 bg-white/10"></div>
+                <div className="w-px h-10 bg-white/10"></div>
 
                 <div className="text-xs font-mono space-y-0.5 pr-1">
-                  <div className="text-gray-400">RUMO: <span className="text-neon-cyan font-bold">{gpsHeading}°</span></div>
-                  <div className="text-neon-lime font-bold text-[10px]">PILOTO ATIVO</div>
+                  <div className="text-gray-400">STATUS: <span className={`font-bold ${exactSpeed === 0 ? 'text-amber-400' : 'text-neon-lime'}`}>{exactSpeed === 0 ? 'VEÍCULO PARADO' : 'EM MOVIMENTO'}</span></div>
+                  <div className="text-neon-cyan font-bold text-[10px]">RUMO GPS: {gpsHeading}°</div>
+                  <div className="text-gray-400 text-[10px]">CIDADE: <span className="text-white font-bold">{myCity.split(" - ")[0]}</span></div>
                 </div>
               </div>
             </div>
@@ -682,7 +794,6 @@
              =================================================================== */}
           {activeTab === "radar" && (
             <div className="absolute top-20 right-4 z-20 flex flex-col gap-2 pointer-events-auto">
-              {/* Botão Centralizar GPS */}
               <button 
                 onClick={() => {
                   if (mapInstanceRef.current) {
@@ -696,7 +807,6 @@
                 🎯
               </button>
 
-              {/* Botão Alternar Waze Dia / Noite */}
               <button 
                 onClick={() => {
                   const nextTheme = mapTheme === "street" ? "dark" : "street";
@@ -712,7 +822,7 @@
           )}
 
           {/* ===================================================================
-              5. BOTÃO FLUTUANTE DE REPORTAR DO WAZE (CANTO INFERIOR DIREITO)
+              5. BOTÃO FLUTUANTE DE REPORTAR DO WAZE
              =================================================================== */}
           {activeTab === "radar" && (
             <div className="absolute bottom-24 right-4 z-20 pointer-events-auto">
@@ -727,7 +837,7 @@
           )}
 
           {/* ===================================================================
-              6. CARD INFERIOR DO ADVERSÁRIO (DRAWER DESLIZANTE ESTILO WAZE)
+              6. CARD DO ADVERSÁRIO (COM CIDADE, CARRO E POTÊNCIA VISÍVEIS)
              =================================================================== */}
           {selectedOpponent && (
             <div className="absolute bottom-20 left-3 right-3 sm:left-auto sm:right-4 sm:w-96 z-40 animate-fadeIn pointer-events-auto">
@@ -746,16 +856,22 @@
                   <button onClick={() => setSelectedOpponent(null)} className="text-gray-400 hover:text-white text-lg">✕</button>
                 </div>
 
-                <div className="p-3.5 rounded-2xl bg-carbon-900/90 border border-white/10 space-y-2 text-xs">
+                <div className="p-3.5 rounded-2xl bg-carbon-900/90 border border-white/10 space-y-2.5 text-xs">
+                  {/* CIDADE DO ADVERSÁRIO */}
+                  <div className="flex items-center justify-between bg-carbon-950 p-2 rounded-xl border border-white/5">
+                    <span className="text-gray-400 font-mono text-[11px]">CIDADE ATUAL:</span>
+                    <span className="text-neon-cyan font-racing font-bold text-xs">📍 {selectedOpponent.city || myCity}</span>
+                  </div>
+
                   <div>
                     <span className="text-gray-400 font-mono text-[10px]">CARRO QUE ELE ESTÁ DIRIGINDO:</span>
-                    <div className="text-sm font-racing font-bold text-white mt-0.5">{selectedOpponent.car}</div>
+                    <div className="text-base font-racing font-black text-white mt-0.5">{selectedOpponent.car}</div>
                     <div className="text-xs font-racing font-bold text-neon-lime">{selectedOpponent.power}</div>
                   </div>
 
                   <div className="flex justify-between border-t border-white/5 pt-2 text-xs font-mono">
                     <div>
-                      <span className="text-gray-400">Velocidade:</span>
+                      <span className="text-gray-400">Velocidade Atual:</span>
                       <div className="text-white font-bold">{selectedOpponent.speed} km/h</div>
                     </div>
                     <div className="text-right">
@@ -767,7 +883,6 @@
                   </div>
                 </div>
 
-                {/* Botão de Desafio Direto */}
                 <button 
                   onClick={() => handleSendChallenge(selectedOpponent)}
                   className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-neon-red to-rose-600 hover:from-rose-500 hover:to-neon-red text-white font-racing font-black text-xs uppercase tracking-wider shadow-waze-alert transition-all flex items-center justify-center gap-2"
@@ -882,7 +997,7 @@
           )}
 
           {/* ===================================================================
-              8. DOCK DE NAVEGAÇÃO FLUTUANTE INFERIOR (ESTILO WAZE / APPLE)
+              8. DOCK DE NAVEGAÇÃO FLUTUANTE INFERIOR
              =================================================================== */}
           <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-30 pointer-events-auto">
             <nav className="flex items-center gap-1 p-1.5 rounded-full waze-pill-floating border border-white/15 shadow-2xl">
@@ -949,7 +1064,7 @@
           </div>
 
           {/* ===================================================================
-              9. MENU RADIAL DE REPORTAR ESTILO WAZE (MODAL)
+              9. MENU RADIAL DE REPORTAR DO WAZE
              =================================================================== */}
           {isWazeReportMenuOpen && (
             <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fadeIn">
@@ -1013,13 +1128,13 @@
           )}
 
           {/* ===================================================================
-              10. MODAL: FICHA DO PILOTO (NOME, CARRO E POTÊNCIA)
+              10. MODAL: FICHA DO PILOTO (NOME, CARRO, POTÊNCIA E CIDADE)
              =================================================================== */}
           {isProfileModalOpen && (
             <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-fadeIn">
               <div className="waze-pill-floating rounded-3xl max-w-md w-full p-6 border border-neon-lime/50 shadow-neon-lime space-y-4">
                 <div className="flex justify-between items-center border-b border-white/10 pb-3">
-                  <h3 className="font-racing font-bold text-base text-white">Configurar Meu Carro no Waze</h3>
+                  <h3 className="font-racing font-bold text-base text-white">Configurar Meu Carro & Cidade</h3>
                   <button onClick={() => setIsProfileModalOpen(false)} className="text-gray-400 hover:text-white text-lg">✕</button>
                 </div>
 
@@ -1031,9 +1146,11 @@
                     name: form.name.value.trim() || "Piloto Anônimo",
                     car: form.car.value.trim() || "Golf GTI Stage 3",
                     power: form.power.value.trim() || "380 cv",
+                    city: form.city.value.trim() || myCity,
                     status: form.status.value
                   };
                   setMyProfile(updated);
+                  setMyCity(updated.city);
                   localStorage.setItem("gridzone_pilot_profile", JSON.stringify(updated));
                   setIsProfileModalOpen(false);
                   showToast("Ficha atualizada no Waze Radar!");
@@ -1046,6 +1163,10 @@
                     <label className="text-gray-300 font-mono block mb-1">Carro que Você Está Dirigindo</label>
                     <input name="car" defaultValue={myProfile.car} required className="w-full bg-carbon-900 border border-white/10 rounded-xl px-3.5 py-2 text-white font-bold" />
                     <span className="text-[10px] text-gray-500 font-mono mt-0.5 block">Os outros pilotos verão esse modelo flutuando sobre seu carro no mapa!</span>
+                  </div>
+                  <div>
+                    <label className="text-gray-300 font-mono block mb-1">Sua Cidade / Região</label>
+                    <input name="city" defaultValue={myProfile.city || myCity} required className="w-full bg-carbon-900 border border-white/10 rounded-xl px-3.5 py-2 text-white font-bold text-neon-cyan" />
                   </div>
                   <div>
                     <label className="text-gray-300 font-mono block mb-1">Potência Estimada (cv)</label>
@@ -1086,6 +1207,9 @@
                   <div className="text-lg font-bold text-white">{activeChallengeReceived.challengerName}</div>
                   <div className="text-base font-racing font-bold text-neon-lime">{activeChallengeReceived.challengerCar}</div>
                   <div className="text-xs font-mono text-gray-300">Potência: {activeChallengeReceived.challengerPower}</div>
+                  {activeChallengeReceived.challengerCity && (
+                    <div className="text-xs font-mono text-neon-cyan mt-1">📍 Cidade: {activeChallengeReceived.challengerCity}</div>
+                  )}
                 </div>
 
                 <div className="grid grid-cols-2 gap-3 pt-2">
