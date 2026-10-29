@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>GridZone • Radar Waze & Paddock Automotivo</title>
+  <title>GridZone • Waze dos Pilotos em Tempo Real</title>
   <meta name="description" content="O Waze dos gearheads. Localização GPS em tempo real, telemetria, garagem virtual e comunidade para donos de carros modificados.">
   
   <link rel="icon" href="logo.jpg">
@@ -36,6 +36,14 @@
               700: '#232b42',
               600: '#323d5d',
             },
+            waze: {
+              blue: '#33ccff',
+              cyan: '#00d2ff',
+              orange: '#ff6600',
+              yellow: '#ffcc00',
+              red: '#ff334b',
+              purple: '#aa44ff',
+            },
             neon: {
               lime: '#00f59b',
               emerald: '#10b981',
@@ -43,7 +51,6 @@
               crimson: '#ef4444',
               cyan: '#00d2ff',
               amber: '#f59e0b',
-              purple: '#b026ff',
             }
           },
           fontFamily: {
@@ -52,9 +59,9 @@
             racing: ['"Orbitron"', 'sans-serif']
           },
           boxShadow: {
-            'neon-lime': '0 0 25px -4px rgba(0, 245, 155, 0.45)',
-            'neon-red': '0 0 25px -4px rgba(255, 42, 75, 0.45)',
-            'neon-cyan': '0 0 25px -4px rgba(0, 210, 255, 0.45)',
+            'waze-float': '0 8px 30px rgba(0, 0, 0, 0.45)',
+            'waze-glow': '0 0 25px rgba(0, 245, 155, 0.5)',
+            'waze-alert': '0 0 30px rgba(255, 51, 75, 0.6)',
           }
         }
       }
@@ -68,90 +75,78 @@
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
   <style>
-    body {
-      background-color: #06070a;
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background-color: #07090e;
       color: #f3f4f6;
       font-family: 'Plus Jakarta Sans', sans-serif;
-      overflow-x: hidden;
       -webkit-tap-highlight-color: transparent;
-      background-image: 
-        radial-gradient(circle at 15% 10%, rgba(0, 245, 155, 0.04) 0%, transparent 40%),
-        radial-gradient(circle at 85% 90%, rgba(255, 42, 75, 0.03) 0%, transparent 40%);
     }
 
-    /* Scrollbar estilizada */
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: #0a0d14; }
-    ::-webkit-scrollbar-thumb { background: #1b2234; border-radius: 3px; }
-    ::-webkit-scrollbar-thumb:hover { background: #00f59b; }
+    /* MAPA WAZE FULLSCREEN EDGE-TO-EDGE */
+    #waze-fullscreen-map {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 1;
+      background: #0a0d14;
+    }
 
-    /* Customização do Leaflet Dark */
     .leaflet-container {
+      width: 100% !important;
+      height: 100% !important;
       background: #07090e !important;
       font-family: 'Rajdhani', sans-serif !important;
     }
-    .leaflet-bar a {
-      background-color: #0a0d14 !important;
-      color: #00f59b !important;
-      border-color: rgba(255, 255, 255, 0.1) !important;
-    }
-    .leaflet-bar a:hover {
-      background-color: #151a28 !important;
-      color: #fff !important;
-    }
-    .leaflet-popup-content-wrapper, .leaflet-popup-tip {
-      background: rgba(10, 13, 20, 0.95) !important;
-      color: #fff !important;
-      border: 1px solid rgba(0, 245, 155, 0.3) !important;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.8), 0 0 15px rgba(0, 245, 155, 0.2) !important;
-      backdrop-filter: blur(12px) !important;
-      border-radius: 14px !important;
+
+    /* Esconde botões feios e deixa controles modernos flutuantes */
+    .leaflet-control-zoom {
+      display: none !important;
     }
 
-    /* Animação do Pulso do Piloto no Mapa */
-    @keyframes radar-sonar {
+    /* Waze Pulsing Marker (Você) */
+    @keyframes waze-halo {
       0% { box-shadow: 0 0 0 0 rgba(0, 245, 155, 0.8), 0 0 0 0 rgba(0, 245, 155, 0.4); }
-      70% { box-shadow: 0 0 0 22px rgba(0, 245, 155, 0), 0 0 0 40px rgba(0, 245, 155, 0); }
+      70% { box-shadow: 0 0 0 20px rgba(0, 245, 155, 0), 0 0 0 38px rgba(0, 245, 155, 0); }
       100% { box-shadow: 0 0 0 0 rgba(0, 245, 155, 0), 0 0 0 0 rgba(0, 245, 155, 0); }
     }
-    .pilot-pulse-marker {
-      animation: radar-sonar 2s infinite;
+    .waze-car-halo {
+      animation: waze-halo 2.2s infinite;
       border-radius: 50%;
     }
 
-    @keyframes opponent-pulse {
+    /* Adversário Pulsante no Waze */
+    @keyframes opponent-waze-halo {
       0% { box-shadow: 0 0 0 0 rgba(255, 42, 75, 0.8); }
-      70% { box-shadow: 0 0 0 18px rgba(255, 42, 75, 0); }
+      70% { box-shadow: 0 0 0 22px rgba(255, 42, 75, 0); }
       100% { box-shadow: 0 0 0 0 rgba(255, 42, 75, 0); }
     }
-    .opponent-pulse-marker {
-      animation: opponent-pulse 2.2s infinite;
+    .opponent-waze-halo {
+      animation: opponent-waze-halo 2s infinite;
       border-radius: 50%;
     }
 
-    .glass-panel {
-      background: rgba(10, 13, 20, 0.85);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-    }
-
-    .glass-card {
-      background: rgba(15, 19, 29, 0.75);
-      backdrop-filter: blur(14px);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    .glass-card:hover {
-      border-color: rgba(0, 245, 155, 0.35);
-      transform: translateY(-2px);
-      box-shadow: 0 8px 24px -6px rgba(0, 245, 155, 0.2);
-    }
-
-    .glass-modal {
-      background: rgba(8, 10, 15, 0.97);
-      backdrop-filter: blur(24px);
+    /* Glassmorphism Flutuante Waze */
+    .waze-pill-floating {
+      background: rgba(10, 13, 20, 0.88);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
       border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+    }
+
+    .waze-card-bottom {
+      background: rgba(10, 13, 20, 0.94);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border-top: 1px solid rgba(255, 255, 255, 0.14);
+      box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.7);
     }
 
     @keyframes challenge-flash {
@@ -166,7 +161,7 @@
 <body>
   <div id="root"></div>
 
-  <!-- APLICAÇÃO REACT PRINCIPAL GRIDZONE -->
+  <!-- APLICAÇÃO REACT PRINCIPAL GRIDZONE WAZE -->
   <script type="text/babel">
     const { useState, useEffect, useRef, useMemo } = React;
 
@@ -190,7 +185,7 @@
     }
 
     // =========================================================================
-    // EFEITOS SONOROS WEBAUDIO
+    // EFEITOS SONOROS WEBAUDIO (ESTILO WAZE & ALERTA DE POLÍCIA)
     // =========================================================================
     const SoundFx = {
       ctx: null,
@@ -241,7 +236,7 @@
     };
 
     // =========================================================================
-    // DADOS INICIAIS DA GARAGEM, MODS, CUSTOS & FEED (INTEGRAÇÃO TOTAL)
+    // DADOS INICIAIS DA GARAGEM & CUSTOS
     // =========================================================================
     const INITIAL_CAR = {
       name: "BMW M2 Coupe (G87)",
@@ -266,16 +261,13 @@
       { id: 2, name: "Intake de Fibra de Carbono Selado", brand: "Eventuri", category: "Admissão", cost: 12500, gain: "+15 cv", status: "Instalado" },
       { id: 3, name: "Remap Bootmod3 Stage 2 Custom E30", brand: "Bootmod3", category: "Injeção", cost: 6500, gain: "+75 cv", status: "Instalado" },
       { id: 4, name: "Coilovers Reguláveis KW V3 Clubsport", brand: "KW Suspensions", category: "Suspensão", cost: 18900, gain: "Setup Pista", status: "Instalado" },
-      { id: 5, name: "Escapamento Cat-Back c/ Válvulas", brand: "Milltek Sport", category: "Escape", cost: 14200, gain: "+10 cv / Ronco", status: "Instalado" },
-      { id: 6, name: "Rodas Forjadas BBS FI-R 19\"/20\"", brand: "BBS Motorsport", category: "Rodas", cost: 32000, gain: "-12kg não-suspensa", status: "Lista de Desejos" }
+      { id: 5, name: "Escapamento Cat-Back c/ Válvulas", brand: "Milltek Sport", category: "Escape", cost: 14200, gain: "+10 cv / Ronco", status: "Instalado" }
     ];
 
     const INITIAL_EXPENSES = [
       { id: 1, desc: "Gasolina Podium Petrobras (55 Litros)", category: "Combustível", amount: 489.50, date: "28/10/2026", km: 24850 },
       { id: 2, desc: "Troca de Óleo Motul 300V 5W-40 + Filtro M", category: "Manutenção", amount: 1250.00, date: "12/10/2026", km: 24200 },
-      { id: 3, desc: "Downpipe VRSF Inox 304", category: "Peças & Mods", amount: 4800.00, date: "02/06/2026", km: 20400 },
-      { id: 4, desc: "Parcela Seguro Auto Porto Seguro M", category: "Seguro & Taxas", amount: 1120.00, date: "05/10/2026", km: 23900 },
-      { id: 5, desc: "Lavagem Detalhada & Proteção Cerâmica", category: "Estética", amount: 550.00, date: "19/10/2026", km: 24500 }
+      { id: 3, desc: "Downpipe VRSF Inox 304", category: "Peças & Mods", amount: 4800.00, date: "02/06/2026", km: 20400 }
     ];
 
     const INITIAL_POSTS = [
@@ -286,24 +278,7 @@
         avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80",
         time: "há 2 horas",
         content: "Track Day inesquecível no Autódromo Velocitta! O setup KW V3 segurou perfeitamente as curvas de alta. Baixei 1.4s no meu tempo de volta! 🏁⏱️",
-        image: "https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&w=900&q=80",
-        likes: 54,
-        isLiked: false,
-        comments: [
-          { author: "Guilherme (RS3)", text: "Ficou monstro o acerto de suspensão! Parabéns!" }
-        ]
-      },
-      {
-        id: 2,
-        author: "Marcos K-Tuned",
-        car: "Civic Si K24 Turbo (430cv)",
-        avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=120&q=80",
-        time: "há 5 horas",
-        content: "Passada no dinamômetro finalizada: 430whp com 1.3 bar de pressão no Etanol puro. Turbina Garrett G25 enchendo muito rápido! 📈💨",
-        image: "https://images.unsplash.com/photo-1606016159991-dfe4f2746ad5?auto=format&fit=crop&w=900&q=80",
-        likes: 89,
-        isLiked: true,
-        comments: []
+        image: "https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&w=900&q=80"
       }
     ];
 
@@ -311,8 +286,11 @@
     // COMPONENTE PRINCIPAL
     // =========================================================================
     function App() {
-      // Navegação por Abas: 'radar' (Waze), 'dashboard', 'garage', 'costs', 'feed'
+      // Abas: 'radar' (Waze Fullscreen), 'dashboard', 'garage', 'costs', 'feed'
       const [activeTab, setActiveTab] = useState("radar");
+
+      // Modo de Mapa: 'street' (ESRI World Street Map - Waze Dia Colorido) ou 'dark' (ESRI Canvas Dark - Waze Noite)
+      const [mapTheme, setMapTheme] = useState("street"); // Padrão: 'street' colorido igualzinho ao Waze!
 
       // Perfil do Piloto
       const [myProfile, setMyProfile] = useState(() => {
@@ -322,9 +300,9 @@
         }
         return {
           id: "pilot_" + Math.random().toString(36).substring(2, 8),
-          name: "Piloto-" + Math.floor(Math.random() * 899 + 100),
-          car: "BMW M2 Coupe (G87)",
-          power: "560 cv",
+          name: "Victor Simão",
+          car: "Golf GTI Stage 3",
+          power: "380 cv",
           status: "Buscando Puxada / Racha"
         };
       });
@@ -333,28 +311,20 @@
       const [myLocation, setMyLocation] = useState({ lat: -23.5505, lng: -46.6333 });
       const [mySpeed, setMySpeed] = useState(0);
       const [gpsHeading, setGpsHeading] = useState(135);
-      const [hasRealGps, setHasRealGps] = useState(false);
+      const [currentStreetName, setCurrentStreetName] = useState("Avenida Principal / Rodovia");
 
-      // Pilotos em Tempo Real
+      // Adversários em Tempo Real no Mapa
       const [livePilots, setLivePilots] = useState({
-        "bot-1": { id: "bot-1", name: "Guilherme 'Apex'", car: "Audi RS3 DaZa 2.5T", power: "620 cv", lat: -23.5470, lng: -46.6390, speed: 84, status: "Pronto pra Puxada" },
-        "bot-2": { id: "bot-2", name: "Diego K-Tuned", car: "Civic Si K24 Turbo", power: "430 cv", lat: -23.5560, lng: -46.6270, speed: 62, status: "Buscando Racha" },
-        "bot-3": { id: "bot-3", name: "Thiago Track", car: "Golf R Mk8 Stage 3", power: "480 cv", lat: -23.5420, lng: -46.6310, speed: 0, status: "Parado no Posto" }
+        "bot-1": { id: "bot-1", name: "Guilherme 'Apex'", car: "Audi RS3 DaZa 2.5T", power: "620 cv", lat: -23.5475, lng: -46.6380, speed: 88, status: "Buscando Puxada" },
+        "bot-2": { id: "bot-2", name: "Diego K-Tuned", car: "Civic Si K24 Turbo", power: "430 cv", lat: -23.5550, lng: -46.6280, speed: 64, status: "Pronto pro Racha" },
+        "bot-3": { id: "bot-3", name: "Thiago Track", car: "Golf R Mk8 Stage 3", power: "480 cv", lat: -23.5430, lng: -46.6310, speed: 0, status: "Parado no Posto" }
       });
 
-      // Modais
+      // Modais Waze
       const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
-      const [selectedOpponent, setSelectedOpponent] = useState(null);
+      const [selectedOpponent, setSelectedOpponent] = useState(null); // Abre o card inferior do adversário estilo Waze
       const [activeChallengeReceived, setActiveChallengeReceived] = useState(null);
-      const [isCreateSpotOpen, setIsCreateSpotOpen] = useState(false);
-      const [isAddAlertOpen, setIsAddAlertOpen] = useState(false);
-      const [isAddModOpen, setIsAddModOpen] = useState(false);
-      const [isAddExpenseOpen, setIsAddExpenseOpen] = useState(false);
-
-      // Dados de Mods, Custos e Posts
-      const [modsList, setModsList] = useState(INITIAL_MODS);
-      const [expensesList, setExpensesList] = useState(INITIAL_EXPENSES);
-      const [postsList, setPostsList] = useState(INITIAL_POSTS);
+      const [isWazeReportMenuOpen, setIsWazeReportMenuOpen] = useState(false); // Menu radial de reportar do Waze
 
       // Toast
       const [toast, setToast] = useState({ show: false, msg: "" });
@@ -364,13 +334,14 @@
         setTimeout(() => setToast({ show: false, msg: "" }), 3500);
       };
 
-      // Referência do Mapa
+      // Referências Leaflet & MQTT
       const mapInstanceRef = useRef(null);
+      const tileLayerRef = useRef(null);
       const markersGroupRef = useRef(null);
       const mqttClientRef = useRef(null);
 
       // -----------------------------------------------------------------------
-      // 1. INICIALIZAR GEOLOCALIZAÇÃO
+      // 1. INICIALIZAR GPS REAL DO DISPOSITIVO
       // -----------------------------------------------------------------------
       useEffect(() => {
         if ("geolocation" in navigator) {
@@ -378,10 +349,9 @@
             (pos) => {
               const { latitude, longitude, speed } = pos.coords;
               setMyLocation({ lat: latitude, lng: longitude });
-              setMySpeed(speed ? Math.round(speed * 3.6) : 48);
-              setHasRealGps(true);
+              setMySpeed(speed ? Math.round(speed * 3.6) : 52);
             },
-            () => setHasRealGps(false),
+            () => {},
             { enableHighAccuracy: true }
           );
 
@@ -389,12 +359,11 @@
             (pos) => {
               const { latitude, longitude, speed, heading } = pos.coords;
               setMyLocation({ lat: latitude, lng: longitude });
-              setMySpeed(speed ? Math.round(speed * 3.6) : Math.floor(Math.random() * 20 + 55));
+              setMySpeed(speed ? Math.round(speed * 3.6) : Math.floor(Math.random() * 20 + 60));
               if (heading) setGpsHeading(Math.round(heading));
-              setHasRealGps(true);
             },
-            () => setHasRealGps(false),
-            { enableHighAccuracy: true, maximumAge: 2500 }
+            () => {},
+            { enableHighAccuracy: true, maximumAge: 2000 }
           );
 
           return () => navigator.geolocation.clearWatch(watchId);
@@ -402,13 +371,13 @@
       }, []);
 
       // -----------------------------------------------------------------------
-      // 2. CONEXÃO MQTT REALTIME (MULTIPLAYER SEM CAIR)
+      // 2. CONEXÃO MQTT REALTIME MULTIPLAYER (EMQX BROKER)
       // -----------------------------------------------------------------------
       useEffect(() => {
         if (typeof mqtt !== "undefined" && mqtt.connect) {
           try {
             const client = mqtt.connect("wss://broker.emqx.io:8084/mqtt", {
-              clientId: "gz_" + myProfile.id,
+              clientId: "waze_" + myProfile.id,
               clean: true,
               reconnectPeriod: 4000,
               connectTimeout: 8000
@@ -435,7 +404,7 @@
                 if (topic === `gridzone/challenges/${myProfile.id}`) {
                   setActiveChallengeReceived(data);
                   SoundFx.playChallenge();
-                  if (navigator.vibrate) navigator.vibrate([200, 100, 200, 100, 400]);
+                  if (navigator.vibrate) navigator.vibrate([250, 100, 250, 100, 500]);
                 }
               } catch(e) {}
             });
@@ -449,7 +418,7 @@
         };
       }, [myProfile.id]);
 
-      // Broadcast da posição para os adversários a cada 3.5s
+      // Broadcast da sua posição a cada 3.5s
       useEffect(() => {
         const sendUpdate = () => {
           const client = mqttClientRef.current;
@@ -476,113 +445,114 @@
       }, [myLocation, mySpeed, gpsHeading, myProfile]);
 
       // -----------------------------------------------------------------------
-      // 3. INICIALIZAR E ATUALIZAR O MAPA LEAFLET COM SEGURANÇA 100%
+      // 3. INICIALIZAR MAPA FULLSCREEN WAZE (ESRI WORLD STREET MAP - 100% SEM WATERMARK)
       // -----------------------------------------------------------------------
       useEffect(() => {
-        if (activeTab !== "radar") return;
-
-        let map = mapInstanceRef.current;
-        const container = document.getElementById("radar-map");
+        const container = document.getElementById("waze-fullscreen-map");
         if (!container) return;
 
-        // Limpa se o container já possuía instância antiga
+        let map = mapInstanceRef.current;
+
         if (container._leaflet_id && !map) {
           container._leaflet_id = null;
         }
 
         if (!map) {
           try {
-            map = L.map("radar-map", {
+            map = L.map("waze-fullscreen-map", {
               center: [myLocation.lat, myLocation.lng],
-              zoom: 14,
+              zoom: 15,
               zoomControl: false,
               attributionControl: false
             });
 
-            // Camada Noturna CartoDB Dark Matter
-            L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
-              maxZoom: 19,
-              subdomains: "abcd"
+            // ESRI World Street Map (Idêntico ao Waze: Ruas coloridas, avenidas amarelas, sem watermark!)
+            const streetUrl = "https://services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}";
+            const darkUrl = "https://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}";
+            
+            const currentUrl = mapTheme === "street" ? streetUrl : darkUrl;
+
+            tileLayerRef.current = L.tileLayer(currentUrl, {
+              maxZoom: 19
             }).addTo(map);
 
-            L.control.zoom({ position: "bottomright" }).addTo(map);
             markersGroupRef.current = L.layerGroup().addTo(map);
             mapInstanceRef.current = map;
           } catch(err) {
-            console.warn("Erro ao iniciar Leaflet:", err);
+            console.warn("Leaflet error:", err);
           }
         }
 
-        // Garante redimensionamento sem cortes ou cinza
-        const timer1 = setTimeout(() => {
-          if (mapInstanceRef.current) mapInstanceRef.current.invalidateSize();
-        }, 100);
-        const timer2 = setTimeout(() => {
-          if (mapInstanceRef.current) mapInstanceRef.current.invalidateSize();
-        }, 350);
+        // Garante redimensionamento perfeito
+        setTimeout(() => { if (mapInstanceRef.current) mapInstanceRef.current.invalidateSize(); }, 80);
+        setTimeout(() => { if (mapInstanceRef.current) mapInstanceRef.current.invalidateSize(); }, 350);
 
-        updateMapMarkers();
-
-        return () => {
-          clearTimeout(timer1);
-          clearTimeout(timer2);
-        };
+        updateWazeMarkers();
       }, [activeTab]);
 
-      // Atualiza marcadores quando a posição ou pilotos mudam
+      // Alterna tema do mapa (Waze Dia / Noite)
       useEffect(() => {
-        if (activeTab === "radar" && mapInstanceRef.current) {
-          updateMapMarkers();
+        if (mapInstanceRef.current && tileLayerRef.current) {
+          const streetUrl = "https://services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}";
+          const darkUrl = "https://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}";
+          tileLayerRef.current.setUrl(mapTheme === "street" ? streetUrl : darkUrl);
         }
-      }, [myLocation, livePilots, mySpeed, myProfile, activeTab]);
+      }, [mapTheme]);
 
-      const updateMapMarkers = () => {
+      // Atualiza marcadores dos pilotos
+      useEffect(() => {
+        if (mapInstanceRef.current) {
+          updateWazeMarkers();
+        }
+      }, [myLocation, livePilots, mySpeed, myProfile]);
+
+      const updateWazeMarkers = () => {
         const map = mapInstanceRef.current;
         const group = markersGroupRef.current;
         if (!map || !group) return;
 
         group.clearLayers();
 
-        // 1. Marcador do Seu Veículo (Verde Neon)
-        const myIcon = L.divIcon({
-          className: "my-marker",
+        // 1. Seu Carro (Estilo Navegação Waze com Halo Neon e Seta)
+        const myWazeIcon = L.divIcon({
+          className: "my-waze-car",
           html: `
-            <div class="relative flex items-center justify-center">
-              <div class="w-14 h-14 bg-neon-lime/25 rounded-full pilot-pulse-marker absolute"></div>
-              <div class="w-9 h-9 bg-carbon-950 border-2 border-neon-lime rounded-full flex items-center justify-center shadow-neon-lime z-10 text-white font-black text-xs">
+            <div class="relative flex items-center justify-center cursor-pointer">
+              <div class="w-16 h-16 bg-neon-lime/30 rounded-full waze-car-halo absolute"></div>
+              <div class="w-11 h-11 bg-carbon-950 border-3 border-neon-lime rounded-full flex items-center justify-center shadow-waze-glow z-10 text-xl font-black">
                 🏎️
               </div>
-              <div class="absolute -bottom-6 px-2 py-0.5 rounded bg-carbon-900 border border-neon-lime text-[10px] font-mono font-bold text-neon-lime whitespace-nowrap shadow-lg">
+              <div class="absolute -bottom-6 px-2.5 py-0.5 rounded-full bg-carbon-950/95 border border-neon-lime text-[10px] font-racing font-bold text-neon-lime whitespace-nowrap shadow-2xl">
                 ${myProfile.name} • ${myProfile.car}
               </div>
             </div>
           `,
-          iconSize: [36, 36],
-          iconAnchor: [18, 18]
+          iconSize: [44, 44],
+          iconAnchor: [22, 22]
         });
 
-        L.marker([myLocation.lat, myLocation.lng], { icon: myIcon }).addTo(group);
+        L.marker([myLocation.lat, myLocation.lng], { icon: myWazeIcon }).addTo(group);
 
-        // 2. Marcadores dos Adversários Conectados
+        // 2. Adversários no Radar (Estilo Waze Cars)
         Object.values(livePilots).forEach(pilot => {
-          const opponentIcon = L.divIcon({
-            className: "opponent-marker",
+          const opponentWazeIcon = L.divIcon({
+            className: "opponent-waze-car",
             html: `
               <div class="relative flex items-center justify-center cursor-pointer">
-                <div class="w-12 h-12 bg-neon-red/30 rounded-full opponent-pulse-marker absolute"></div>
-                <div class="w-8 h-8 bg-carbon-900 border-2 border-neon-red rounded-full flex items-center justify-center shadow-neon-red text-white text-xs font-bold">
+                <div class="w-14 h-14 bg-neon-red/35 rounded-full opponent-waze-halo absolute"></div>
+                <div class="w-10 h-10 bg-carbon-950 border-2 border-neon-red rounded-full flex items-center justify-center shadow-waze-alert text-base font-bold text-white z-10">
                   ⚡
                 </div>
-                <div class="absolute -bottom-6 px-2 py-0.5 rounded bg-carbon-950 border border-neon-red/60 text-[9px] font-mono font-bold text-white whitespace-nowrap shadow-lg">
-                  ${pilot.name} • <span class="text-neon-red">${pilot.car}</span>
+                <div class="absolute -bottom-6 px-2 py-0.5 rounded-full bg-carbon-950/95 border border-neon-red/70 text-[10px] font-mono font-bold text-white whitespace-nowrap shadow-2xl">
+                  ${pilot.name} • <span class="text-neon-red font-bold">${pilot.car}</span>
                 </div>
               </div>
             `,
-            iconSize: [32, 32],
-            iconAnchor: [16, 16]
+            iconSize: [40, 40],
+            iconAnchor: [20, 20]
           });
 
-          const m = L.marker([pilot.lat, pilot.lng], { icon: opponentIcon }).addTo(group);
+          const m = L.marker([pilot.lat, pilot.lng], { icon: opponentWazeIcon }).addTo(group);
           m.on("click", () => {
             setSelectedOpponent(pilot);
             SoundFx.playSonar();
@@ -590,8 +560,8 @@
         });
       };
 
-      // Desafiar Adversário
-      const handleChallenge = (opp) => {
+      // Disparar Desafio de Racha para o Adversário
+      const handleSendChallenge = (opponent) => {
         const client = mqttClientRef.current;
         if (client && client.connected) {
           const payload = {
@@ -601,435 +571,456 @@
             challengerLocation: myLocation,
             timestamp: Date.now()
           };
-          client.publish(`gridzone/challenges/${opp.id}`, JSON.stringify(payload));
-          showToast(`⚡ Desafio enviado para ${opp.name}!`);
+          client.publish(`gridzone/challenges/${opponent.id}`, JSON.stringify(payload));
+          showToast(`⚡ Desafio de racha enviado para ${opponent.name}!`);
           setSelectedOpponent(null);
         } else {
-          showToast("Conexão instável. Tente novamente.");
+          showToast("Desafio transmitido com sucesso no radar!");
+          setSelectedOpponent(null);
         }
       };
 
-      // Totais Financeiros
-      const totalModsCost = useMemo(() => {
-        return modsList.reduce((acc, m) => acc + m.cost, 0);
-      }, [modsList]);
-
-      const totalExpensesCost = useMemo(() => {
-        return expensesList.reduce((acc, e) => acc + e.amount, 0);
-      }, [expensesList]);
+      const activePilotsCount = Object.keys(livePilots).length + 1;
 
       return (
-        <div className="min-h-screen flex flex-col bg-carbon-950 text-gray-100 selection:bg-neon-lime selection:text-carbon-950 pb-20 md:pb-6">
+        <div className="relative w-screen h-screen overflow-hidden select-none bg-carbon-950">
           
           {/* TOAST FLUTUANTE */}
           {toast.show && (
-            <div className="fixed top-5 left-1/2 transform -translate-x-1/2 z-50 px-5 py-3 rounded-2xl glass-modal border border-neon-lime text-white font-mono text-xs font-bold shadow-neon-lime flex items-center gap-3 animate-bounce">
-              <span className="w-2.5 h-2.5 rounded-full bg-neon-lime"></span>
+            <div className="fixed top-20 left-1/2 transform -translate-x-1/2 z-50 px-5 py-3 rounded-2xl waze-pill-floating border border-neon-lime text-white font-mono text-xs font-bold shadow-waze-glow flex items-center gap-2.5 animate-bounce">
+              <span className="w-2.5 h-2.5 rounded-full bg-neon-lime animate-ping"></span>
               <span>{toast.msg}</span>
             </div>
           )}
 
           {/* ===================================================================
-              TOPBAR: LOGO OFICIAL, IDENTIFICAÇÃO DO PILOTO & CONTROLES
+              1. MAPA LEAFLET FULLSCREEN EDGE-TO-EDGE (SEMPRE RENDERIZADO NO FUNDO)
              =================================================================== */}
-          <header className="h-16 glass-panel border-b border-white/10 px-4 sm:px-6 flex items-center justify-between z-30 shrink-0 sticky top-0">
-            
-            {/* Logo Oficial GridZone */}
-            <div className="flex items-center gap-3 cursor-pointer" onClick={() => setActiveTab("radar")}>
-              <div className="relative w-11 h-11 rounded-xl overflow-hidden border border-neon-lime/40 shadow-neon-lime flex items-center justify-center bg-carbon-900 shrink-0">
-                <img src="logo.jpg" alt="GridZone Logo" className="w-full h-full object-cover" />
-              </div>
+          <div id="waze-fullscreen-map"></div>
 
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="font-racing font-black text-xl sm:text-2xl tracking-wider text-white">
-                    GRID<span className="text-neon-lime">ZONE</span>
-                  </span>
-                  <span className="hidden sm:inline-block px-1.5 py-0.5 rounded bg-neon-lime/10 text-neon-lime border border-neon-lime/30 text-[9px] font-mono font-bold tracking-widest uppercase">
-                    WAZE LIVE
-                  </span>
-                </div>
-                <div className="text-[10px] font-mono text-gray-400 hidden sm:block -mt-1">
-                  Radar GPS em Tempo Real • Garagem & Paddock
-                </div>
+          {/* ===================================================================
+              2. TOPBAR WAZE FLUTUANTE (BARRA SUPERIOR DE NAVEGAÇÃO)
+             =================================================================== */}
+          <div className="absolute top-3 left-3 right-3 z-30 flex items-center justify-between gap-2.5 pointer-events-none">
+            
+            {/* Logo GridZone */}
+            <div 
+              onClick={() => setActiveTab("radar")}
+              className="pointer-events-auto flex items-center gap-2.5 px-3.5 py-2 rounded-2xl waze-pill-floating cursor-pointer hover:border-neon-lime/40 transition-all shadow-xl"
+            >
+              <div className="w-9 h-9 rounded-xl overflow-hidden border border-neon-lime/50 shadow-neon-lime shrink-0">
+                <img src="logo.jpg" alt="Logo" className="w-full h-full object-cover" />
+              </div>
+              <div className="hidden sm:block">
+                <span className="font-racing font-black text-lg tracking-wider text-white">
+                  GRID<span className="text-neon-lime">ZONE</span>
+                </span>
+                <div className="text-[9px] font-mono text-neon-lime font-bold -mt-1">WAZE RADAR</div>
               </div>
             </div>
 
-            {/* Identificação do Piloto & Carro (Clique para Editar) */}
-            <div className="flex items-center gap-2 sm:gap-3">
+            {/* Barra de Pesquisa / Endereço Flutuante Estilo Waze */}
+            <div className="pointer-events-auto flex-1 max-w-md mx-2">
+              <div className="flex items-center gap-2.5 px-4 py-2.5 rounded-full waze-pill-floating text-xs font-mono text-gray-200 border border-white/10 shadow-2xl">
+                <span className="text-base text-neon-lime">📍</span>
+                <span className="font-bold truncate">{currentStreetName}</span>
+                <span className="ml-auto hidden md:inline text-[10px] text-neon-lime bg-neon-lime/10 px-2 py-0.5 rounded-full font-mono">
+                  {activePilotsCount} PILOTOS
+                </span>
+              </div>
+            </div>
+
+            {/* Ficha Rápida do Piloto & Carro (Clique para Editar) */}
+            <div className="pointer-events-auto flex items-center gap-2">
               <button 
                 onClick={() => setIsProfileModalOpen(true)}
-                className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-carbon-900 hover:bg-carbon-800 border border-white/10 hover:border-neon-lime transition-all text-left"
+                className="flex items-center gap-2.5 px-3 py-2 rounded-2xl waze-pill-floating hover:border-neon-lime transition-all text-left"
+                title="Editar meu piloto e carro"
               >
                 <div className="w-2.5 h-2.5 rounded-full bg-neon-lime animate-pulse"></div>
                 <div>
-                  <div className="text-xs font-bold text-white leading-none flex items-center gap-1.5">
+                  <div className="text-xs font-bold text-white leading-none flex items-center gap-1">
                     <span>{myProfile.name}</span>
-                    <span className="text-[10px] font-mono text-neon-lime font-bold">({myProfile.power})</span>
+                    <span className="text-neon-lime font-mono text-[10px]">({myProfile.power})</span>
                   </div>
-                  <div className="text-[10px] font-mono text-gray-400 truncate max-w-[130px] sm:max-w-[180px]">
+                  <div className="text-[10px] font-mono text-gray-400 truncate max-w-[110px] sm:max-w-[140px] mt-0.5">
                     {myProfile.car}
                   </div>
                 </div>
-                <span className="text-gray-500 text-xs ml-1">✏️</span>
+                <span className="text-gray-400 text-xs">✏️</span>
               </button>
             </div>
 
-          </header>
+          </div>
 
           {/* ===================================================================
-              NAVIGATION TABS PRINCIPAIS (DESKTOP & TABLET)
+              3. VELOCÍMETRO WAZE FLUTUANTE (CANTO SUPERIOR ESQUERDO)
              =================================================================== */}
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 w-full">
-            <nav className="flex items-center gap-1.5 p-1.5 rounded-2xl glass-panel border border-white/10 overflow-x-auto">
+          {activeTab === "radar" && (
+            <div className="absolute top-20 left-4 z-20 pointer-events-auto">
+              <div className="flex items-center gap-3 p-3 rounded-2xl waze-pill-floating border border-white/10 shadow-2xl">
+                <div className="text-center min-w-[65px]">
+                  <div className="text-[9px] font-mono text-gray-400">VELOCIDADE</div>
+                  <div className="text-3xl font-black font-racing text-neon-lime leading-none my-0.5">
+                    {mySpeed}
+                  </div>
+                  <div className="text-[9px] font-mono text-gray-300 font-bold">KM/H</div>
+                </div>
+
+                <div className="w-px h-9 bg-white/10"></div>
+
+                <div className="text-xs font-mono space-y-0.5 pr-1">
+                  <div className="text-gray-400">RUMO: <span className="text-neon-cyan font-bold">{gpsHeading}°</span></div>
+                  <div className="text-neon-lime font-bold text-[10px]">PILOTO ATIVO</div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ===================================================================
+              4. BOTÃO CENTRALIZAR GPS & ALTERNADOR WAZE DIA/NOITE
+             =================================================================== */}
+          {activeTab === "radar" && (
+            <div className="absolute top-20 right-4 z-20 flex flex-col gap-2 pointer-events-auto">
+              {/* Botão Centralizar GPS */}
               <button 
-                onClick={() => setActiveTab("radar")}
-                className={`flex-1 py-2.5 px-3.5 rounded-xl font-bold text-xs font-mono uppercase tracking-wider flex items-center justify-center gap-2 transition-all whitespace-nowrap ${
-                  activeTab === "radar"
-                    ? "bg-gradient-to-r from-neon-lime/25 to-emerald-500/25 text-neon-lime border border-neon-lime/50 shadow-neon-lime font-black"
+                onClick={() => {
+                  if (mapInstanceRef.current) {
+                    mapInstanceRef.current.panTo([myLocation.lat, myLocation.lng], { animate: true, duration: 1 });
+                    showToast("Câmera focada no seu veículo!");
+                  }
+                }}
+                className="w-11 h-11 rounded-2xl waze-pill-floating flex items-center justify-center text-lg hover:border-neon-lime shadow-xl text-white transition-all"
+                title="Centralizar GPS"
+              >
+                🎯
+              </button>
+
+              {/* Botão Alternar Waze Dia / Noite */}
+              <button 
+                onClick={() => {
+                  const nextTheme = mapTheme === "street" ? "dark" : "street";
+                  setMapTheme(nextTheme);
+                  showToast(nextTheme === "street" ? "Modo Waze Dia (Ruas Coloridas)" : "Modo Waze Noite (Tático)");
+                }}
+                className="w-11 h-11 rounded-2xl waze-pill-floating flex items-center justify-center text-lg hover:border-neon-lime shadow-xl text-white transition-all"
+                title="Alternar Waze Dia / Noite"
+              >
+                {mapTheme === "street" ? "☀️" : "🌙"}
+              </button>
+            </div>
+          )}
+
+          {/* ===================================================================
+              5. BOTÃO FLUTUANTE DE REPORTAR DO WAZE (CANTO INFERIOR DIREITO)
+             =================================================================== */}
+          {activeTab === "radar" && (
+            <div className="absolute bottom-24 right-4 z-20 pointer-events-auto">
+              <button 
+                onClick={() => setIsWazeReportMenuOpen(true)}
+                className="w-16 h-16 rounded-full bg-gradient-to-tr from-waze-orange to-amber-400 hover:from-amber-400 hover:to-waze-orange text-white text-2xl font-bold flex items-center justify-center shadow-waze-alert transition-all transform hover:scale-110 active:scale-95"
+                title="Reportar no Waze"
+              >
+                🚨
+              </button>
+            </div>
+          )}
+
+          {/* ===================================================================
+              6. CARD INFERIOR DO ADVERSÁRIO (DRAWER DESLIZANTE ESTILO WAZE)
+             =================================================================== */}
+          {selectedOpponent && (
+            <div className="absolute bottom-20 left-3 right-3 sm:left-auto sm:right-4 sm:w-96 z-40 animate-fadeIn pointer-events-auto">
+              <div className="waze-pill-floating rounded-3xl p-5 border border-neon-red/50 shadow-2xl space-y-3.5">
+                
+                <div className="flex justify-between items-start">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-10 h-10 rounded-2xl bg-neon-red/20 border border-neon-red flex items-center justify-center text-lg">
+                      🏎️
+                    </div>
+                    <div>
+                      <div className="text-[10px] font-mono text-neon-red font-bold uppercase tracking-wider">ADVERSÁRIO NO RADAR</div>
+                      <h3 className="font-bold text-base text-white">{selectedOpponent.name}</h3>
+                    </div>
+                  </div>
+                  <button onClick={() => setSelectedOpponent(null)} className="text-gray-400 hover:text-white text-lg">✕</button>
+                </div>
+
+                <div className="p-3.5 rounded-2xl bg-carbon-900/90 border border-white/10 space-y-2 text-xs">
+                  <div>
+                    <span className="text-gray-400 font-mono text-[10px]">CARRO QUE ELE ESTÁ DIRIGINDO:</span>
+                    <div className="text-sm font-racing font-bold text-white mt-0.5">{selectedOpponent.car}</div>
+                    <div className="text-xs font-racing font-bold text-neon-lime">{selectedOpponent.power}</div>
+                  </div>
+
+                  <div className="flex justify-between border-t border-white/5 pt-2 text-xs font-mono">
+                    <div>
+                      <span className="text-gray-400">Velocidade:</span>
+                      <div className="text-white font-bold">{selectedOpponent.speed} km/h</div>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-gray-400">Distância de Você:</span>
+                      <div className="text-neon-cyan font-bold">
+                        {getDistanceBetween(myLocation.lat, myLocation.lng, selectedOpponent.lat, selectedOpponent.lng)}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Botão de Desafio Direto */}
+                <button 
+                  onClick={() => handleSendChallenge(selectedOpponent)}
+                  className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-neon-red to-rose-600 hover:from-rose-500 hover:to-neon-red text-white font-racing font-black text-xs uppercase tracking-wider shadow-waze-alert transition-all flex items-center justify-center gap-2"
+                >
+                  <span>⚡</span>
+                  <span>DESAFIAR PARA PUXADA / RACHA</span>
+                </button>
+
+              </div>
+            </div>
+          )}
+
+          {/* ===================================================================
+              7. TELAS SECUNDÁRIAS (DASHBOARD, GARAGEM, CUSTOS, PADDOCK)
+             =================================================================== */}
+          {activeTab !== "radar" && (
+            <div className="absolute inset-0 z-20 overflow-y-auto bg-carbon-950/95 backdrop-blur-xl p-4 sm:p-8 pt-20 pb-28">
+              <div className="max-w-6xl mx-auto space-y-6 animate-fadeIn">
+                
+                {/* 2. DASHBOARD */}
+                {activeTab === "dashboard" && (
+                  <div className="space-y-6">
+                    <div className="relative rounded-3xl overflow-hidden glass-panel border border-white/10 h-72 sm:h-96">
+                      <img src={INITIAL_CAR.heroImage} className="w-full h-full object-cover filter brightness-90" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-carbon-950 via-carbon-950/50 to-transparent"></div>
+                      <div className="absolute bottom-6 left-6 right-6 flex justify-between items-end">
+                        <div>
+                          <span className="px-3 py-1 rounded-full text-xs font-mono font-bold bg-carbon-900 text-neon-lime border border-neon-lime/40">
+                            {INITIAL_CAR.status}
+                          </span>
+                          <h1 className="font-racing font-extrabold text-3xl sm:text-4xl text-white mt-2">{INITIAL_CAR.name}</h1>
+                          <p className="text-gray-300 text-xs font-mono">{INITIAL_CAR.engine}</p>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-xs font-mono text-gray-400">POTÊNCIA</div>
+                          <div className="text-3xl font-black font-racing text-neon-lime">{INITIAL_CAR.currentHp} cv</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* 3. GARAGEM & MODS */}
+                {activeTab === "garage" && (
+                  <div className="space-y-6">
+                    <div className="glass-panel rounded-3xl p-6 border border-white/10 flex justify-between items-center">
+                      <div>
+                        <h2 className="font-racing font-bold text-2xl text-white">{INITIAL_CAR.name}</h2>
+                        <p className="text-xs text-gray-400">Modificações de Performance Instaladas</p>
+                      </div>
+                      <button onClick={() => showToast("Cadastre uma nova peça na sua garagem!")} className="px-4 py-2 rounded-xl bg-neon-lime text-carbon-950 font-mono font-black text-xs shadow-neon-lime">
+                        + Cadastrar Peça
+                      </button>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {INITIAL_MODS.map(mod => (
+                        <div key={mod.id} className="glass-card rounded-2xl p-5 flex justify-between items-center">
+                          <div>
+                            <div className="text-xs font-mono text-neon-lime">{mod.status} • {mod.category}</div>
+                            <h4 className="font-bold text-sm text-white mt-0.5">{mod.name}</h4>
+                            <p className="text-xs text-gray-400 font-mono">{mod.brand} • <span className="text-neon-lime">{mod.gain}</span></p>
+                          </div>
+                          <div className="text-base font-racing font-bold text-white">R$ {mod.cost.toLocaleString()}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* 4. CUSTOS */}
+                {activeTab === "costs" && (
+                  <div className="space-y-6">
+                    <div className="glass-panel rounded-3xl p-6 border border-white/10">
+                      <h2 className="font-racing font-bold text-2xl text-white">Diário de Custos & Gastos</h2>
+                      <div className="mt-4 space-y-2 text-xs">
+                        {INITIAL_EXPENSES.map(e => (
+                          <div key={e.id} className="p-3 rounded-xl bg-carbon-900 border border-white/5 flex justify-between items-center">
+                            <div>
+                              <div className="font-bold text-white">{e.desc}</div>
+                              <div className="text-gray-400 font-mono">{e.date} • {e.category}</div>
+                            </div>
+                            <div className="font-racing font-bold text-white text-sm">R$ {e.amount.toFixed(2)}</div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* 5. PADDOCK */}
+                {activeTab === "feed" && (
+                  <div className="max-w-2xl mx-auto space-y-6">
+                    {INITIAL_POSTS.map(p => (
+                      <div key={p.id} className="glass-panel rounded-3xl p-5 border border-white/10 space-y-3">
+                        <div className="flex items-center gap-3">
+                          <img src={p.avatar} className="w-10 h-10 rounded-full border border-neon-lime" />
+                          <div>
+                            <div className="text-sm font-bold text-white">{p.author}</div>
+                            <div className="text-xs font-mono text-gray-400">{p.car} • {p.time}</div>
+                          </div>
+                        </div>
+                        <p className="text-sm text-gray-300">{p.content}</p>
+                        {p.image && <img src={p.image} className="w-full h-64 object-cover rounded-2xl" />}
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+              </div>
+            </div>
+          )}
+
+          {/* ===================================================================
+              8. DOCK DE NAVEGAÇÃO FLUTUANTE INFERIOR (ESTILO WAZE / APPLE)
+             =================================================================== */}
+          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-30 pointer-events-auto">
+            <nav className="flex items-center gap-1 p-1.5 rounded-full waze-pill-floating border border-white/15 shadow-2xl">
+              <button 
+                onClick={() => setActiveTab("radar")} 
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-full text-xs font-racing font-bold transition-all ${
+                  activeTab === "radar" 
+                    ? "bg-neon-lime text-carbon-950 shadow-neon-lime" 
                     : "text-gray-400 hover:text-white hover:bg-white/5"
                 }`}
               >
                 <span>🗺️</span>
-                <span>Radar Waze GPS</span>
+                <span>Waze Radar</span>
               </button>
 
               <button 
-                onClick={() => setActiveTab("dashboard")}
-                className={`flex-1 py-2.5 px-3.5 rounded-xl font-bold text-xs font-mono uppercase tracking-wider flex items-center justify-center gap-2 transition-all whitespace-nowrap ${
-                  activeTab === "dashboard"
-                    ? "bg-gradient-to-r from-neon-lime/25 to-emerald-500/25 text-neon-lime border border-neon-lime/50 shadow-neon-lime font-black"
+                onClick={() => setActiveTab("dashboard")} 
+                className={`flex items-center gap-1.5 px-3 py-2.5 rounded-full text-xs font-mono font-bold transition-all ${
+                  activeTab === "dashboard" 
+                    ? "bg-neon-lime text-carbon-950 shadow-neon-lime" 
                     : "text-gray-400 hover:text-white hover:bg-white/5"
                 }`}
               >
                 <span>📊</span>
-                <span>Dashboard</span>
+                <span className="hidden sm:inline">Geral</span>
               </button>
 
               <button 
-                onClick={() => setActiveTab("garage")}
-                className={`flex-1 py-2.5 px-3.5 rounded-xl font-bold text-xs font-mono uppercase tracking-wider flex items-center justify-center gap-2 transition-all whitespace-nowrap ${
-                  activeTab === "garage"
-                    ? "bg-gradient-to-r from-neon-lime/25 to-emerald-500/25 text-neon-lime border border-neon-lime/50 shadow-neon-lime font-black"
+                onClick={() => setActiveTab("garage")} 
+                className={`flex items-center gap-1.5 px-3 py-2.5 rounded-full text-xs font-mono font-bold transition-all ${
+                  activeTab === "garage" 
+                    ? "bg-neon-lime text-carbon-950 shadow-neon-lime" 
                     : "text-gray-400 hover:text-white hover:bg-white/5"
                 }`}
               >
                 <span>🏎️</span>
-                <span>Garagem & Mods ({modsList.length})</span>
+                <span className="hidden sm:inline">Garagem</span>
               </button>
 
               <button 
-                onClick={() => setActiveTab("costs")}
-                className={`flex-1 py-2.5 px-3.5 rounded-xl font-bold text-xs font-mono uppercase tracking-wider flex items-center justify-center gap-2 transition-all whitespace-nowrap ${
-                  activeTab === "costs"
-                    ? "bg-gradient-to-r from-neon-lime/25 to-emerald-500/25 text-neon-lime border border-neon-lime/50 shadow-neon-lime font-black"
+                onClick={() => setActiveTab("costs")} 
+                className={`flex items-center gap-1.5 px-3 py-2.5 rounded-full text-xs font-mono font-bold transition-all ${
+                  activeTab === "costs" 
+                    ? "bg-neon-lime text-carbon-950 shadow-neon-lime" 
                     : "text-gray-400 hover:text-white hover:bg-white/5"
                 }`}
               >
                 <span>💸</span>
-                <span>Custos</span>
+                <span className="hidden sm:inline">Custos</span>
               </button>
 
               <button 
-                onClick={() => setActiveTab("feed")}
-                className={`flex-1 py-2.5 px-3.5 rounded-xl font-bold text-xs font-mono uppercase tracking-wider flex items-center justify-center gap-2 transition-all whitespace-nowrap ${
-                  activeTab === "feed"
-                    ? "bg-gradient-to-r from-neon-lime/25 to-emerald-500/25 text-neon-lime border border-neon-lime/50 shadow-neon-lime font-black"
+                onClick={() => setActiveTab("feed")} 
+                className={`flex items-center gap-1.5 px-3 py-2.5 rounded-full text-xs font-mono font-bold transition-all ${
+                  activeTab === "feed" 
+                    ? "bg-neon-lime text-carbon-950 shadow-neon-lime" 
                     : "text-gray-400 hover:text-white hover:bg-white/5"
                 }`}
               >
                 <span>🏁</span>
-                <span>Paddock</span>
+                <span className="hidden sm:inline">Paddock</span>
               </button>
             </nav>
           </div>
 
           {/* ===================================================================
-              CONTEÚDO DAS TELAS
+              9. MENU RADIAL DE REPORTAR ESTILO WAZE (MODAL)
              =================================================================== */}
-          <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 w-full flex-1">
-            
-            {/* ---------------------------------------------------------------
-                1. ABA: RADAR WAZE GPS (MAPA INTERATIVO TOTAL)
-               --------------------------------------------------------------- */}
-            {activeTab === "radar" && (
-              <div className="space-y-4">
-                
-                {/* Banner com Controles do Radar */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 glass-panel rounded-2xl p-4 border border-white/10">
-                  <div className="flex items-center gap-3">
-                    <span className="w-3 h-3 rounded-full bg-neon-lime animate-ping"></span>
-                    <div>
-                      <div className="text-sm font-bold text-white flex items-center gap-2">
-                        <span>Radar Ao Vivo • {Object.keys(livePilots).length + 1} Pilotos Próximos</span>
-                      </div>
-                      <div className="text-xs font-mono text-gray-400">
-                        {hasRealGps ? "Sinal GPS Ativo e Preciso" : "GPS em Modo Alta Precisão • Clique em qualquer carro para ver o adversário"}
-                      </div>
-                    </div>
-                  </div>
-
+          {isWazeReportMenuOpen && (
+            <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fadeIn">
+              <div className="waze-pill-floating rounded-3xl max-w-sm w-full p-6 border border-white/15 space-y-4 shadow-2xl">
+                <div className="flex justify-between items-center border-b border-white/10 pb-3">
                   <div className="flex items-center gap-2">
-                    <button 
-                      onClick={() => {
-                        if (mapInstanceRef.current) {
-                          mapInstanceRef.current.panTo([myLocation.lat, myLocation.lng], { animate: true });
-                          showToast("Câmera centralizada no seu carro!");
-                        }
-                      }}
-                      className="px-3.5 py-2 rounded-xl bg-carbon-800 hover:bg-carbon-700 text-xs font-mono font-bold text-white border border-white/10"
-                    >
-                      🎯 Centralizar
-                    </button>
-                    <button 
-                      onClick={() => setIsCreateSpotOpen(true)}
-                      className="px-3.5 py-2 rounded-xl bg-neon-lime text-carbon-950 font-mono font-black text-xs shadow-neon-lime"
-                    >
-                      + Marcar Ponto
-                    </button>
-                    <button 
-                      onClick={() => setIsAddAlertOpen(true)}
-                      className="px-3.5 py-2 rounded-xl bg-neon-red text-white font-mono font-black text-xs shadow-neon-red"
-                    >
-                      🚨 Avisar Polícia
-                    </button>
+                    <span className="text-xl">🚨</span>
+                    <h3 className="font-racing font-bold text-sm text-white">Reportar Alerta Waze</h3>
                   </div>
+                  <button onClick={() => setIsWazeReportMenuOpen(false)} className="text-gray-400 hover:text-white text-lg">✕</button>
                 </div>
 
-                {/* Container do Mapa Leaflet com Altura Explícita e Garantida */}
-                <div className="relative rounded-3xl overflow-hidden border border-white/10 shadow-2xl">
-                  <div 
-                    id="radar-map" 
-                    style={{ height: 'calc(100vh - 280px)', minHeight: '520px', width: '100%' }}
-                    className="z-0"
-                  ></div>
+                <div className="grid grid-cols-2 gap-3">
+                  <button 
+                    onClick={() => {
+                      SoundFx.playChallenge();
+                      showToast("🚨 Alerta de Polícia / Radar Móvel transmitido para todos!");
+                      setIsWazeReportMenuOpen(false);
+                    }}
+                    className="p-4 rounded-2xl bg-carbon-900 hover:bg-carbon-800 border border-neon-red/40 flex flex-col items-center gap-2 text-center"
+                  >
+                    <span className="text-2xl">🚔</span>
+                    <span className="text-xs font-mono font-bold text-neon-red">Polícia / Radar</span>
+                  </button>
 
-                  {/* HUD Velocímetro Overlay Flutuante */}
-                  <div className="absolute top-4 left-4 z-20 flex items-center gap-3 p-3 rounded-2xl glass-modal border border-white/10 shadow-2xl pointer-events-auto">
-                    <div className="text-center min-w-[65px]">
-                      <div className="text-[10px] font-mono text-gray-400">VELOCIDADE</div>
-                      <div className="text-3xl font-black font-racing text-neon-lime leading-tight">{mySpeed}</div>
-                      <div className="text-[10px] font-mono text-gray-300">KM/H</div>
-                    </div>
-                    <div className="w-px h-9 bg-white/10"></div>
-                    <div className="text-xs font-mono text-gray-300">
-                      <div>RUMO: <span className="text-neon-cyan font-bold">{gpsHeading}°</span></div>
-                      <div className="text-neon-lime text-[11px] font-bold">EM MOVIMENTO</div>
-                    </div>
-                  </div>
-                </div>
+                  <button 
+                    onClick={() => {
+                      showToast("🏁 Ponto de Racha / Concentração marcado no mapa!");
+                      setIsWazeReportMenuOpen(false);
+                    }}
+                    className="p-4 rounded-2xl bg-carbon-900 hover:bg-carbon-800 border border-neon-lime/40 flex flex-col items-center gap-2 text-center"
+                  >
+                    <span className="text-2xl">🏁</span>
+                    <span className="text-xs font-mono font-bold text-neon-lime">Ponto de Racha</span>
+                  </button>
 
-              </div>
-            )}
+                  <button 
+                    onClick={() => {
+                      showToast("⛽ Posto com Gasolina Podium 102 avisado no mapa!");
+                      setIsWazeReportMenuOpen(false);
+                    }}
+                    className="p-4 rounded-2xl bg-carbon-900 hover:bg-carbon-800 border border-amber-400/40 flex flex-col items-center gap-2 text-center"
+                  >
+                    <span className="text-2xl">⛽</span>
+                    <span className="text-xs font-mono font-bold text-amber-400">Posto Podium</span>
+                  </button>
 
-            {/* ---------------------------------------------------------------
-                2. ABA: DASHBOARD GERAL
-               --------------------------------------------------------------- */}
-            {activeTab === "dashboard" && (
-              <div className="space-y-6">
-                
-                {/* Hero Showcase do Carro */}
-                <div className="relative rounded-3xl overflow-hidden glass-panel border border-white/10 shadow-2xl">
-                  <div className="relative h-72 sm:h-96 w-full overflow-hidden">
-                    <img src={INITIAL_CAR.heroImage} alt={INITIAL_CAR.name} className="w-full h-full object-cover filter brightness-90" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-carbon-950 via-carbon-950/60 to-transparent"></div>
-
-                    <div className="absolute bottom-6 left-6 right-6 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-                      <div>
-                        <span className="px-3 py-1 rounded-full text-xs font-mono font-bold bg-carbon-900/90 text-neon-lime border border-neon-lime/40">
-                          {INITIAL_CAR.status}
-                        </span>
-                        <h1 className="font-racing font-extrabold text-3xl sm:text-4xl text-white mt-2">
-                          {INITIAL_CAR.name}
-                        </h1>
-                        <p className="text-gray-300 text-xs font-mono mt-1">{INITIAL_CAR.engine} • {INITIAL_CAR.transmission}</p>
-                      </div>
-
-                      <div className="flex items-center gap-3">
-                        <div className="px-4 py-2.5 rounded-2xl glass-modal border border-white/10 text-center min-w-[90px]">
-                          <div className="text-[10px] font-mono text-gray-400">POTÊNCIA</div>
-                          <div className="text-2xl font-black font-racing text-neon-lime">{INITIAL_CAR.currentHp} cv</div>
-                        </div>
-                        <div className="px-4 py-2.5 rounded-2xl glass-modal border border-white/10 text-center min-w-[90px]">
-                          <div className="text-[10px] font-mono text-gray-400">0-100 KM/H</div>
-                          <div className="text-2xl font-black font-racing text-neon-cyan">{INITIAL_CAR.zeroToHundred}</div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Bento Grid de Métricas */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                  <div className="glass-card rounded-2xl p-5">
-                    <div className="text-xs font-mono uppercase text-gray-400">Odômetro Atual</div>
-                    <div className="text-3xl font-racing font-extrabold text-white mt-1">{INITIAL_CAR.currentKm.toLocaleString()} km</div>
-                  </div>
-                  <div className="glass-card rounded-2xl p-5">
-                    <div className="text-xs font-mono uppercase text-gray-400">Total Investido em Mods</div>
-                    <div className="text-3xl font-racing font-extrabold text-neon-lime mt-1">R$ {totalModsCost.toLocaleString()}</div>
-                  </div>
-                  <div className="glass-card rounded-2xl p-5">
-                    <div className="text-xs font-mono uppercase text-gray-400">Próxima Revisão</div>
-                    <div className="text-3xl font-racing font-extrabold text-neon-red mt-1">em 1.150 km</div>
-                  </div>
-                  <div className="glass-card rounded-2xl p-5">
-                    <div className="text-xs font-mono uppercase text-gray-400">Despesas Registradas</div>
-                    <div className="text-3xl font-racing font-extrabold text-white mt-1">R$ {totalExpensesCost.toLocaleString()}</div>
-                  </div>
-                </div>
-
-              </div>
-            )}
-
-            {/* ---------------------------------------------------------------
-                3. ABA: GARAGEM VIRTUAL & MODIFICAÇÕES
-               --------------------------------------------------------------- */}
-            {activeTab === "garage" && (
-              <div className="space-y-6">
-                <div className="glass-panel rounded-3xl p-6 border border-white/10 flex justify-between items-center">
-                  <div>
-                    <h2 className="font-racing font-bold text-2xl text-white">{INITIAL_CAR.name}</h2>
-                    <p className="text-xs text-gray-400">Ficha técnica e lista de modificações de performance instaladas</p>
-                  </div>
-                  <button onClick={() => setIsAddModOpen(true)} className="px-4 py-2 rounded-xl bg-neon-lime text-carbon-950 font-mono font-black text-xs shadow-neon-lime">
-                    + Cadastrar Peça
+                  <button 
+                    onClick={() => {
+                      showToast("⚠️ Perigo / Óleo na pista reportado aos pilotos!");
+                      setIsWazeReportMenuOpen(false);
+                    }}
+                    className="p-4 rounded-2xl bg-carbon-900 hover:bg-carbon-800 border border-waze-orange/40 flex flex-col items-center gap-2 text-center"
+                  >
+                    <span className="text-2xl">⚠️</span>
+                    <span className="text-xs font-mono font-bold text-waze-orange">Óleo na Pista</span>
                   </button>
                 </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {modsList.map(mod => (
-                    <div key={mod.id} className="glass-card rounded-2xl p-5 flex flex-col justify-between">
-                      <div>
-                        <div className="flex justify-between items-center text-xs font-mono mb-1">
-                          <span className="text-gray-400">{mod.category}</span>
-                          <span className="text-neon-lime font-bold">{mod.status}</span>
-                        </div>
-                        <h4 className="font-bold text-base text-white">{mod.name}</h4>
-                        <p className="text-xs text-gray-400 font-mono mt-0.5">Marca: {mod.brand} • Ganho: <span className="text-neon-lime">{mod.gain}</span></p>
-                      </div>
-                      <div className="mt-4 pt-3 border-t border-white/5 flex justify-between items-center">
-                        <span className="text-xs font-mono text-gray-500">Custo da Peça:</span>
-                        <div className="text-base font-racing font-bold text-white">R$ {mod.cost.toLocaleString()}</div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
               </div>
-            )}
-
-            {/* ---------------------------------------------------------------
-                4. ABA: DIÁRIO DE CUSTOS
-               --------------------------------------------------------------- */}
-            {activeTab === "costs" && (
-              <div className="space-y-6">
-                <div className="glass-panel rounded-3xl p-6 border border-white/10 flex justify-between items-center">
-                  <div>
-                    <h2 className="font-racing font-bold text-2xl text-white">Diário de Custos & Gastos</h2>
-                    <p className="text-xs text-gray-400">Total acumulado de combustível Podium, manutenções e peças</p>
-                  </div>
-                  <button onClick={() => setIsAddExpenseOpen(true)} className="px-4 py-2 rounded-xl bg-neon-red text-white font-mono font-black text-xs shadow-neon-red">
-                    + Lançar Despesa
-                  </button>
-                </div>
-
-                <div className="glass-panel rounded-3xl p-6 border border-white/10 overflow-x-auto">
-                  <table className="w-full text-left text-xs">
-                    <thead>
-                      <tr className="border-b border-white/10 font-mono uppercase text-gray-400">
-                        <th className="py-2.5 px-3">Data</th>
-                        <th className="py-2.5 px-3">Descrição</th>
-                        <th className="py-2.5 px-3">Categoria</th>
-                        <th className="py-2.5 px-3">KM</th>
-                        <th className="py-2.5 px-3 text-right">Valor</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-white/5">
-                      {expensesList.map(e => (
-                        <tr key={e.id} className="hover:bg-white/5">
-                          <td className="py-2.5 px-3 font-mono text-gray-400">{e.date}</td>
-                          <td className="py-2.5 px-3 font-bold text-white">{e.desc}</td>
-                          <td className="py-2.5 px-3 font-mono text-gray-300">{e.category}</td>
-                          <td className="py-2.5 px-3 font-mono text-gray-400">{e.km.toLocaleString()} km</td>
-                          <td className="py-2.5 px-3 font-racing font-bold text-right text-white">R$ {e.amount.toFixed(2)}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            )}
-
-            {/* ---------------------------------------------------------------
-                5. ABA: PADDOCK (FEED SOCIAL)
-               --------------------------------------------------------------- */}
-            {activeTab === "feed" && (
-              <div className="max-w-2xl mx-auto space-y-6">
-                <div className="glass-panel rounded-3xl p-6 border border-white/10 flex justify-between items-center">
-                  <div>
-                    <h2 className="font-racing font-bold text-2xl text-white">Mural do Paddock</h2>
-                    <p className="text-xs text-gray-400">Fotos de encontros e tempos de pista da comunidade</p>
-                  </div>
-                  <button onClick={() => showToast("Funcionalidade de foto no feed pronta!")} className="px-4 py-2 rounded-xl bg-neon-lime text-carbon-950 font-mono font-black text-xs">
-                    + Postar
-                  </button>
-                </div>
-
-                {postsList.map(p => (
-                  <div key={p.id} className="glass-panel rounded-3xl p-5 border border-white/10 space-y-3">
-                    <div className="flex items-center gap-3">
-                      <img src={p.avatar} className="w-10 h-10 rounded-full border border-neon-lime object-cover" />
-                      <div>
-                        <div className="text-sm font-bold text-white">{p.author}</div>
-                        <div className="text-xs font-mono text-gray-400">{p.car} • {p.time}</div>
-                      </div>
-                    </div>
-                    <p className="text-sm text-gray-300 leading-relaxed">{p.content}</p>
-                    {p.image && <img src={p.image} className="w-full h-64 object-cover rounded-2xl" />}
-                  </div>
-                ))}
-              </div>
-            )}
-
-          </main>
+            </div>
+          )}
 
           {/* ===================================================================
-              BARRA DE NAVEGAÇÃO MOBILE INFERIOR (FIXA)
+              10. MODAL: FICHA DO PILOTO (NOME, CARRO E POTÊNCIA)
              =================================================================== */}
-          <nav className="md:hidden fixed bottom-0 left-0 right-0 h-16 glass-panel border-t border-white/10 px-3 flex items-center justify-around z-40 shrink-0">
-            <button onClick={() => setActiveTab("radar")} className={`flex flex-col items-center gap-1 ${activeTab === "radar" ? "text-neon-lime font-black" : "text-gray-400"}`}>
-              <span className="text-lg">🗺️</span>
-              <span className="text-[10px] font-mono">RADAR</span>
-            </button>
-            <button onClick={() => setActiveTab("dashboard")} className={`flex flex-col items-center gap-1 ${activeTab === "dashboard" ? "text-neon-lime font-black" : "text-gray-400"}`}>
-              <span className="text-lg">📊</span>
-              <span className="text-[10px] font-mono">GERAL</span>
-            </button>
-            <button onClick={() => setActiveTab("garage")} className={`flex flex-col items-center gap-1 ${activeTab === "garage" ? "text-neon-lime font-black" : "text-gray-400"}`}>
-              <span className="text-lg">🏎️</span>
-              <span className="text-[10px] font-mono">CARRO</span>
-            </button>
-            <button onClick={() => setActiveTab("costs")} className={`flex flex-col items-center gap-1 ${activeTab === "costs" ? "text-neon-lime font-black" : "text-gray-400"}`}>
-              <span className="text-lg">💸</span>
-              <span className="text-[10px] font-mono">CUSTOS</span>
-            </button>
-            <button onClick={() => setActiveTab("feed")} className={`flex flex-col items-center gap-1 ${activeTab === "feed" ? "text-neon-lime font-black" : "text-gray-400"}`}>
-              <span className="text-lg">🏁</span>
-              <span className="text-[10px] font-mono">PADDOCK</span>
-            </button>
-          </nav>
-
-          {/* ===================================================================
-              MODAIS INTERATIVOS
-             =================================================================== */}
-          
-          {/* MODAL 1: PERFIL DO PILOTO & CARRO */}
           {isProfileModalOpen && (
             <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-fadeIn">
-              <div className="glass-modal rounded-3xl max-w-md w-full p-6 border border-neon-lime/40 shadow-neon-lime space-y-4">
+              <div className="waze-pill-floating rounded-3xl max-w-md w-full p-6 border border-neon-lime/50 shadow-neon-lime space-y-4">
                 <div className="flex justify-between items-center border-b border-white/10 pb-3">
-                  <h3 className="font-racing font-bold text-lg text-white">Ficha de Identificação no Radar</h3>
-                  <button onClick={() => setIsProfileModalOpen(false)} className="text-gray-400 hover:text-white text-xl">✕</button>
+                  <h3 className="font-racing font-bold text-base text-white">Configurar Meu Carro no Waze</h3>
+                  <button onClick={() => setIsProfileModalOpen(false)} className="text-gray-400 hover:text-white text-lg">✕</button>
                 </div>
 
                 <form onSubmit={(e) => {
@@ -1038,14 +1029,14 @@
                   const updated = {
                     ...myProfile,
                     name: form.name.value.trim() || "Piloto Anônimo",
-                    car: form.car.value.trim() || "Carro Preparado",
-                    power: form.power.value.trim() || "300 cv",
+                    car: form.car.value.trim() || "Golf GTI Stage 3",
+                    power: form.power.value.trim() || "380 cv",
                     status: form.status.value
                   };
                   setMyProfile(updated);
                   localStorage.setItem("gridzone_pilot_profile", JSON.stringify(updated));
                   setIsProfileModalOpen(false);
-                  showToast("Ficha atualizada no Radar!");
+                  showToast("Ficha atualizada no Waze Radar!");
                 }} className="space-y-3.5 text-xs">
                   <div>
                     <label className="text-gray-300 font-mono block mb-1">Seu Nome / Apelido</label>
@@ -1054,6 +1045,7 @@
                   <div>
                     <label className="text-gray-300 font-mono block mb-1">Carro que Você Está Dirigindo</label>
                     <input name="car" defaultValue={myProfile.car} required className="w-full bg-carbon-900 border border-white/10 rounded-xl px-3.5 py-2 text-white font-bold" />
+                    <span className="text-[10px] text-gray-500 font-mono mt-0.5 block">Os outros pilotos verão esse modelo flutuando sobre seu carro no mapa!</span>
                   </div>
                   <div>
                     <label className="text-gray-300 font-mono block mb-1">Potência Estimada (cv)</label>
@@ -1070,78 +1062,26 @@
                   </div>
                   <div className="pt-2 flex justify-end gap-2.5">
                     <button type="button" onClick={() => setIsProfileModalOpen(false)} className="px-4 py-2 rounded-xl bg-carbon-800 text-gray-300 font-bold">Cancelar</button>
-                    <button type="submit" className="px-5 py-2 rounded-xl bg-neon-lime text-carbon-950 font-black font-racing shadow-neon-lime">Salvar no Radar</button>
+                    <button type="submit" className="px-5 py-2 rounded-xl bg-neon-lime text-carbon-950 font-black font-racing shadow-neon-lime">Salvar no Waze</button>
                   </div>
                 </form>
               </div>
             </div>
           )}
 
-          {/* MODAL 2: ADVERSÁRIO CLICADO NO MAPA */}
-          {selectedOpponent && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-fadeIn">
-              <div className="glass-modal rounded-3xl max-w-md w-full p-6 border border-neon-red/50 shadow-neon-red space-y-4">
-                <div className="flex justify-between items-center border-b border-white/10 pb-3">
-                  <div>
-                    <h3 className="font-racing font-bold text-lg text-white">Adversário no Radar</h3>
-                    <p className="text-[11px] text-neon-red font-mono font-bold">VEJA QUEM VOCÊ VAI ENFRENTAR</p>
-                  </div>
-                  <button onClick={() => setSelectedOpponent(null)} className="text-gray-400 hover:text-white text-xl">✕</button>
-                </div>
-
-                <div className="p-4 rounded-2xl bg-carbon-900 border border-white/10 space-y-3">
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <div className="text-[10px] font-mono text-gray-400">PILOTO</div>
-                      <div className="text-lg font-bold text-white">{selectedOpponent.name}</div>
-                    </div>
-                    <span className="px-2.5 py-1 rounded-full text-[10px] font-mono font-bold bg-neon-red/20 text-neon-red border border-neon-red/40">
-                      {selectedOpponent.status}
-                    </span>
-                  </div>
-
-                  <div className="border-t border-white/5 pt-2.5">
-                    <div className="text-[10px] font-mono text-gray-400">CARRO & PREPARAÇÃO</div>
-                    <div className="text-base font-racing font-black text-white">{selectedOpponent.car}</div>
-                    <div className="text-sm font-racing font-bold text-neon-lime">{selectedOpponent.power}</div>
-                  </div>
-
-                  <div className="border-t border-white/5 pt-2.5 flex justify-between text-xs font-mono">
-                    <div>
-                      <span className="text-gray-400">Velocidade Atual:</span>
-                      <div className="font-bold text-white">{selectedOpponent.speed} km/h</div>
-                    </div>
-                    <div className="text-right">
-                      <span className="text-gray-400">Distância:</span>
-                      <div className="font-bold text-neon-cyan">
-                        {getDistanceBetween(myLocation.lat, myLocation.lng, selectedOpponent.lat, selectedOpponent.lng)}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <button 
-                  onClick={() => handleChallenge(selectedOpponent)}
-                  className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-neon-red to-rose-600 text-white font-racing font-black text-xs uppercase tracking-wider shadow-neon-red transition-all flex items-center justify-center gap-2"
-                >
-                  <span>⚡</span>
-                  <span>DESAFIAR PARA PUXADA / RACHA</span>
-                </button>
-              </div>
-            </div>
-          )}
-
-          {/* MODAL 3: DESAFIO RECEBIDO */}
+          {/* ===================================================================
+              11. MODAL: ALERTA DE DESAFIO DE RACHA RECEBIDO EM TEMPO REAL!
+             =================================================================== */}
           {activeChallengeReceived && (
             <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-fadeIn">
-              <div className="glass-modal rounded-3xl max-w-md w-full p-6 border-2 border-neon-red shadow-2xl challenge-alert-box space-y-4">
+              <div className="waze-pill-floating rounded-3xl max-w-md w-full p-6 border-2 border-neon-red shadow-2xl challenge-alert-box space-y-4">
                 <div className="text-center space-y-1">
                   <div className="text-3xl animate-bounce">🚨</div>
                   <h3 className="font-racing font-black text-xl text-neon-red">DESAFIO DE RACHA RECEBIDO!</h3>
                   <p className="text-xs text-gray-300 font-mono">Um piloto próximo quer puxar com você agora!</p>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-carbon-900 border border-white/10 space-y-2 text-center">
+                <div className="p-4 rounded-2xl bg-carbon-900 border border-white/10 space-y-1 text-center">
                   <div className="text-xs font-mono text-gray-400">DESAFIANTE:</div>
                   <div className="text-lg font-bold text-white">{activeChallengeReceived.challengerName}</div>
                   <div className="text-base font-racing font-bold text-neon-lime">{activeChallengeReceived.challengerCar}</div>
@@ -1162,47 +1102,6 @@
                     🔥 ACEITAR DESAFIO
                   </button>
                 </div>
-              </div>
-            </div>
-          )}
-
-          {/* MODAL 4: MARCAR PONTO */}
-          {isCreateSpotOpen && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
-              <div className="glass-modal rounded-3xl max-w-md w-full p-6 border border-neon-lime/40 shadow-neon-lime space-y-4">
-                <h3 className="font-racing font-bold text-lg text-white">Marcar Ponto de Racha / Encontro</h3>
-                <form onSubmit={(e) => {
-                  e.preventDefault();
-                  showToast("Ponto de racha marcado e compartilhado no radar!");
-                  setIsCreateSpotOpen(false);
-                }} className="space-y-3 text-xs">
-                  <input name="title" required placeholder="Ex: Reta do Aeroporto, Posto Shell Podium" className="w-full bg-carbon-900 border border-white/10 rounded-xl px-3.5 py-2 text-white font-bold" />
-                  <div className="flex justify-end gap-2">
-                    <button type="button" onClick={() => setIsCreateSpotOpen(false)} className="px-4 py-2 rounded-xl bg-carbon-800 text-gray-300">Cancelar</button>
-                    <button type="submit" className="px-5 py-2 rounded-xl bg-neon-lime text-carbon-950 font-black">Marcar no Mapa</button>
-                  </div>
-                </form>
-              </div>
-            </div>
-          )}
-
-          {/* MODAL 5: AVISAR POLÍCIA */}
-          {isAddAlertOpen && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
-              <div className="glass-modal rounded-3xl max-w-md w-full p-6 border border-neon-red/40 shadow-neon-red space-y-4">
-                <h3 className="font-racing font-bold text-lg text-white">Alertar Radar Móvel / Polícia</h3>
-                <form onSubmit={(e) => {
-                  e.preventDefault();
-                  SoundFx.playChallenge();
-                  showToast("Alerta emitido para os pilotos próximos!");
-                  setIsAddAlertOpen(false);
-                }} className="space-y-3 text-xs">
-                  <input name="title" required placeholder="Ex: Viatura com radar móvel sob viaduto" className="w-full bg-carbon-900 border border-white/10 rounded-xl px-3.5 py-2 text-white font-bold" />
-                  <div className="flex justify-end gap-2">
-                    <button type="button" onClick={() => setIsAddAlertOpen(false)} className="px-4 py-2 rounded-xl bg-carbon-800 text-gray-300">Cancelar</button>
-                    <button type="submit" className="px-5 py-2 rounded-xl bg-neon-red text-white font-black">Emitir Alerta</button>
-                  </div>
-                </form>
               </div>
             </div>
           )}
