@@ -487,6 +487,9 @@
       const [exactSpeed, setExactSpeed] = useState(0);
       const [gpsHeading, setGpsHeading] = useState(135);
       const [hasRealGps, setHasRealGps] = useState(false);
+      const [isAutoFollow, setIsAutoFollow] = useState(true);
+      const isAutoFollowRef = useRef(true);
+      isAutoFollowRef.current = isAutoFollow;
       const lastGpsPointRef = useRef(null);
 
       // ADVERSÁRIOS NO MAPA: RIGOROSAMENTE APENAS PILOTOS REAIS CONECTADOS VIA MQTT!
@@ -524,6 +527,37 @@
       const [isWazeReportMenuOpen, setIsWazeReportMenuOpen] = useState(false);
       const [isSearchOpen, setIsSearchOpen] = useState(false);
       const [searchQuery, setSearchQuery] = useState("");
+      const [isSimulatingDrive, setIsSimulatingDrive] = useState(false);
+
+      // Função para simular teste de puxada (quando o usuário quiser testar em casa ou no computador)
+      const handleSimulateDrive = () => {
+        if (isSimulatingDrive) return;
+        setIsSimulatingDrive(true);
+        showToast("🚀 Simulando puxada na pista!");
+        SoundFx.playChallenge();
+
+        let step = 0;
+        const speeds = [0, 18, 42, 68, 95, 122, 148, 125, 88, 45, 15, 0];
+        const timer = setInterval(() => {
+          if (step < speeds.length) {
+            const simulatedKmh = speeds[step];
+            setExactSpeed(simulatedKmh);
+            setMyLocation(prev => {
+              const next = { lat: prev.lat + 0.00015, lng: prev.lng + 0.00012 };
+              if (mapInstanceRef.current && isAutoFollowRef.current) {
+                mapInstanceRef.current.panTo([next.lat, next.lng], { animate: true, duration: 0.6 });
+              }
+              return next;
+            });
+            step++;
+          } else {
+            clearInterval(timer);
+            setExactSpeed(0);
+            setIsSimulatingDrive(false);
+            showToast("🏁 Puxada concluída! Velocímetro em 0 km/h.");
+          }
+        }, 650);
+      };
 
       // Toast feedback
       const [toast, setToast] = useState({ show: false, msg: "" });
@@ -538,6 +572,26 @@
       const tileLayerRef = useRef(null);
       const markersGroupRef = useRef(null);
       const mqttClientRef = useRef(null);
+
+      // -----------------------------------------------------------------------
+      // 0. WAKE LOCK API: MANTÉM A TELA DO CELULAR LIGADA NO PAINEL DO CARRO
+      // -----------------------------------------------------------------------
+      useEffect(() => {
+        let wakeLock = null;
+        const requestWakeLock = async () => {
+          if ("wakeLock" in navigator) {
+            try {
+              wakeLock = await navigator.wakeLock.request("screen");
+            } catch(e) {}
+          }
+        };
+        requestWakeLock();
+        return () => {
+          if (wakeLock) {
+            try { wakeLock.release(); } catch(e) {}
+          }
+        };
+      }, []);
 
       // -----------------------------------------------------------------------
       // 1. AUTO-LOCALIZAÇÃO INTELIGENTE (TUPÃ - SP VIA IP & NOMINATIM)
@@ -577,7 +631,14 @@
               const now = Date.now();
               setMyLocation({ lat: latitude, lng: longitude });
               setHasRealGps(true);
-              if (heading) setGpsHeading(Math.round(heading));
+              if (heading !== null && heading !== undefined && !isNaN(heading)) {
+                setGpsHeading(Math.round(heading));
+              }
+
+              // AUTO-FOLLOW ESTILO WAZE: CENTRALIZA AUTOMATICAMENTE NO CARRO EM MOVIMENTO
+              if (mapInstanceRef.current && isAutoFollowRef.current) {
+                mapInstanceRef.current.panTo([latitude, longitude], { animate: true, duration: 0.8 });
+              }
 
               // Medição de hardware do sensor GPS
               if (speed !== null && speed !== undefined && !isNaN(speed) && speed >= 0) {
@@ -744,6 +805,12 @@
             markersGroupRef.current = markersGroup;
             mapInstanceRef.current = map;
 
+            // Pausa o auto-follow se o usuário arrastar o mapa manualmente
+            map.on("dragstart", () => {
+              setIsAutoFollow(false);
+              isAutoFollowRef.current = false;
+            });
+
             setTimeout(() => {
               if (map) map.invalidateSize();
             }, 300);
@@ -774,7 +841,7 @@
           html: `
             <div class="relative flex items-center justify-center cursor-pointer">
               <div class="w-16 h-16 bg-neon-lime/30 rounded-full waze-car-halo absolute"></div>
-              <div class="w-11 h-11 bg-carbon-950 border-3 border-neon-lime rounded-full flex items-center justify-center shadow-waze-glow z-10 text-xl font-black">
+              <div class="w-11 h-11 bg-carbon-950 border-3 border-neon-lime rounded-full flex items-center justify-center shadow-waze-glow z-10 text-xl font-black transition-transform duration-300" style="transform: rotate(${gpsHeading}deg);">
                 🏎️
               </div>
               <div class="absolute -bottom-7 px-2.5 py-0.5 rounded-full bg-carbon-950/95 border border-neon-lime text-[10px] font-racing font-bold text-neon-lime whitespace-nowrap shadow-2xl flex items-center gap-1">
@@ -1321,24 +1388,54 @@
                 </div>
 
                 {/* 3. VELOCÍMETRO HUD CIRCULAR WAZE (0 KM/H PARADO) */}
-                <div className="absolute bottom-20 left-4 z-20 pointer-events-auto">
+                <div className="absolute bottom-20 left-4 z-20 pointer-events-auto flex flex-col items-center gap-2">
                   <div className="relative w-28 h-28 rounded-full waze-pill-floating border-2 border-white/20 flex flex-col items-center justify-center shadow-waze-glow">
                     <div className="text-[10px] font-racing font-bold text-gray-400 uppercase tracking-wider">
                       VELOCIDADE
                     </div>
-                    <div className="font-racing font-black text-3xl leading-none text-white tracking-tighter">
+                    <div className={`font-racing font-black text-3xl leading-none tracking-tighter ${exactSpeed > 100 ? "text-neon-red" : exactSpeed > 50 ? "text-neon-amber" : "text-white"}`}>
                       {exactSpeed}
                     </div>
                     <div className="text-[9px] font-mono font-bold text-neon-lime uppercase">
                       KM / H
                     </div>
 
-                    {/* Indicador de Câmbio */}
+                    {/* Indicador de Câmbio Dinâmico */}
                     <div className="absolute -top-2.5 px-2 py-0.5 rounded-full bg-carbon-900 border border-white/20 text-[10px] font-mono font-bold text-neon-cyan">
-                      {exactSpeed === 0 ? "P" : exactSpeed < 45 ? "1ª" : exactSpeed < 80 ? "2ª" : "3ª"}
+                      {exactSpeed === 0 ? "P" : exactSpeed < 35 ? "1ª" : exactSpeed < 70 ? "2ª" : exactSpeed < 105 ? "3ª" : exactSpeed < 145 ? "4ª" : "5ª"}
                     </div>
                   </div>
+
+                  {/* Botão de Teste Rápido / Simular Puxada */}
+                  <button 
+                    onClick={handleSimulateDrive}
+                    disabled={isSimulatingDrive}
+                    className="px-2.5 py-1 rounded-full bg-carbon-900/90 border border-white/20 text-[10px] font-racing font-bold text-gray-300 hover:text-neon-lime hover:border-neon-lime transition-all whitespace-nowrap shadow-lg"
+                    title="Testar velocímetro e movimento do mapa imediatamente"
+                  >
+                    {isSimulatingDrive ? "⚡ Acelerando..." : "🚀 Testar Puxada"}
+                  </button>
                 </div>
+
+                {/* BOTÃO FLUTUANTE RECENTRALIZAR NO MEU CARRO (SE ARRASTAR O MAPA) */}
+                {!isAutoFollow && (
+                  <div className="absolute top-20 right-4 z-20 pointer-events-auto animate-bounce">
+                    <button 
+                      onClick={() => {
+                        setIsAutoFollow(true);
+                        isAutoFollowRef.current = true;
+                        if (mapInstanceRef.current) {
+                          mapInstanceRef.current.panTo([myLocation.lat, myLocation.lng], { animate: true, duration: 0.8 });
+                        }
+                        showToast("🎯 Câmera centralizada no seu carro!");
+                      }}
+                      className="px-3.5 py-1.5 rounded-full bg-neon-lime text-carbon-950 font-racing font-bold text-xs shadow-neon-lime flex items-center gap-1.5"
+                    >
+                      <span>🎯</span>
+                      <span>Seguir Meu Carro</span>
+                    </button>
+                  </div>
+                )}
 
                 {/* 4. BOTÃO FLUTUANTE DE REPORTAR ALERTA WAZE */}
                 <div className="absolute bottom-20 right-4 z-20 pointer-events-auto">
