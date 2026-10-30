@@ -1,0 +1,19 @@
+{
+  "name": "GridZone • Waze dos Pilotos & Rede Social",
+  "short_name": "GridZone",
+  "description": "Rede social automotiva e radar Waze de pilotos reais em tempo real via GPS.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#07090e",
+  "theme_color": "#07090e",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "logo.jpg",
+      "sizes": "192x192 512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    }
+  ]
+}
