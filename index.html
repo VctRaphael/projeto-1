@@ -403,36 +403,207 @@
       }
     ];
 
+    // =========================================================================
+    // EVENTOS AUTOMOTIVOS REAIS DO BRASIL (CALENDÁRIO OFICIAL & INGRESSOS SYMPLA)
+    // =========================================================================
     const INITIAL_EVENTS = [
       {
-        id: "ev1",
-        title: "1º Encontro Noturno de Turbos & Aspirados de Tupã",
-        location: "Posto Shell / Av. Tamoios, Tupã - SP",
-        date: "Sexta-feira, 20:30",
-        confirmed: 42,
+        id: "ev_ultimate_drift",
+        title: "Ultimate Drift Brasil 2026",
+        edition: "Campeonato Brasileiro de Drift • Etapa Oficial",
+        category: "Drift",
+        location: "Autódromo ECPA",
+        city: "Piracicaba - SP",
+        date: "Temporada Oficial • Piracicaba & Balneário Camboriú",
+        lat: -22.7533,
+        lng: -47.6694,
+        confirmed: 128,
         isGoing: true,
-        image: "https://images.unsplash.com/photo-1511919884226-fd3cad34687c?auto=format&fit=crop&w=1000&q=80",
-        description: "Reunião de entusiastas automotivos, arrancadas de demonstração, praça de alimentação e gravação de vídeos para o GridZone."
+        image: "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=1000&q=80",
+        tag: "Drift Profissional",
+        badgeColor: "bg-neon-lime/20 text-neon-lime border-neon-lime/40",
+        instagram: "@ultimatedriftbr",
+        instagramUrl: "https://www.instagram.com/ultimatedriftbr/",
+        ticketUrl: "https://ultimatedrift.com.br",
+        ticketPlatform: "Bilheteria Oficial / Sympla",
+        ticketPrice: "A partir de R$ 50,00",
+        description: "O maior campeonato de Drift do Brasil. Batalhas eliminatórias de porta com porta a mais de 130 km/h, muita fumaça de pneu, acesso livre aos boxes e Carona Radical com os pilotos."
       },
       {
-        id: "ev2",
-        title: "Racha Noturno & Desafio 201m no Radar Waze",
-        location: "Trecho Seguro SP-294, Região Oeste",
-        date: "Sábado, 23:00",
-        confirmed: 28,
+        id: "ev_bgt",
+        title: "Bubble Gun Treffen (BGT 14)",
+        edition: "O Maior Encontro VAG da América Latina",
+        category: "Encontros & Custom",
+        location: "Praça Adhemar de Barros",
+        city: "Águas de Lindóia - SP",
+        date: "Feriado da Proclamação da República • Edição Anual",
+        lat: -22.4764,
+        lng: -46.6328,
+        confirmed: 310,
         isGoing: false,
-        image: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1000&q=80",
-        description: "Puxadas individuais casadas pelo app GridZone Radar. Apenas pilotos cadastrados com assinatura VIP ativa."
+        image: "https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?auto=format&fit=crop&w=1000&q=80",
+        tag: "VAG & Euro Stance",
+        badgeColor: "bg-blue-500/20 text-blue-400 border-blue-500/40",
+        instagram: "@bgtreffen",
+        instagramUrl: "https://www.instagram.com/bgtreffen/",
+        ticketUrl: "https://www.sympla.com.br/produtor/volkspage",
+        ticketPlatform: "Sympla Oficial",
+        ticketPrice: "A partir de R$ 60,00",
+        description: "Mais de 1.500 carros do Grupo Volkswagen (VW, Audi, Porsche) de todos os cantos do continente. Suspensão a ar, projetos forjados, rodas raras e a maior celebração da cultura automotiva."
       },
       {
-        id: "ev3",
-        title: "Dyno Night - Desafio das Potências (+500cv)",
-        location: "Oficina Motorsport, Marília - SP",
-        date: "Domingo, 14:00",
-        confirmed: 65,
+        id: "ev_crazy_auto",
+        title: "Crazy For Auto • Interlagos",
+        edition: "Track Day & Time Attack no Templo da F1",
+        category: "Track Day & Pista",
+        location: "Autódromo José Carlos Pace (Interlagos)",
+        city: "São Paulo - SP",
+        date: "Etapas Mensais no Circuito de F1",
+        lat: -23.7011,
+        lng: -46.6972,
+        confirmed: 94,
+        isGoing: false,
+        image: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=1000&q=80",
+        tag: "Circuito de Interlagos",
+        badgeColor: "bg-purple-500/20 text-purple-400 border-purple-500/40",
+        instagram: "@crazyforauto",
+        instagramUrl: "https://www.instagram.com/crazyforauto/",
+        ticketUrl: "https://linktr.ee/crazyforauto",
+        ticketPlatform: "Sympla Oficial / WhatsApp",
+        ticketPrice: "Visitante Box: R$ 40 | Piloto: Lotes",
+        description: "Acelere seu carro no mesmo asfalto onde Senna venceu. Baterias divididas por nível de experiência, telemetria oficial por transponder, área de visitantes nos boxes e supercarros."
+      },
+      {
+        id: "ev_armageddon",
+        title: "Armageddon Arrancada No Prep",
+        edition: "O Maior Evento de Arrancada No Prep da América Latina",
+        category: "Arrancada & Drag",
+        location: "Pista de Arrancada Race Park",
+        city: "Maringá - PR",
+        date: "Etapa Oficial Temporada Listas Brasil",
+        lat: -23.4209,
+        lng: -51.9331,
+        confirmed: 220,
+        isGoing: false,
+        image: "https://images.unsplash.com/photo-1511919884226-fd3cad34687c?auto=format&fit=crop&w=1000&q=80",
+        tag: "No Prep 402m",
+        badgeColor: "bg-neon-red/20 text-neon-red border-neon-red/40",
+        instagram: "@listasbrasiloficial",
+        instagramUrl: "https://www.instagram.com/listasbrasiloficial/",
+        ticketUrl: "https://www.sympla.com.br",
+        ticketPlatform: "Sympla / Minha Entrada",
+        ticketPrice: "A partir de R$ 70,00 (Acesso Todos os Dias)",
+        description: "Sem preparação na pista: pura tração mecânica e pilotagem agressiva. Mais de 120 carros de arrancada com potências que passam de 1.200cv disputando o topo da Lista Brasil."
+      },
+      {
+        id: "ev_detailer_fest",
+        title: "Detailer Fest Brasil & Drift",
+        edition: "O Maior Festival de Estética & Customização Automotiva",
+        category: "Encontros & Custom",
+        location: "Centro de Eventos Boituva",
+        city: "Boituva - SP",
+        date: "Encontro Anual • Boituva - SP",
+        lat: -23.2847,
+        lng: -47.6789,
+        confirmed: 175,
+        isGoing: false,
+        image: "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?auto=format&fit=crop&w=1000&q=80",
+        tag: "Estética & Drift",
+        badgeColor: "bg-amber-400/20 text-amber-400 border-amber-400/40",
+        instagram: "@detailerfestbrasil",
+        instagramUrl: "https://www.instagram.com/detailerfestbrasil/",
+        ticketUrl: "https://detailerfestbrasil.com.br",
+        ticketPlatform: "Site Oficial & Sympla",
+        ticketPrice: "A partir de R$ 50,00",
+        description: "Mega encontro reunindo o mercado de detalhamento automotivo, produtos importados, shows de Drift com Carona Radical e praça de alimentação completa."
+      },
+      {
+        id: "ev_velopark",
+        title: "VP Series de Arrancada • Velopark",
+        edition: "Campeonato Oficial de Arrancada Velopark",
+        category: "Arrancada & Drag",
+        location: "Complexo Automobilístico Velopark",
+        city: "Nova Santa Rita - RS",
+        date: "Etapas do Campeonato Sul-Brasileiro",
+        lat: -29.8631,
+        lng: -51.2721,
+        confirmed: 140,
+        isGoing: false,
+        image: "https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&w=1000&q=80",
+        tag: "Velopark 402m",
+        badgeColor: "bg-neon-red/20 text-neon-red border-neon-red/40",
+        instagram: "@velopark",
+        instagramUrl: "https://www.instagram.com/velopark/",
+        ticketUrl: "https://www.sympla.com.br",
+        ticketPlatform: "Sympla Oficial Velopark",
+        ticketPrice: "A partir de R$ 45,00",
+        description: "A pista de arrancada com tratamento em VHT mais rápida da América do Sul. Pro Mods, dragsters de 3.000cv ultrapassando os 380 km/h em 5 segundos nos 402 metros."
+      },
+      {
+        id: "ev_km_arrancada",
+        title: "Km de Arrancada • Goiânia",
+        edition: "Festival Centro-Oeste de Arrancada & Queima de Pneu",
+        category: "Arrancada & Drag",
+        location: "Autódromo Internacional de Goiânia",
+        city: "Goiânia - GO",
+        date: "Etapas Oficiais no Autódromo Ayrton Senna",
+        lat: -16.7183,
+        lng: -49.2014,
+        confirmed: 115,
         isGoing: false,
         image: "https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&w=1000&q=80",
-        description: "Medição de cavalaria na roda em dinamômetro Servitec. Troféu para a puxada mais forte do dia."
+        tag: "Arrancada Centro-Oeste",
+        badgeColor: "bg-neon-red/20 text-neon-red border-neon-red/40",
+        instagram: "@km_arrancada",
+        instagramUrl: "https://www.instagram.com/km_arrancada/",
+        ticketUrl: "https://www.sympla.com.br",
+        ticketPlatform: "Sympla Oficial",
+        ticketPrice: "A partir de R$ 35,00",
+        description: "O maior show de arrancada do Centro-Oeste brasileiro. Reta oficial, arrancadas noturnas, shows de manobras e pilotos de Goiás, DF e Minas Gerais."
+      },
+      {
+        id: "ev_ebaa_lindoia",
+        title: "Encontro Brasileiro de Autos Antigos (EBAA)",
+        edition: "O Maior Encontro de Carros Clássicos do Brasil",
+        category: "Clássicos & Raridades",
+        location: "Praça Adhemar de Barros",
+        city: "Águas de Lindóia - SP",
+        date: "Feriado de Corpus Christi • Edição Anual",
+        lat: -22.4764,
+        lng: -46.6328,
+        confirmed: 260,
+        isGoing: false,
+        image: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1000&q=80",
+        tag: "Clássicos & Muscle Cars",
+        badgeColor: "bg-amber-400/20 text-amber-400 border-amber-400/40",
+        instagram: "@encontroantigosaguasdelindoia",
+        instagramUrl: "https://www.instagram.com/encontroantigosaguasdelindoia/",
+        ticketUrl: "https://encontrodelindoia.com.br",
+        ticketPlatform: "Site Oficial EBAA",
+        ticketPrice: "Entrada Franca / Credenciamento Expositores",
+        description: "Mais de 1.000 veículos antigos impecáveis: Opala SS, Maverick V8, Dodges, Porsches clássicos e feira gigante de peças raras."
+      },
+      {
+        id: "ev_stx_festival",
+        title: "STX Festival • Anhembi São Paulo",
+        edition: "Festival da Cultura Automotiva & Stance",
+        category: "Encontros & Custom",
+        location: "Sambódromo & Pavilhão do Anhembi",
+        city: "São Paulo - SP",
+        date: "Edição Capital • Pavilhão do Anhembi",
+        lat: -23.5186,
+        lng: -46.6433,
+        confirmed: 195,
+        isGoing: false,
+        image: "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=1000&q=80",
+        tag: "Stance & Car Culture",
+        badgeColor: "bg-neon-cyan/20 text-neon-cyan border-neon-cyan/40",
+        instagram: "@stxfestival",
+        instagramUrl: "https://www.instagram.com/stxfestival/",
+        ticketUrl: "https://www.sympla.com.br",
+        ticketPlatform: "Sympla Oficial",
+        ticketPrice: "A partir de R$ 40,00",
+        description: "O maior encontro automotivo urbano na capital paulista, reunindo os melhores projetos de rebaixados, som de qualidade, estandes de marcas automotivas e público apaixonado."
       }
     ];
 
@@ -516,6 +687,21 @@
       }, [posts]);
 
       const [eventsList, setEventsList] = useState(INITIAL_EVENTS);
+      const [eventCategoryFilter, setEventCategoryFilter] = useState("all");
+
+      // Ordenação e cálculo de distância em tempo real para cada usuário
+      const sortedEventsList = useMemo(() => {
+        return eventsList.map(ev => {
+          const distMeters = getDistanceMeters(myLocation.lat, myLocation.lng, ev.lat, ev.lng);
+          const distText = getDistanceBetween(myLocation.lat, myLocation.lng, ev.lat, ev.lng);
+          return { ...ev, distMeters, distText };
+        })
+        .filter(ev => {
+          if (eventCategoryFilter === "all") return true;
+          return (ev.category || "").toLowerCase().includes(eventCategoryFilter.toLowerCase());
+        })
+        .sort((a, b) => a.distMeters - b.distMeters);
+      }, [eventsList, myLocation, eventCategoryFilter]);
       const [storiesList, setStoriesList] = useState(INITIAL_STORIES);
 
       // MODAIS
@@ -1301,71 +1487,179 @@
                 ABA 2: EVENTOS & ENCONTROS AUTOMOTIVOS
                ================================================================= */}
             {activeTab === "events" && (
-              <div className="max-w-2xl mx-auto px-4 py-6 space-y-6">
-                <div className="flex items-center justify-between">
+              <div className="max-w-3xl mx-auto px-3 sm:px-4 py-6 space-y-6">
+                
+                {/* Header Principal da Página de Eventos */}
+                <div className="glass-panel rounded-3xl p-5 sm:p-6 border border-white/10 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                   <div>
-                    <h2 className="font-racing font-black text-2xl text-white">ENCONTROS & EVENTOS</h2>
-                    <p className="text-xs font-mono text-gray-400">Rachas noturnos, trackdays e encontros na região de {myCity}</p>
+                    <div className="flex items-center gap-2.5">
+                      <span className="text-3xl">🏁</span>
+                      <h2 className="font-racing font-black text-2xl sm:text-3xl text-white">
+                        EVENTOS AUTOMOTIVOS REAIS • BRASIL
+                      </h2>
+                    </div>
+                    <p className="text-xs text-gray-300 font-mono mt-1 flex flex-wrap items-center gap-1.5">
+                      <span>📍 Sua localização atual:</span>
+                      <span className="text-neon-lime font-bold">{myCity}</span>
+                      <span className="text-gray-400">• Ordenados automaticamente pelo mais próximo de você!</span>
+                    </p>
                   </div>
-                  <button 
-                    onClick={() => {
-                      showToast("🎪 Envie sua sugestão de evento para a moderação!");
-                    }}
-                    className="px-3 py-1.5 rounded-xl bg-carbon-850 border border-white/15 text-xs font-racing font-bold text-neon-lime hover:bg-carbon-800"
-                  >
-                    + Criar Encontro
-                  </button>
+
+                  {/* Filtros de Categoria */}
+                  <div className="flex flex-wrap gap-1.5">
+                    <button 
+                      onClick={() => setEventCategoryFilter("all")}
+                      className={`px-3 py-1.5 rounded-xl font-racing font-bold text-xs transition-all ${
+                        eventCategoryFilter === "all" ? "bg-neon-lime text-carbon-950 shadow-neon-lime font-black" : "bg-carbon-850 text-gray-400 hover:text-white"
+                      }`}
+                    >
+                      Todos (Mais Próximos)
+                    </button>
+                    <button 
+                      onClick={() => setEventCategoryFilter("Drift")}
+                      className={`px-3 py-1.5 rounded-xl font-racing font-bold text-xs transition-all ${
+                        eventCategoryFilter === "Drift" ? "bg-neon-lime text-carbon-950 shadow-neon-lime font-black" : "bg-carbon-850 text-gray-400 hover:text-white"
+                      }`}
+                    >
+                      💨 Drift
+                    </button>
+                    <button 
+                      onClick={() => setEventCategoryFilter("Arrancada")}
+                      className={`px-3 py-1.5 rounded-xl font-racing font-bold text-xs transition-all ${
+                        eventCategoryFilter === "Arrancada" ? "bg-neon-lime text-carbon-950 shadow-neon-lime font-black" : "bg-carbon-850 text-gray-400 hover:text-white"
+                      }`}
+                    >
+                      🏁 Arrancada & Drag
+                    </button>
+                    <button 
+                      onClick={() => setEventCategoryFilter("Track")}
+                      className={`px-3 py-1.5 rounded-xl font-racing font-bold text-xs transition-all ${
+                        eventCategoryFilter === "Track" ? "bg-neon-lime text-carbon-950 shadow-neon-lime font-black" : "bg-carbon-850 text-gray-400 hover:text-white"
+                      }`}
+                    >
+                      🏎️ Track Day
+                    </button>
+                    <button 
+                      onClick={() => setEventCategoryFilter("Custom")}
+                      className={`px-3 py-1.5 rounded-xl font-racing font-bold text-xs transition-all ${
+                        eventCategoryFilter === "Custom" ? "bg-neon-lime text-carbon-950 shadow-neon-lime font-black" : "bg-carbon-850 text-gray-400 hover:text-white"
+                      }`}
+                    >
+                      ✨ Encontros & VAG
+                    </button>
+                  </div>
                 </div>
 
-                <div className="space-y-4">
-                  {eventsList.map(ev => (
-                    <div key={ev.id} className="glass-panel rounded-3xl border border-white/10 overflow-hidden shadow-xl">
-                      <div className="relative h-48 sm:h-56 w-full">
-                        <img src={ev.image} alt={ev.title} className="w-full h-full object-cover" />
-                        <div className="absolute inset-0 bg-gradient-to-t from-carbon-950 via-carbon-950/40 to-transparent"></div>
-                        <div className="absolute bottom-4 left-4 right-4 flex items-end justify-between">
-                          <div>
-                            <span className="px-2.5 py-0.5 rounded-md bg-neon-red text-white font-racing font-bold text-[10px] uppercase">
-                              Confirmado
+                {/* Lista de Cards de Eventos Reais */}
+                <div className="space-y-5">
+                  {sortedEventsList.map((ev, index) => (
+                    <div key={ev.id} className="glass-panel rounded-3xl border border-white/10 overflow-hidden shadow-2xl flex flex-col md:flex-row group hover:border-neon-lime/40 transition-all">
+                      
+                      {/* Banner do Evento com Badge de Distância */}
+                      <div className="relative md:w-72 h-52 md:h-auto overflow-hidden shrink-0">
+                        <img src={ev.image} alt={ev.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                        <div className="absolute inset-0 bg-gradient-to-t md:bg-gradient-to-r from-carbon-950 via-carbon-950/40 to-transparent"></div>
+                        
+                        {/* Distância da Localização do Usuário */}
+                        <div className="absolute top-3 left-3 flex flex-col gap-1.5 z-10">
+                          {index === 0 && (
+                            <span className="px-3 py-1 rounded-full bg-gradient-to-r from-neon-lime to-emerald-400 text-carbon-950 text-[10px] font-racing font-black uppercase tracking-wider shadow-neon-lime">
+                              🏆 O MAIS PRÓXIMO DE VOCÊ
                             </span>
-                            <h3 className="font-racing font-bold text-lg text-white mt-1">{ev.title}</h3>
-                            <div className="text-xs text-neon-cyan font-mono flex items-center gap-2 mt-0.5">
-                              <span>📅 {ev.date}</span>
-                              <span>•</span>
-                              <span>📍 {ev.location}</span>
-                            </div>
-                          </div>
+                          )}
+                          <span className="px-3 py-1 rounded-full bg-carbon-950/90 border border-neon-cyan text-neon-cyan text-xs font-mono font-bold shadow-xl backdrop-blur-md">
+                            📍 A {ev.distText} de você
+                          </span>
+                        </div>
+
+                        <div className="absolute bottom-3 left-3 z-10">
+                          <span className={`px-2.5 py-1 rounded-lg text-[10px] font-mono font-bold border backdrop-blur-md ${ev.badgeColor}`}>
+                            {ev.tag}
+                          </span>
                         </div>
                       </div>
 
-                      <div className="p-4 flex items-center justify-between bg-carbon-900/60">
-                        <div className="flex items-center gap-2 text-xs font-mono text-gray-300">
-                          <span className="text-neon-lime font-bold">🏁 {ev.confirmed} Pilotos Confirmados</span>
+                      {/* Informações Completas do Evento */}
+                      <div className="p-5 sm:p-6 flex-1 flex flex-col justify-between space-y-4">
+                        <div>
+                          <div className="flex flex-wrap items-center justify-between gap-2 mb-1">
+                            <span className="text-xs font-mono text-neon-lime font-bold">{ev.edition}</span>
+                            <span className="text-xs font-mono text-gray-400">{ev.date}</span>
+                          </div>
+
+                          <h3 className="font-racing font-black text-xl sm:text-2xl text-white group-hover:text-neon-lime transition-colors">
+                            {ev.title}
+                          </h3>
+
+                          <div className="flex items-center gap-1.5 text-xs font-mono text-gray-300 mt-1">
+                            <span>📍 {ev.location} •</span>
+                            <span className="text-white font-bold">{ev.city}</span>
+                          </div>
+
+                          <p className="text-xs text-gray-300 font-sans mt-3 leading-relaxed">
+                            {ev.description}
+                          </p>
                         </div>
-                        <button 
-                          onClick={() => {
-                            setEventsList(prev => prev.map(e => {
-                              if (e.id === ev.id) {
-                                const nextGoing = !e.isGoing;
-                                showToast(nextGoing ? "Presença confirmada no encontro!" : "Presença cancelada.");
-                                return {
-                                  ...e,
-                                  isGoing: nextGoing,
-                                  confirmed: nextGoing ? e.confirmed + 1 : e.confirmed - 1
-                                };
-                              }
-                              return e;
-                            }));
-                            SoundFx.playSonar();
-                          }}
-                          className={`px-4 py-2 rounded-xl text-xs font-racing font-bold transition-all ${
-                            ev.isGoing 
-                              ? "bg-carbon-800 text-neon-lime border border-neon-lime/40" 
-                              : "bg-neon-lime text-carbon-950 shadow-neon-lime font-black"
-                          }`}
-                        >
-                          {ev.isGoing ? "✓ Presença Confirmada" : "Eu Vou! Confirmar"}
-                        </button>
+
+                        {/* Barra de Ações: Ingressos, Instagram e Presença */}
+                        <div className="pt-4 border-t border-white/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                          <div className="space-y-0.5">
+                            <div className="text-[10px] font-mono text-gray-400">INGRESSOS DISPONÍVEIS:</div>
+                            <div className="text-sm font-racing font-bold text-white">{ev.ticketPrice}</div>
+                            <div className="text-[10px] font-mono text-neon-cyan">Plataforma: {ev.ticketPlatform}</div>
+                          </div>
+
+                          <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+                            {/* Botão Instagram Oficial */}
+                            <a 
+                              href={ev.instagramUrl} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="flex-1 sm:flex-none px-3.5 py-2 rounded-xl bg-carbon-850 hover:bg-carbon-800 border border-white/15 text-xs font-mono font-bold text-gray-200 hover:text-white transition-all flex items-center justify-center gap-1.5"
+                            >
+                              <span>📸</span>
+                              <span>{ev.instagram}</span>
+                            </a>
+
+                            {/* Botão Oficial de Ingressos */}
+                            <a 
+                              href={ev.ticketUrl} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="flex-1 sm:flex-none px-4 py-2.5 rounded-xl bg-gradient-to-r from-neon-lime to-emerald-400 hover:from-emerald-400 hover:to-neon-lime text-carbon-950 font-racing font-black text-xs uppercase tracking-wider shadow-neon-lime hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-1.5"
+                            >
+                              <span>🎟️</span>
+                              <span>COMPRAR INGRESSOS</span>
+                            </a>
+
+                            {/* Botão Confirmar Presença */}
+                            <button 
+                              onClick={() => {
+                                setEventsList(prev => prev.map(e => {
+                                  if (e.id === ev.id) {
+                                    const nextGoing = !e.isGoing;
+                                    showToast(nextGoing ? `Presença confirmada no ${ev.title}!` : "Presença cancelada.");
+                                    return {
+                                      ...e,
+                                      isGoing: nextGoing,
+                                      confirmed: nextGoing ? e.confirmed + 1 : e.confirmed - 1
+                                    };
+                                  }
+                                  return e;
+                                }));
+                                SoundFx.playSonar();
+                              }}
+                              className={`px-3 py-2 rounded-xl text-xs font-racing font-bold transition-all ${
+                                ev.isGoing 
+                                  ? "bg-carbon-800 text-neon-lime border border-neon-lime/40" 
+                                  : "bg-carbon-900 hover:bg-carbon-850 text-gray-300 border border-white/10"
+                              }`}
+                            >
+                              {ev.isGoing ? "✓ Confirmado" : "Eu Vou"}
+                            </button>
+                          </div>
+                        </div>
+
                       </div>
                     </div>
                   ))}
