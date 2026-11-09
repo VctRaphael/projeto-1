@@ -16,6 +16,17 @@ Uma plataforma web progressiva (PWA) de alta performance desenvolvida sob medida
 - 💨 **Filtros por Modalidade:** Drift, Arrancada & Drag 402m, Track Day Interlagos, Encontros & VAG Euro Stance.
 
 ### 🏁 Principais Eventos Mapeados:
+
+#### 📍 Região Alta Paulista & Centro-Oeste (Marília, Bauru, Tupã & Assis):
+1. **Festival de Drift & Arrancada de Marília** — Autódromo Municipal de Avencas (Marília - SP) | Instagram: @automovelclubemarilia | Ingressos: 1kg Alimento Solidário
+2. **Night Meet Turbos & Clássicos na Esmeralda** — Av. das Esmeraldas (Marília - SP) | Instagram: @clubedoopalamarilia | Entrada Franca
+3. **Expo Dapper Style Bauru** — Recinto Mello Moraes (Bauru - SP) | Instagram: @dapper_style_oficial | Ingressos: Sympla Oficial Dapper
+4. **Exposição Tradicional de Carros Antigos de Bauru** — Recinto Mello Moraes & Vitória Régia (Bauru - SP) | Ingressos: Sympla & Portaria
+5. **Encontro de Clássicos no Sambódromo de Bauru** — Sambódromo Municipal (Bauru - SP) | Instagram: @bauru147clube | Entrada Franca
+6. **Encontro Noturno de Turbos & Customizados de Tupã** — Praça da Bandeira / Av. Tamoios (Tupã - SP) | Entrada Franca
+7. **Encontro Automotivo & Antigos de Assis** — Parque Ecológico Buracão (Assis - SP) | Entrada Franca
+
+#### 🏆 Grandes Campeonatos Nacionais:
 1. **Ultimate Drift Brasil** — Autódromo ECPA (Piracicaba - SP) | Instagram: `@ultimatedriftbr` | Ingressos: Sympla & Site Oficial
 2. **Bubble Gun Treffen (BGT 14)** — Praça Adhemar de Barros (Águas de Lindóia - SP) | Instagram: `@bgtreffen` | Ingressos: Sympla Oficial
 3. **Crazy For Auto** — Autódromo de Interlagos (São Paulo - SP) | Instagram: `@crazyforauto` | Ingressos: Sympla & Linktree
