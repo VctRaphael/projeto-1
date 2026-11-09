@@ -403,37 +403,90 @@
       }
     ];
 
+    // =========================================================================
+    // EVENTOS REAIS AUTOMOTIVOS CONFIRMADOS (RACE 100-200, DRIFT, SPID, TRACKDAY)
+    // =========================================================================
     const INITIAL_EVENTS = [
       {
-        id: "ev1",
-        title: "1º Encontro Noturno de Turbos & Aspirados de Tupã",
-        location: "Posto Shell / Av. Tamoios, Tupã - SP",
-        date: "Sexta-feira, 20:30",
-        confirmed: 42,
+        id: "ev_race100200",
+        title: "Race 100-200 • Desafio Meia Milha & Arrancada",
+        category: "Arrancada & Puxadas 100-200",
+        location: "SPID Dragway (Itatiba - SP) & Aeródromos Oficiais",
+        date: "Temporada Oficial 2026",
+        confirmed: 245,
         isGoing: true,
-        image: "https://images.unsplash.com/photo-1511919884226-fd3cad34687c?auto=format&fit=crop&w=1000&q=80",
-        description: "Reunião de entusiastas automotivos, arrancadas de demonstração, praça de alimentação e gravação de vídeos para o GridZone."
+        image: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1200&q=80",
+        description: "O maior campeonato de arrancada e meia milha do Brasil! Supercarros e projetos preparados de 500 a mais de 1.500 cv acelerando tudo entre 100 km/h e 200 km/h com cronometragem oficial e área VIP.",
+        ticketUrl: "https://www.oticket.com.br",
+        instagramUrl: "https://www.instagram.com/race100200/",
+        officialSite: "https://www.oticket.com.br"
       },
       {
-        id: "ev2",
-        title: "Racha Noturno & Desafio 201m no Radar Waze",
-        location: "Trecho Seguro SP-294, Região Oeste",
-        date: "Sábado, 23:00",
-        confirmed: 28,
-        isGoing: false,
-        image: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1000&q=80",
-        description: "Puxadas individuais casadas pelo app GridZone Radar. Apenas pilotos cadastrados com assinatura VIP ativa."
+        id: "ev_ultimate_drift",
+        title: "Ultimate Drift • Campeonato Brasileiro Oficial CBA",
+        category: "Drift Profissional",
+        location: "Autódromo de Interlagos (SP) & Mega Space",
+        date: "Etapa Oficial CBA",
+        confirmed: 380,
+        isGoing: true,
+        image: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=1200&q=80",
+        description: "O principal campeonato brasileiro de Drift chancelado pela CBA. Batalhas tandem eliminatórias de carros turbinados e V8 raspando nos muros a mais de 100 km/h com muita fumaça e adrenalina pura!",
+        ticketUrl: "https://www.ultimatedrift.com.br",
+        instagramUrl: "https://www.instagram.com/ultimatedriftbr",
+        officialSite: "https://www.ultimatedrift.com.br"
       },
       {
-        id: "ev3",
-        title: "Dyno Night - Desafio das Potências (+500cv)",
-        location: "Oficina Motorsport, Marília - SP",
-        date: "Domingo, 14:00",
-        confirmed: 65,
+        id: "ev_spid_cup",
+        title: "SPID Cup • Arrancada Internacional (Padrão NHRA)",
+        category: "Arrancada 402m / 201m",
+        location: "Rod. Alkindar Monteiro Junqueira, Km 30 – Itatiba/SP",
+        date: "Super Final SPID 2026",
+        confirmed: 310,
         isGoing: false,
-        image: "https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&w=1000&q=80",
-        description: "Medição de cavalaria na roda em dinamômetro Servitec. Troféu para a puxada mais forte do dia."
+        image: "https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&w=1200&q=80",
+        description: "Complexo de arrancada mais moderno da América Latina. Pista emborrachada padrão NHRA com monstros de 4.000 cv quebrando recordes mundiais, visitação aberta aos boxes e Lounge VIP.",
+        ticketUrl: "https://spidcup.com.br",
+        instagramUrl: "https://www.instagram.com/spidcup/",
+        officialSite: "https://spidcup.com.br"
+      },
+      {
+        id: "ev_motorgrid",
+        title: "Motorgrid Track Day • Supercarros em Interlagos",
+        category: "Track Day & Supercarros",
+        location: "Autódromo José Carlos Pace (Interlagos - SP)",
+        date: "Track Day & Paddock Experience",
+        confirmed: 190,
+        isGoing: false,
+        image: "https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&w=1200&q=80",
+        description: "Encontro dos maiores colecionadores e donos de supercarros do Brasil acelerando no lendário circuito de Fórmula 1 de Interlagos. Paddock aberto, medição de telemetria e camarote exclusivo.",
+        ticketUrl: "https://www.motorgridbrasil.com",
+        instagramUrl: "https://www.instagram.com/motorgridbrasil/",
+        officialSite: "https://www.motorgridbrasil.com"
+      },
+      {
+        id: "ev_super_drift",
+        title: "Super Drift Brasil • Batalhas & Cultura JDM",
+        category: "Drift & Exposição",
+        location: "ECPA (Esporte Clube Piracicabano de Automobilismo)",
+        date: "Etapa Regional SP",
+        confirmed: 165,
+        isGoing: false,
+        image: "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&w=1200&q=80",
+        description: "Competição de drift com carros clássicos preparados (Nissan Silvia, 350Z, Chevette turbo, BMW E36), praça de food trucks, exposição de projetos rebaixados e show de manobras.",
+        ticketUrl: "https://superdriftbrasil.com.br",
+        instagramUrl: "https://www.instagram.com/superdriftbrasil/",
+        officialSite: "https://superdriftbrasil.com.br"
       }
+    ];
+
+    // =========================================================================
+    // DESTAQUES DO PERFIL (INSTAGRAM HIGHLIGHTS)
+    // =========================================================================
+    const INITIAL_HIGHLIGHTS = [
+      { id: "h1", title: "Meu GTI", image: "https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?auto=format&fit=crop&w=400&q=80" },
+      { id: "h2", title: "Dyno 380cv", image: "https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&w=400&q=80" },
+      { id: "h3", title: "Trackday", image: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=400&q=80" },
+      { id: "h4", title: "Puxadas SP", image: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=400&q=80" }
     ];
 
     const INITIAL_MODS = [
@@ -518,6 +571,46 @@
       const [eventsList, setEventsList] = useState(INITIAL_EVENTS);
       const [storiesList, setStoriesList] = useState(INITIAL_STORIES);
 
+      // DESTAQUES DO PERFIL (INSTAGRAM HIGHLIGHTS)
+      const [highlights, setHighlights] = useState(() => {
+        const saved = localStorage.getItem("gridzone_user_highlights");
+        if (saved) {
+          try { return JSON.parse(saved); } catch(e) {}
+        }
+        return INITIAL_HIGHLIGHTS;
+      });
+
+      useEffect(() => {
+        localStorage.setItem("gridzone_user_highlights", JSON.stringify(highlights));
+      }, [highlights]);
+
+      // TEMA DO WAZE (MODO CLARO DIA / MODO ESCURO NOITE)
+      const [wazeTheme, setWazeTheme] = useState(() => {
+        return localStorage.getItem("gridzone_waze_theme") || "street";
+      });
+
+      const toggleWazeTheme = () => {
+        const next = wazeTheme === "street" ? "dark" : "street";
+        setWazeTheme(next);
+        localStorage.setItem("gridzone_waze_theme", next);
+        if (mapInstanceRef.current && tileLayerRef.current) {
+          mapInstanceRef.current.removeLayer(tileLayerRef.current);
+          const url = next === "street"
+            ? "https://services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}"
+            : "https://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}";
+          const newTile = L.tileLayer(url, { maxZoom: 19 }).addTo(mapInstanceRef.current);
+          tileLayerRef.current = newTile;
+          newTile.bringToBack();
+        }
+        showToast(next === "street" ? "☀️ Waze Modo Dia (Claro) ativado!" : "🌙 Waze Modo Noite (Escuro) ativado!");
+      };
+
+      // GAVETA / MODAL DE COMENTÁRIOS DO INSTAGRAM
+      const [activeCommentsPostId, setActiveCommentsPostId] = useState(null);
+      const activeCommentsPost = useMemo(() => {
+        return posts.find(p => p.id === activeCommentsPostId);
+      }, [posts, activeCommentsPostId]);
+
       // MODAIS
       const [isVipModalOpen, setIsVipModalOpen] = useState(false);
       const [selectedVipPlan, setSelectedVipPlan] = useState("monthly"); // 'monthly' | 'annual'
@@ -525,6 +618,13 @@
       const [isVipProcessing, setIsVipProcessing] = useState(false);
 
       const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+      const [editAvatar, setEditAvatar] = useState(currentUser.avatar);
+      const [editCarImage, setEditCarImage] = useState(currentUser.carImage);
+
+      const [isNewHighlightModalOpen, setIsNewHighlightModalOpen] = useState(false);
+      const [newHighlightTitle, setNewHighlightTitle] = useState("");
+      const [newHighlightImage, setNewHighlightImage] = useState("https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?auto=format&fit=crop&w=400&q=80");
+
       const [isNewPostModalOpen, setIsNewPostModalOpen] = useState(false);
       const [isStoryViewerOpen, setIsStoryViewerOpen] = useState(false);
       const [activeStory, setActiveStory] = useState(null);
@@ -802,10 +902,11 @@
               attributionControl: false
             });
 
-            // ESRI World Street Map (Estradas amarelas/laranjas estilo Waze limpo)
-            const tileLayer = L.tileLayer("https://services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}", {
-              maxZoom: 19
-            }).addTo(map);
+            // Mapa ESRI: World Street Map (Modo Dia) ou World Dark Gray (Modo Noite)
+            const tileUrl = wazeTheme === "street"
+              ? "https://services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}"
+              : "https://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}";
+            const tileLayer = L.tileLayer(tileUrl, { maxZoom: 19 }).addTo(map);
 
             tileLayerRef.current = tileLayer;
 
@@ -1218,7 +1319,11 @@
                               <span className="font-mono text-xs font-bold text-white">{post.likes}</span>
                             </button>
 
-                            <button className="flex items-center gap-1.5 text-lg text-gray-300 hover:text-white transition-colors">
+                            <button 
+                              onClick={() => setActiveCommentsPostId(post.id)}
+                              className="flex items-center gap-1.5 text-lg text-gray-300 hover:text-white transition-colors"
+                              title="Abrir comentários"
+                            >
                               <span>💬</span>
                               <span className="font-mono text-xs font-bold text-white">{post.comments?.length || 0}</span>
                             </button>
@@ -1255,9 +1360,16 @@
                           </p>
                         </div>
 
-                        {/* Comentários Recentes */}
+                        {/* Comentários Recentes & Abrir Todos */}
                         {post.comments && post.comments.length > 0 && (
                           <div className="pt-2 border-t border-white/5 space-y-1.5 text-xs">
+                            <button 
+                              type="button"
+                              onClick={() => setActiveCommentsPostId(post.id)}
+                              className="text-gray-400 hover:text-neon-lime text-[11px] font-mono block transition-colors"
+                            >
+                              Ver todos os {post.comments.length} comentários...
+                            </button>
                             {post.comments.slice(-2).map(c => (
                               <div key={c.id} className="text-gray-300">
                                 <span className="font-bold text-white mr-1.5">{c.username}</span>
@@ -1317,55 +1429,91 @@
                   </button>
                 </div>
 
-                <div className="space-y-4">
+                <div className="space-y-5">
                   {eventsList.map(ev => (
-                    <div key={ev.id} className="glass-panel rounded-3xl border border-white/10 overflow-hidden shadow-xl">
-                      <div className="relative h-48 sm:h-56 w-full">
-                        <img src={ev.image} alt={ev.title} className="w-full h-full object-cover" />
-                        <div className="absolute inset-0 bg-gradient-to-t from-carbon-950 via-carbon-950/40 to-transparent"></div>
-                        <div className="absolute bottom-4 left-4 right-4 flex items-end justify-between">
-                          <div>
-                            <span className="px-2.5 py-0.5 rounded-md bg-neon-red text-white font-racing font-bold text-[10px] uppercase">
-                              Confirmado
-                            </span>
-                            <h3 className="font-racing font-bold text-lg text-white mt-1">{ev.title}</h3>
-                            <div className="text-xs text-neon-cyan font-mono flex items-center gap-2 mt-0.5">
-                              <span>📅 {ev.date}</span>
-                              <span>•</span>
-                              <span>📍 {ev.location}</span>
-                            </div>
+                    <div key={ev.id} className="glass-panel rounded-3xl border border-white/10 overflow-hidden shadow-2xl hover:border-neon-lime/40 transition-all">
+                      <div className="relative h-52 sm:h-64 w-full overflow-hidden group">
+                        <img src={ev.image} alt={ev.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-carbon-950 via-carbon-950/50 to-transparent"></div>
+                        <div className="absolute top-3 left-3 px-3 py-1 rounded-full bg-neon-red/90 text-white font-racing font-bold text-[11px] uppercase tracking-wider shadow-lg flex items-center gap-1.5">
+                          <span>🔥</span>
+                          <span>{ev.category || "Evento Oficial"}</span>
+                        </div>
+                        <div className="absolute bottom-4 left-4 right-4">
+                          <h3 className="font-racing font-black text-xl text-white tracking-wide">{ev.title}</h3>
+                          <div className="text-xs text-neon-cyan font-mono flex flex-wrap items-center gap-x-3 gap-y-1 mt-1">
+                            <span>📅 {ev.date}</span>
+                            <span>•</span>
+                            <span>📍 {ev.location}</span>
                           </div>
                         </div>
                       </div>
 
-                      <div className="p-4 flex items-center justify-between bg-carbon-900/60">
-                        <div className="flex items-center gap-2 text-xs font-mono text-gray-300">
-                          <span className="text-neon-lime font-bold">🏁 {ev.confirmed} Pilotos Confirmados</span>
+                      {/* Descrição do Evento */}
+                      <div className="p-4 space-y-3 bg-carbon-900/80">
+                        <p className="text-xs text-gray-300 leading-relaxed">
+                          {ev.description}
+                        </p>
+
+                        {/* Barra de Ações: Ingressos, Instagram e Presença */}
+                        <div className="pt-2 border-t border-white/10 flex flex-wrap items-center justify-between gap-2.5">
+                          <div className="flex items-center gap-2">
+                            {ev.ticketUrl && (
+                              <a 
+                                href={ev.ticketUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-neon-gold to-neon-amber text-carbon-950 font-racing font-black text-xs flex items-center gap-1.5 shadow-neon-gold hover:scale-105 transition-all"
+                              >
+                                <span>🎟️</span>
+                                <span>Comprar Ingresso / Site</span>
+                              </a>
+                            )}
+
+                            {ev.instagramUrl && (
+                              <a 
+                                href={ev.instagramUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="px-3 py-2 rounded-xl bg-carbon-800 hover:bg-carbon-700 border border-white/15 text-xs font-racing font-bold text-gray-200 flex items-center gap-1.5 transition-all"
+                              >
+                                <span>📸</span>
+                                <span>Instagram Oficial</span>
+                              </a>
+                            )}
+                          </div>
+
+                          <div className="flex items-center gap-3">
+                            <span className="text-[11px] font-mono text-neon-lime font-bold">
+                              🏁 {ev.confirmed} Confirmados
+                            </span>
+                            <button 
+                              onClick={() => {
+                                setEventsList(prev => prev.map(e => {
+                                  if (e.id === ev.id) {
+                                    const nextGoing = !e.isGoing;
+                                    showToast(nextGoing ? "✓ Presença confirmada no evento!" : "Presença cancelada.");
+                                    return {
+                                      ...e,
+                                      isGoing: nextGoing,
+                                      confirmed: nextGoing ? e.confirmed + 1 : e.confirmed - 1
+                                    };
+                                  }
+                                  return e;
+                                }));
+                                SoundFx.playSonar();
+                              }}
+                              className={`px-3.5 py-2 rounded-xl text-xs font-racing font-bold transition-all ${
+                                ev.isGoing 
+                                  ? "bg-neon-lime/20 text-neon-lime border border-neon-lime" 
+                                  : "bg-neon-lime text-carbon-950 font-black shadow-neon-lime"
+                              }`}
+                            >
+                              {ev.isGoing ? "✓ Vou Participar" : "Eu Vou! Confirmar"}
+                            </button>
+                          </div>
                         </div>
-                        <button 
-                          onClick={() => {
-                            setEventsList(prev => prev.map(e => {
-                              if (e.id === ev.id) {
-                                const nextGoing = !e.isGoing;
-                                showToast(nextGoing ? "Presença confirmada no encontro!" : "Presença cancelada.");
-                                return {
-                                  ...e,
-                                  isGoing: nextGoing,
-                                  confirmed: nextGoing ? e.confirmed + 1 : e.confirmed - 1
-                                };
-                              }
-                              return e;
-                            }));
-                            SoundFx.playSonar();
-                          }}
-                          className={`px-4 py-2 rounded-xl text-xs font-racing font-bold transition-all ${
-                            ev.isGoing 
-                              ? "bg-carbon-800 text-neon-lime border border-neon-lime/40" 
-                              : "bg-neon-lime text-carbon-950 shadow-neon-lime font-black"
-                          }`}
-                        >
-                          {ev.isGoing ? "✓ Presença Confirmada" : "Eu Vou! Confirmar"}
-                        </button>
+
                       </div>
                     </div>
                   ))}
@@ -1395,12 +1543,22 @@
                         📍 {myCity} • SP-294 e Vias Urbanas
                       </div>
                     </div>
-                    <button 
-                      onClick={() => setIsSearchOpen(true)}
-                      className="px-2.5 py-1 bg-carbon-800 hover:bg-carbon-700 text-neon-cyan font-mono text-xs rounded-lg border border-white/10"
-                    >
-                      Mudar Rua
-                    </button>
+                    <div className="flex items-center gap-1.5">
+                      <button 
+                        onClick={toggleWazeTheme}
+                        className="px-2.5 py-1 bg-carbon-800 hover:bg-carbon-700 text-xs font-racing font-bold text-white rounded-lg border border-white/10 flex items-center gap-1 transition-all"
+                        title="Alternar Modo Claro (Dia) e Modo Escuro (Noite)"
+                      >
+                        <span>{wazeTheme === "street" ? "☀️ Dia" : "🌙 Noite"}</span>
+                      </button>
+
+                      <button 
+                        onClick={() => setIsSearchOpen(true)}
+                        className="px-2.5 py-1 bg-carbon-800 hover:bg-carbon-700 text-neon-cyan font-mono text-xs rounded-lg border border-white/10"
+                      >
+                        Mudar Rua
+                      </button>
+                    </div>
                   </div>
                 </div>
 
@@ -1665,6 +1823,59 @@
                       ⚡ Membro VIP Ativo
                     </div>
                   )}
+                </div>
+
+                {/* DESTAQUES DO PERFIL (INSTAGRAM HIGHLIGHTS) */}
+                <div className="pt-3 border-t border-white/10 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] font-racing font-bold text-gray-300 uppercase tracking-wider">
+                      Destaques do Projeto
+                    </span>
+                    <button 
+                      onClick={() => setIsNewHighlightModalOpen(true)}
+                      className="text-[11px] font-racing font-bold text-neon-lime hover:underline flex items-center gap-1"
+                    >
+                      <span>+</span>
+                      <span>Novo Destaque</span>
+                    </button>
+                  </div>
+
+                  <div className="flex items-center gap-3.5 overflow-x-auto pb-1.5 no-scrollbar">
+                    {/* Botão Criar Novo Destaque */}
+                    <div 
+                      onClick={() => setIsNewHighlightModalOpen(true)}
+                      className="flex flex-col items-center gap-1.5 flex-shrink-0 cursor-pointer group"
+                    >
+                      <div className="w-14 h-14 rounded-full border-2 border-dashed border-neon-lime/60 group-hover:border-neon-lime flex items-center justify-center bg-carbon-900 group-hover:scale-105 transition-all">
+                        <span className="text-xl font-bold text-neon-lime">+</span>
+                      </div>
+                      <span className="text-[10px] font-mono text-gray-300">Novo</span>
+                    </div>
+
+                    {/* Destaques Cadastrados */}
+                    {highlights.map(hl => (
+                      <div 
+                        key={hl.id}
+                        onClick={() => {
+                          setActiveStory({
+                            id: hl.id,
+                            author: hl.title,
+                            avatar: currentUser.avatar,
+                            image: hl.image,
+                            time: "Destaque",
+                            caption: `${currentUser.name} • ${hl.title}`
+                          });
+                          setIsStoryViewerOpen(true);
+                        }}
+                        className="flex flex-col items-center gap-1.5 flex-shrink-0 cursor-pointer group"
+                      >
+                        <div className="w-14 h-14 rounded-full p-0.5 bg-gradient-to-tr from-neon-lime to-neon-cyan group-hover:scale-105 transition-transform">
+                          <img src={hl.image} className="w-full h-full rounded-full object-cover" />
+                        </div>
+                        <span className="text-[10px] font-mono text-gray-300 truncate max-w-[64px]">{hl.title}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
 
                 {/* Grade de Fotos (Grid Instagram) */}
