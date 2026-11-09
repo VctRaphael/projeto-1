@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>GridZone • Rede Social Automotiva & Waze dos Pilotos VIP</title>
+  <title>GridZone â€¢ Rede Social Automotiva & Waze dos Pilotos VIP</title>
   <meta name="description" content="A rede social definitiva dos gearheads e rachadores. Compartilhe fotos de carros e eventos estilo Instagram e desbloqueie o Radar Waze VIP para localizar pilotos reais ao vivo.">
   
   <link rel="icon" href="logo.jpg">
@@ -68,7 +68,7 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-  <!-- MQTT.js para Sincronização Multiplayer dos Pilotos Reais -->
+  <!-- MQTT.js para SincronizaÃ§Ã£o Multiplayer dos Pilotos Reais -->
   <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
 
   <!-- React 18 & ReactDOM -->
@@ -146,7 +146,7 @@
       animation: opponent-waze-halo 2s infinite ease-in-out;
     }
 
-    /* Animação de like coração Instagram */
+    /* AnimaÃ§Ã£o de like coraÃ§Ã£o Instagram */
     @keyframes heart-burst {
       0% { transform: scale(0); opacity: 0; }
       50% { transform: scale(1.3); opacity: 1; }
@@ -180,11 +180,11 @@
   <script type="text/babel">
     const { useState, useEffect, useRef, useMemo } = React;
 
-    // COORDENADAS REAIS PADRÃO: TUPÃ - SP (ONDE O USUÁRIO ESTÁ)
+    // COORDENADAS REAIS PADRÃƒO: TUPÃƒ - SP (ONDE O USUÃRIO ESTÃ)
     const TUPA_COORDS = { lat: -21.9347, lng: -50.5136 };
 
     // =========================================================================
-    // CÁLCULO DE DISTÂNCIA REAL HAVERSINE
+    // CÃLCULO DE DISTÃ‚NCIA REAL HAVERSINE
     // =========================================================================
     function getDistanceBetween(lat1, lon1, lat2, lon2) {
       if (!lat1 || !lon1 || !lat2 || !lon2) return "Calculando...";
@@ -307,8 +307,8 @@
         username: "@tupa_cars",
         avatar: "https://images.unsplash.com/photo-1511919884226-fd3cad34687c?auto=format&fit=crop&w=300&q=80",
         image: "https://images.unsplash.com/photo-1511919884226-fd3cad34687c?auto=format&fit=crop&w=1080&q=80",
-        time: "há 20 min",
-        caption: "Posto Shell lotado em Tupã! Vários turbos alinhados 🏎️🔥"
+        time: "hÃ¡ 20 min",
+        caption: "Posto Shell lotado em TupÃ£! VÃ¡rios turbos alinhados ðŸŽï¸ðŸ”¥"
       },
       {
         id: "s2",
@@ -316,8 +316,8 @@
         username: "@tork_one",
         avatar: "https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&w=300&q=80",
         image: "https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&w=1080&q=80",
-        time: "há 45 min",
-        caption: "Audi RS3 cuspindo fogo no rolo do dinamômetro! 🔥💨"
+        time: "hÃ¡ 45 min",
+        caption: "Audi RS3 cuspindo fogo no rolo do dinamÃ´metro! ðŸ”¥ðŸ’¨"
       },
       {
         id: "s3",
@@ -325,8 +325,8 @@
         username: "@speed_marilia",
         avatar: "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&w=300&q=80",
         image: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1080&q=80",
-        time: "há 1h",
-        caption: "Alinhamento na SP-294. 3 puxadas limpas de 200m! 🏁"
+        time: "hÃ¡ 1h",
+        caption: "Alinhamento na SP-294. 3 puxadas limpas de 200m! ðŸ"
       },
       {
         id: "s4",
@@ -334,31 +334,31 @@
         username: "@apex_hunters",
         avatar: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=300&q=80",
         image: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=1080&q=80",
-        time: "há 2h",
-        caption: "S do Senna pé embaixo! Tempo baixando a cada volta ⏱️"
+        time: "hÃ¡ 2h",
+        caption: "S do Senna pÃ© embaixo! Tempo baixando a cada volta â±ï¸"
       }
     ];
 
     const INITIAL_POSTS = [
       {
         id: "post_1",
-        author: "Victor Simão",
+        author: "Victor SimÃ£o",
         username: "@victor_gti",
         avatar: "logo.jpg",
-        city: "Tupã - SP",
+        city: "TupÃ£ - SP",
         time: "agora",
         isVip: true,
         isFollowing: false,
         likes: 184,
         isLiked: false,
         isSaved: false,
-        car: "Golf GTI Stage 3 • 380 cv",
+        car: "Golf GTI Stage 3 â€¢ 380 cv",
         category: "Meu Projeto / Garagem",
         image: "https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?auto=format&fit=crop&w=1200&q=80",
-        caption: "Acabei de montar o Intake de carbono e o remap Stage 3 custom! O carro mudou da água pro vinho, puxada limpa de 2ª e 3ª marcha na estrada de Tupã. Quem tiver com projeto afiado na região, bora marcar um racha pelo Waze Radar! 🔥🏁 #GolfGTI #Stage3 #Tupã #GridZone #RachaNoturno",
+        caption: "Acabei de montar o Intake de carbono e o remap Stage 3 custom! O carro mudou da Ã¡gua pro vinho, puxada limpa de 2Âª e 3Âª marcha na estrada de TupÃ£. Quem tiver com projeto afiado na regiÃ£o, bora marcar um racha pelo Waze Radar! ðŸ”¥ðŸ #GolfGTI #Stage3 #TupÃ£ #GridZone #RachaNoturno",
         comments: [
-          { id: "c1", user: "Marcos 'Turbo'", username: "@marcos_rs3", text: "Ficou canhão demais! Sexta-feira vou colar aí pra gente puxar!" },
-          { id: "c2", user: "Felipe Tork", username: "@felipe_tork", text: "Esse intake da RacingLine é o melhor do mercado, ganho absurdo no miolo!" }
+          { id: "c1", user: "Marcos 'Turbo'", username: "@marcos_rs3", text: "Ficou canhÃ£o demais! Sexta-feira vou colar aÃ­ pra gente puxar!" },
+          { id: "c2", user: "Felipe Tork", username: "@felipe_tork", text: "Esse intake da RacingLine Ã© o melhor do mercado, ganho absurdo no miolo!" }
         ]
       },
       {
@@ -366,28 +366,28 @@
         author: "Lucas 'Downpipe'",
         username: "@lucas_civicsi",
         avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80",
-        city: "Marília - SP",
-        time: "há 42 min",
+        city: "MarÃ­lia - SP",
+        time: "hÃ¡ 42 min",
         isVip: true,
         isFollowing: true,
         likes: 245,
         isLiked: true,
         isSaved: true,
-        car: "Civic Si K24 Turbo • 450 cv",
+        car: "Civic Si K24 Turbo â€¢ 450 cv",
         category: "Encontro & Racha",
         image: "https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?auto=format&fit=crop&w=1200&q=80",
-        caption: "Hoje foi dia de testar a pressão no turbo na serra de Marília! 1.4 bar sem falhar nada. Alguém na ativa no radar Waze hoje à noite? 🚀⚡ #CivicSi #Turbo #K24 #Arrancada",
+        caption: "Hoje foi dia de testar a pressÃ£o no turbo na serra de MarÃ­lia! 1.4 bar sem falhar nada. AlguÃ©m na ativa no radar Waze hoje Ã  noite? ðŸš€âš¡ #CivicSi #Turbo #K24 #Arrancada",
         comments: [
-          { id: "c3", user: "André BMW", username: "@andre_m2", text: "Te vi passando pelo radar agora pouco, tá roncando forte!" }
+          { id: "c3", user: "AndrÃ© BMW", username: "@andre_m2", text: "Te vi passando pelo radar agora pouco, tÃ¡ roncando forte!" }
         ]
       },
       {
         id: "post_3",
-        author: "Clube Automotivo Tupã",
+        author: "Clube Automotivo TupÃ£",
         username: "@tupa_gearheads",
         avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80",
-        city: "Tupã - SP",
-        time: "há 2 horas",
+        city: "TupÃ£ - SP",
+        time: "hÃ¡ 2 horas",
         isVip: false,
         isFollowing: false,
         likes: 412,
@@ -396,86 +396,269 @@
         car: "Encontro Multimarcas",
         category: "Encontro Noturno",
         image: "https://images.unsplash.com/photo-1511919884226-fd3cad34687c?auto=format&fit=crop&w=1200&q=80",
-        caption: "OFICIAL: Sexta-feira que vem tem Encontro Noturno no Posto Graal / Shell na SP-294 em Tupã a partir das 20h30! Presença confirmada de mais de 40 carros preparados da região. Entrada franca, tragam seus projetos! 🎪🏁 #EncontroAutomotivo #TupãCars #Gearhead",
+        caption: "OFICIAL: Sexta-feira que vem tem Encontro Noturno no Posto Graal / Shell na SP-294 em TupÃ£ a partir das 20h30! PresenÃ§a confirmada de mais de 40 carros preparados da regiÃ£o. Entrada franca, tragam seus projetos! ðŸŽªðŸ #EncontroAutomotivo #TupÃ£Cars #Gearhead",
         comments: [
-          { id: "c4", user: "Victor Simão", username: "@victor_gti", text: "Presença confirmadíssima! Vou com o GTI montado!" }
+          { id: "c4", user: "Victor SimÃ£o", username: "@victor_gti", text: "PresenÃ§a confirmadÃ­ssima! Vou com o GTI montado!" }
         ]
       }
     ];
 
     // =========================================================================
-    // EVENTOS REAIS AUTOMOTIVOS CONFIRMADOS (RACE 100-200, DRIFT, SPID, TRACKDAY)
-    // =========================================================================
     const INITIAL_EVENTS = [
       {
         id: "ev_race100200",
-        title: "Race 100-200 • Desafio Meia Milha & Arrancada",
+        title: "Race 100-200 â€¢ Desafio Meia Milha & Arrancada",
         category: "Arrancada & Puxadas 100-200",
-        location: "SPID Dragway (Itatiba - SP) & Aeródromos Oficiais",
+        location: "SPID Dragway (Itatiba - SP) & AerÃ³dromos Oficiais",
         date: "Temporada Oficial 2026",
         confirmed: 245,
         isGoing: true,
         image: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1200&q=80",
-        description: "O maior campeonato de arrancada e meia milha do Brasil! Supercarros e projetos preparados de 500 a mais de 1.500 cv acelerando tudo entre 100 km/h e 200 km/h com cronometragem oficial e área VIP.",
+        description: "O maior campeonato de arrancada e meia milha do Brasil! Supercarros e projetos preparados de 500 a mais de 1.500 cv acelerando tudo entre 100 km/h e 200 km/h com cronometragem oficial e Ã¡rea VIP.",
         ticketUrl: "https://www.oticket.com.br",
         instagramUrl: "https://www.instagram.com/race100200/",
         officialSite: "https://www.oticket.com.br"
       },
       {
         id: "ev_ultimate_drift",
-        title: "Ultimate Drift • Campeonato Brasileiro Oficial CBA",
+        title: "Ultimate Drift â€¢ Campeonato Brasileiro Oficial CBA",
         category: "Drift Profissional",
-        location: "Autódromo de Interlagos (SP) & Mega Space",
+        location: "AutÃ³dromo de Interlagos (SP) & Mega Space",
         date: "Etapa Oficial CBA",
         confirmed: 380,
         isGoing: true,
         image: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=1200&q=80",
-        description: "O principal campeonato brasileiro de Drift chancelado pela CBA. Batalhas tandem eliminatórias de carros turbinados e V8 raspando nos muros a mais de 100 km/h com muita fumaça e adrenalina pura!",
+        description: "O principal campeonato brasileiro de Drift chancelado pela CBA. Batalhas tandem eliminatÃ³rias de carros turbinados e V8 raspando nos muros a mais de 100 km/h com muita fumaÃ§a e adrenalina pura!",
         ticketUrl: "https://www.ultimatedrift.com.br",
         instagramUrl: "https://www.instagram.com/ultimatedriftbr",
         officialSite: "https://www.ultimatedrift.com.br"
       },
       {
         id: "ev_spid_cup",
-        title: "SPID Cup • Arrancada Internacional (Padrão NHRA)",
+        title: "SPID Cup â€¢ Arrancada Internacional (PadrÃ£o NHRA)",
         category: "Arrancada 402m / 201m",
-        location: "Rod. Alkindar Monteiro Junqueira, Km 30 – Itatiba/SP",
+        location: "Rod. Alkindar Monteiro Junqueira, Km 30 â€“ Itatiba/SP",
         date: "Super Final SPID 2026",
         confirmed: 310,
         isGoing: false,
         image: "https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&w=1200&q=80",
-        description: "Complexo de arrancada mais moderno da América Latina. Pista emborrachada padrão NHRA com monstros de 4.000 cv quebrando recordes mundiais, visitação aberta aos boxes e Lounge VIP.",
+        description: "Complexo de arrancada mais moderno da AmÃ©rica Latina. Pista emborrachada padrÃ£o NHRA com monstros de 4.000 cv quebrando recordes mundiais, visitaÃ§Ã£o aberta aos boxes e Lounge VIP.",
         ticketUrl: "https://spidcup.com.br",
         instagramUrl: "https://www.instagram.com/spidcup/",
         officialSite: "https://spidcup.com.br"
       },
       {
         id: "ev_motorgrid",
-        title: "Motorgrid Track Day • Supercarros em Interlagos",
+        title: "Motorgrid Track Day â€¢ Supercarros em Interlagos",
         category: "Track Day & Supercarros",
-        location: "Autódromo José Carlos Pace (Interlagos - SP)",
+        location: "AutÃ³dromo JosÃ© Carlos Pace (Interlagos - SP)",
         date: "Track Day & Paddock Experience",
         confirmed: 190,
         isGoing: false,
         image: "https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&w=1200&q=80",
-        description: "Encontro dos maiores colecionadores e donos de supercarros do Brasil acelerando no lendário circuito de Fórmula 1 de Interlagos. Paddock aberto, medição de telemetria e camarote exclusivo.",
+        description: "Encontro dos maiores colecionadores e donos de supercarros do Brasil acelerando no lendÃ¡rio circuito de FÃ³rmula 1 de Interlagos. Paddock aberto, mediÃ§Ã£o de telemetria e camarote exclusivo.",
         ticketUrl: "https://www.motorgridbrasil.com",
         instagramUrl: "https://www.instagram.com/motorgridbrasil/",
         officialSite: "https://www.motorgridbrasil.com"
       },
       {
         id: "ev_super_drift",
-        title: "Super Drift Brasil • Batalhas & Cultura JDM",
-        category: "Drift & Exposição",
+        title: "Super Drift Brasil â€¢ Batalhas & Cultura JDM",
+        category: "Drift & ExposiÃ§Ã£o",
         location: "ECPA (Esporte Clube Piracicabano de Automobilismo)",
         date: "Etapa Regional SP",
         confirmed: 165,
         isGoing: false,
         image: "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&w=1200&q=80",
-        description: "Competição de drift com carros clássicos preparados (Nissan Silvia, 350Z, Chevette turbo, BMW E36), praça de food trucks, exposição de projetos rebaixados e show de manobras.",
+        description: "CompetiÃ§Ã£o de drift com carros clÃ¡ssicos preparados (Nissan Silvia, 350Z, Chevette turbo, BMW E36), praÃ§a de food trucks, exposiÃ§Ã£o de projetos rebaixados e show de manobras.",
         ticketUrl: "https://superdriftbrasil.com.br",
         instagramUrl: "https://www.instagram.com/superdriftbrasil/",
         officialSite: "https://superdriftbrasil.com.br"
+    // EVENTOS AUTOMOTIVOS REAIS DO BRASIL (CALENDÃRIO OFICIAL & INGRESSOS SYMPLA)
+    const INITIAL_EVENTS = [
+      {
+        id: "ev_ultimate_drift",
+        title: "Ultimate Drift Brasil",
+        edition: "Campeonato Brasileiro de Drift â€¢ Etapa Oficial",
+        category: "Drift",
+        location: "AutÃ³dromo ECPA (Piracicaba) & Mega Space",
+        city: "Piracicaba - SP",
+        date: "Temporada Oficial 2026 â€¢ Etapas em SP, SC e MG",
+        lat: -22.7533,
+        lng: -47.6694,
+        confirmed: 248,
+        isGoing: true,
+        image: "https://www.ultimatedrift.com.br/wp-content/themes/ultimate-drift/img/index-1.jpg",
+        logo: "https://www.ultimatedrift.com.br/wp-content/themes/ultimate-drift/img/logo.png",
+        tag: "Drift Profissional",
+        badgeColor: "bg-neon-lime/20 text-neon-lime border-neon-lime/40",
+        instagram: "@ultimatedriftbr",
+        instagramUrl: "https://www.instagram.com/ultimatedriftbr/",
+        ticketUrl: "https://ultimatedrift.com.br",
+        ticketPlatform: "Bilheteria Oficial / Sympla",
+        ticketPrice: "A partir de R$ 50,00 (Arquibancada & Boxes)",
+        description: "O maior campeonato de Drift do Brasil. Batalhas eliminatÃ³rias de porta com porta a mais de 130 km/h, fumaÃ§a intensa de pneu, acesso livre aos boxes e Carona Radical com os pilotos."
+      },
+      {
+        id: "ev_bgt",
+        title: "Bubble Gun Treffen (BGT 14)",
+        edition: "O Maior Encontro VAG da AmÃ©rica Latina",
+        category: "Encontros & Custom",
+        location: "PraÃ§a Adhemar de Barros",
+        city: "Ãguas de LindÃ³ia - SP",
+        date: "Feriado da ProclamaÃ§Ã£o da RepÃºblica â€¢ EdiÃ§Ã£o Anual",
+        lat: -22.4764,
+        lng: -46.6328,
+        confirmed: 380,
+        isGoing: false,
+        image: "https://images.sympla.com.br/63221132e9401-lg.png",
+        logo: "https://images.sympla.com.br/5b91b791947bb-lg.jpg",
+        tag: "VAG & Euro Stance",
+        badgeColor: "bg-blue-500/20 text-blue-400 border-blue-500/40",
+        instagram: "@bgtreffen",
+        instagramUrl: "https://www.instagram.com/bgtreffen/",
+        ticketUrl: "https://www.sympla.com.br/produtor/volkspage",
+        ticketPlatform: "Sympla Oficial VP97",
+        ticketPrice: "A partir de R$ 60,00",
+        description: "Mais de 1.500 carros do Grupo Volkswagen (VW, Audi, Porsche) de todos os cantos do continente. Projetos forjados, suspensÃµes a ar de alta precisÃ£o, rodas raras e o encontro mais icÃ´nico de Ãguas de LindÃ³ia."
+      },
+      {
+        id: "ev_crazy_auto",
+        title: "Crazy For Auto â€¢ Interlagos",
+        edition: "Track Day & Time Attack no Templo de Interlagos",
+        category: "Track Day & Pista",
+        location: "AutÃ³dromo JosÃ© Carlos Pace (Interlagos)",
+        city: "SÃ£o Paulo - SP",
+        date: "Etapas Oficiais no Circuito de FÃ³rmula 1",
+        lat: -23.7011,
+        lng: -46.6972,
+        confirmed: 125,
+        isGoing: false,
+        image: "https://images.sympla.com.br/6ab161854af68-lg.png",
+        logo: "https://images.sympla.com.br/6328a35b565bf.png",
+        tag: "Circuito de Interlagos",
+        badgeColor: "bg-purple-500/20 text-purple-400 border-purple-500/40",
+        instagram: "@crazyforauto",
+        instagramUrl: "https://www.instagram.com/crazyforauto/",
+        ticketUrl: "https://www.sympla.com.br/produtor/crazyforauto",
+        ticketPlatform: "Sympla Oficial",
+        ticketPrice: "Visitante Box: R$ 40,00 | Piloto: Lotes Sympla",
+        description: "Acelere no mesmo asfalto onde Senna venceu! Baterias divididas por categorias (SSR e nacionais), telemetria com transponder oficial, Ã¡rea de visitantes nos boxes e supercarros na pista."
+      },
+      {
+        id: "ev_armageddon",
+        title: "Armageddon Arrancada No Prep",
+        edition: "O Maior Desafio No Prep da AmÃ©rica Latina",
+        category: "Arrancada & Drag",
+        location: "Pistas Oficiais â€¢ Londrina / Race Park / Velopark",
+        city: "Londrina - PR",
+        date: "Temporada Listas Brasil â€¢ Etapa Oficial",
+        lat: -23.3103,
+        lng: -51.1628,
+        confirmed: 290,
+        isGoing: false,
+        image: "https://images.sympla.com.br/6a0b160f28934-lg.png",
+        logo: "https://listasbrasil.racinglog.net/media/listas-brasil/migrated/2c22614450b5c511289a75bd-365ea7da8fdd07f61f21a2ec428582640f5a37921e227e64d34df5ffb5d52cab.jpg",
+        tag: "No Prep 402m / 201m",
+        badgeColor: "bg-neon-red/20 text-neon-red border-neon-red/40",
+        instagram: "@listasbrasiloficial",
+        instagramUrl: "https://www.instagram.com/listasbrasiloficial/",
+        ticketUrl: "https://listasbrasil.com",
+        ticketPlatform: "Sympla & Bilheteria Listas Brasil",
+        ticketPrice: "A partir de R$ 70,00 (Passaporte Fim de Semana)",
+        description: "Arrancada pura sem tratamento quÃ­mico na pista! Mais de 120 carros montados com potÃªncias que passam de 1.500 cv disputando o topo da Lista 43 e da Lista Brasil, burnout constante e muita adrenalina."
+      },
+      {
+        id: "ev_ebaa_lindoia",
+        title: "Encontro Brasileiro de Autos Antigos (EBAA)",
+        edition: "O Maior Encontro de Carros ClÃ¡ssicos do Brasil",
+        category: "ClÃ¡ssicos & Raridades",
+        location: "PraÃ§a Adhemar de Barros",
+        city: "Ãguas de LindÃ³ia - SP",
+        date: "EdiÃ§Ã£o Anual â€¢ 04 a 07 de Junho",
+        lat: -22.4764,
+        lng: -46.6328,
+        confirmed: 430,
+        isGoing: false,
+        image: "https://static.wixstatic.com/media/32ee38_80d01ce1047d48cf9953428582a3a746~mv2.png/v1/crop/x_1,y_0,w_3545,h_1313/fill/w_980,h_363,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/EBAA%20BANNER%20FACEBOO%20FLAYER%202026.png",
+        logo: "https://static.wixstatic.com/media/32ee38_ffdb558600744fd498fa266035a32a02~mv2.png/v1/fill/w_145,h_142,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/EBAA%20-%20PERFIL%202026.png",
+        tag: "ClÃ¡ssicos & ColeÃ§Ã£o",
+        badgeColor: "bg-yellow-500/20 text-yellow-400 border-yellow-500/40",
+        instagram: "@encontroantigosaguasdelindoia",
+        instagramUrl: "https://www.instagram.com/encontroantigosaguasdelindoia/",
+        ticketUrl: "https://www.encontroaguasdelindoia.com.br",
+        ticketPlatform: "Entrada Gratuita (Pedestres)",
+        ticketPrice: "Gratuito para Visitantes",
+        description: "Mais de 1.000 automÃ³veis antigos de coleÃ§Ã£o expostos nos jardins de Ãguas de LindÃ³ia, feira gigante de peÃ§as raras, leilÃ£o de veÃ­culos histÃ³ricos e colecionadores do Brasil e exterior."
+      },
+      {
+        id: "ev_detailer_fest",
+        title: "Detailer Fest Brasil & Drift Show",
+        edition: "O Maior Festival de EstÃ©tica & CustomizaÃ§Ã£o Automotiva",
+        category: "Encontros & Custom",
+        location: "Centro de Eventos Boituva",
+        city: "Boituva - SP",
+        date: "Mega Encontro Anual â€¢ Boituva - SP",
+        lat: -23.2847,
+        lng: -47.6789,
+        confirmed: 210,
+        isGoing: false,
+        image: "https://images.sympla.com.br/659713b97d8ad-lg.jpg",
+        logo: "https://detailerfestbrasil.com.br/wp-content/uploads/2026/03/logo.avif",
+        tag: "EstÃ©tica & Drift",
+        badgeColor: "bg-amber-400/20 text-amber-400 border-amber-400/40",
+        instagram: "@detailerfestbrasil",
+        instagramUrl: "https://www.instagram.com/detailerfestbrasil/",
+        ticketUrl: "https://www.sympla.com.br/evento/detailer-fest-brasil-2024/2297955",
+        ticketPlatform: "Sympla Oficial & Boituva",
+        ticketPrice: "A partir de R$ 50,00",
+        description: "A maior convenÃ§Ã£o de estÃ©tica automotiva da AmÃ©rica Latina: estÃºdios de detalhamento, lanÃ§amentos internacionais, shows de Drift com manobras radicais e praÃ§a de alimentaÃ§Ã£o completa."
+      },
+      {
+        id: "ev_velopark",
+        title: "Campeonato de Arrancada Velopark",
+        edition: "Etapas Oficiais na Pista Mais RÃ¡pida da AmÃ©rica do Sul",
+        category: "Arrancada & Drag",
+        location: "Complexo AutomobilÃ­stico Velopark",
+        city: "Nova Santa Rita - RS",
+        date: "Temporada Velopark â€¢ Etapas Oficiais",
+        lat: -29.8631,
+        lng: -51.2721,
+        confirmed: 175,
+        isGoing: false,
+        image: "https://images.sympla.com.br/64715d5028742-lg.png",
+        logo: "https://images.sympla.com.br/6aa4af5227082-lg.png",
+        tag: "Velopark 402m VHT",
+        badgeColor: "bg-neon-red/20 text-neon-red border-neon-red/40",
+        instagram: "@velopark",
+        instagramUrl: "https://www.instagram.com/velopark/",
+        ticketUrl: "https://www.sympla.com.br/produtor/velopark",
+        ticketPlatform: "Sympla Oficial Velopark",
+        ticketPrice: "A partir de R$ 45,00",
+        description: "Reta de 402 metros com tratamento em cola VHT internacional. Pro Mods e dragsters de mais de 3.000 cv que cruzam a reta a quase 400 km/h em 5 segundos cravados."
+      },
+      {
+        id: "ev_drag_fest",
+        title: "Drag Fest Brasil â€¢ Arrancada",
+        edition: "O Maior Festival Regional de Arrancada & Manobras",
+        category: "Arrancada & Drag",
+        location: "Pista Drag Race Artur Nogueira",
+        city: "Artur Nogueira - SP",
+        date: "EdiÃ§Ã£o Especial Drag Fest",
+        lat: -22.5728,
+        lng: -47.1725,
+        confirmed: 155,
+        isGoing: false,
+        image: "https://images.sympla.com.br/6aa0a0d1d5542-lg.jpg",
+        logo: "https://images.sympla.com.br/67f04b82c8dff.png",
+        tag: "Arrancada 201m",
+        badgeColor: "bg-neon-red/20 text-neon-red border-neon-red/40",
+        instagram: "@dragfestoficial",
+        instagramUrl: "https://www.instagram.com/explore/tags/dragfestbrasil/",
+        ticketUrl: "https://www.sympla.com.br/evento/drag-fest-o-maior-evento-de-arrancada-da-regiao/3564603",
+        ticketPlatform: "Sympla Oficial",
+        ticketPrice: "A partir de R$ 35,00",
+        description: "Show de velocidade, arrancadas nos 201m, carros aspirados e turbos de rua e de pista, show de burnout, espaÃ§o kids e acesso aos boxes."
       }
     ];
 
@@ -491,9 +674,9 @@
 
     const INITIAL_MODS = [
       { id: 1, name: "Downpipe Inox 304 High-Flow", brand: "Nova Racing", category: "Escape", cost: 3200, gain: "+25 cv", status: "Instalado" },
-      { id: 2, name: "Intake de Fibra de Carbono R600", brand: "RacingLine", category: "Admissão", cost: 5800, gain: "+15 cv", status: "Instalado" },
-      { id: 3, name: "Remap ECU & TCU Stage 3 Custom", brand: "Tork One", category: "Injeção", cost: 4500, gain: "+110 cv", status: "Instalado" },
-      { id: 4, name: "Molas Esportivas Pro-Kit", brand: "Eibach", category: "Suspensão", cost: 2400, gain: "Setup Rua/Pista", status: "Instalado" },
+      { id: 2, name: "Intake de Fibra de Carbono R600", brand: "RacingLine", category: "AdmissÃ£o", cost: 5800, gain: "+15 cv", status: "Instalado" },
+      { id: 3, name: "Remap ECU & TCU Stage 3 Custom", brand: "Tork One", category: "InjeÃ§Ã£o", cost: 4500, gain: "+110 cv", status: "Instalado" },
+      { id: 4, name: "Molas Esportivas Pro-Kit", brand: "Eibach", category: "SuspensÃ£o", cost: 2400, gain: "Setup Rua/Pista", status: "Instalado" },
       { id: 5, name: "Discos de Freio Ranhurados 340mm", brand: "Brembo", category: "Freios", cost: 4200, gain: "Frenagem 100-0", status: "Instalado" }
     ];
 
@@ -501,14 +684,14 @@
     // COMPONENTE PRINCIPAL
     // =========================================================================
     function App() {
-      // Navegação: 'feed' (Instagram), 'events' (Encontros), 'radar' (Waze VIP), 'garage' (Carro & Mods), 'profile' (Perfil Social)
+      // NavegaÃ§Ã£o: 'feed' (Instagram), 'events' (Encontros), 'radar' (Waze VIP), 'garage' (Carro & Mods), 'profile' (Perfil Social)
       const [activeTab, setActiveTab] = useState("feed");
 
-      // CIDADE ATUAL REAL (Tupã - SP)
-      const [myCity, setMyCity] = useState("Tupã - SP");
+      // CIDADE ATUAL REAL (TupÃ£ - SP)
+      const [myCity, setMyCity] = useState("TupÃ£ - SP");
 
       // =======================================================================
-      // CADASTRO / PERFIL DO USUÁRIO PILOTO
+      // CADASTRO / PERFIL DO USUÃRIO PILOTO
       // =======================================================================
       const [currentUser, setCurrentUser] = useState(() => {
         const saved = localStorage.getItem("gridzone_user_profile");
@@ -517,15 +700,15 @@
         }
         return {
           id: "pilot_victor",
-          name: "Victor Simão",
+          name: "Victor SimÃ£o",
           username: "@victor_gti",
           email: "victor@gridzone.app",
           avatar: "logo.jpg",
           car: "Golf GTI Stage 3",
           carImage: "https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?auto=format&fit=crop&w=1200&q=80",
           power: "380 cv",
-          city: "Tupã - SP",
-          bio: "🚀 Golf GTI Mk7.5 Stage 3 | 380 cv | Pista & Rua | Tupã - SP",
+          city: "TupÃ£ - SP",
+          bio: "ðŸš€ Golf GTI Mk7.5 Stage 3 | 380 cv | Pista & Rua | TupÃ£ - SP",
           isVip: false, // Desbloqueia com a assinatura mensal
           vipPlan: null,
           vipExpires: null,
@@ -535,12 +718,12 @@
         };
       });
 
-      // Salva usuário no localStorage
+      // Salva usuÃ¡rio no localStorage
       useEffect(() => {
         localStorage.setItem("gridzone_user_profile", JSON.stringify(currentUser));
       }, [currentUser]);
 
-      // COORDENADAS REAIS DO USUÁRIO
+      // COORDENADAS REAIS DO USUÃRIO
       const [myLocation, setMyLocation] = useState(TUPA_COORDS);
 
       // VELOCIDADE RIGOROSAMENTE EXATA (0 KM/H QUANDO PARADO)
@@ -552,7 +735,7 @@
       isAutoFollowRef.current = isAutoFollow;
       const lastGpsPointRef = useRef(null);
 
-      // ADVERSÁRIOS NO MAPA: RIGOROSAMENTE APENAS PILOTOS REAIS CONECTADOS VIA MQTT!
+      // ADVERSÃRIOS NO MAPA: RIGOROSAMENTE APENAS PILOTOS REAIS CONECTADOS VIA MQTT!
       const [livePilots, setLivePilots] = useState({});
 
       // REDE SOCIAL POSTS & STORIES
@@ -569,6 +752,22 @@
       }, [posts]);
 
       const [eventsList, setEventsList] = useState(INITIAL_EVENTS);
+      const [eventCategoryFilter, setEventCategoryFilter] = useState("all");
+      const [viewingEventFlyer, setViewingEventFlyer] = useState(null);
+
+      // OrdenaÃ§Ã£o e cÃ¡lculo de distÃ¢ncia em tempo real para cada usuÃ¡rio
+      const sortedEventsList = useMemo(() => {
+        return eventsList.map(ev => {
+          const distMeters = getDistanceMeters(myLocation.lat, myLocation.lng, ev.lat, ev.lng);
+          const distText = getDistanceBetween(myLocation.lat, myLocation.lng, ev.lat, ev.lng);
+          return { ...ev, distMeters, distText };
+        })
+        .filter(ev => {
+          if (eventCategoryFilter === "all") return true;
+          return (ev.category || "").toLowerCase().includes(eventCategoryFilter.toLowerCase());
+        })
+        .sort((a, b) => a.distMeters - b.distMeters);
+      }, [eventsList, myLocation, eventCategoryFilter]);
       const [storiesList, setStoriesList] = useState(INITIAL_STORIES);
 
       // DESTAQUES DO PERFIL (INSTAGRAM HIGHLIGHTS)
@@ -602,10 +801,10 @@
           tileLayerRef.current = newTile;
           newTile.bringToBack();
         }
-        showToast(next === "street" ? "☀️ Waze Modo Dia (Claro) ativado!" : "🌙 Waze Modo Noite (Escuro) ativado!");
+        showToast(next === "street" ? "â˜€ï¸ Waze Modo Dia (Claro) ativado!" : "ðŸŒ™ Waze Modo Noite (Escuro) ativado!");
       };
 
-      // GAVETA / MODAL DE COMENTÁRIOS DO INSTAGRAM
+      // GAVETA / MODAL DE COMENTÃRIOS DO INSTAGRAM
       const [activeCommentsPostId, setActiveCommentsPostId] = useState(null);
       const activeCommentsPost = useMemo(() => {
         return posts.find(p => p.id === activeCommentsPostId);
@@ -637,11 +836,11 @@
       const [isSimulatingDrive, setIsSimulatingDrive] = useState(false);
       const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
-      // Função para simular teste de puxada (quando o usuário quiser testar em casa ou no computador)
+      // FunÃ§Ã£o para simular teste de puxada (quando o usuÃ¡rio quiser testar em casa ou no computador)
       const handleSimulateDrive = () => {
         if (isSimulatingDrive) return;
         setIsSimulatingDrive(true);
-        showToast("🚀 Simulando puxada na pista!");
+        showToast("ðŸš€ Simulando puxada na pista!");
         SoundFx.playChallenge();
 
         let step = 0;
@@ -662,7 +861,7 @@
             clearInterval(timer);
             setExactSpeed(0);
             setIsSimulatingDrive(false);
-            showToast("🏁 Puxada concluída! Velocímetro em 0 km/h.");
+            showToast("ðŸ Puxada concluÃ­da! VelocÃ­metro em 0 km/h.");
           }
         }, 650);
       };
@@ -675,14 +874,14 @@
         setTimeout(() => setToast({ show: false, msg: "" }), 3500);
       };
 
-      // Referências para o Mapa e MQTT
+      // ReferÃªncias para o Mapa e MQTT
       const mapInstanceRef = useRef(null);
       const tileLayerRef = useRef(null);
       const markersGroupRef = useRef(null);
       const mqttClientRef = useRef(null);
 
       // -----------------------------------------------------------------------
-      // 0. WAKE LOCK API: MANTÉM A TELA DO CELULAR LIGADA NO PAINEL DO CARRO
+      // 0. WAKE LOCK API: MANTÃ‰M A TELA DO CELULAR LIGADA NO PAINEL DO CARRO
       // -----------------------------------------------------------------------
       useEffect(() => {
         let wakeLock = null;
@@ -702,7 +901,7 @@
       }, []);
 
       // -----------------------------------------------------------------------
-      // 1. AUTO-LOCALIZAÇÃO INTELIGENTE (TUPÃ - SP VIA IP & NOMINATIM)
+      // 1. AUTO-LOCALIZAÃ‡ÃƒO INTELIGENTE (TUPÃƒ - SP VIA IP & NOMINATIM)
       // -----------------------------------------------------------------------
       useEffect(() => {
         const fetchIpLocation = async () => {
@@ -710,7 +909,7 @@
             const res = await fetch("https://ipwho.is/");
             const data = await res.json();
             if (data && data.success && data.latitude && data.longitude) {
-              const detectedCity = `${data.city || "Tupã"} - ${data.region_code || "SP"}`;
+              const detectedCity = `${data.city || "TupÃ£"} - ${data.region_code || "SP"}`;
               setMyCity(detectedCity);
               setCurrentUser(prev => ({ ...prev, city: detectedCity }));
               setMyLocation({ lat: data.latitude, lng: data.longitude });
@@ -720,7 +919,7 @@
               }
             }
           } catch(e) {
-            setMyCity("Tupã - SP");
+            setMyCity("TupÃ£ - SP");
             setMyLocation(TUPA_COORDS);
           }
         };
@@ -748,12 +947,12 @@
                 mapInstanceRef.current.panTo([latitude, longitude], { animate: true, duration: 0.8 });
               }
 
-              // Medição de hardware do sensor GPS
+              // MediÃ§Ã£o de hardware do sensor GPS
               if (speed !== null && speed !== undefined && !isNaN(speed) && speed >= 0) {
                 const kmh = Math.round(speed * 3.6);
                 setExactSpeed(kmh < 2.5 ? 0 : kmh);
               } 
-              // Derivada de distância
+              // Derivada de distÃ¢ncia
               else if (lastGpsPointRef.current) {
                 const prev = lastGpsPointRef.current;
                 const timeDeltaSec = (now - prev.time) / 1000;
@@ -786,7 +985,7 @@
       // 3. MULTIPLAYER MQTT: APENAS PILOTOS REAIS CONECTADOS AO VIVO!
       // -----------------------------------------------------------------------
       useEffect(() => {
-        // Conecta ao broker MQTT público via WebSockets para sincronizar pilotos reais
+        // Conecta ao broker MQTT pÃºblico via WebSockets para sincronizar pilotos reais
         if (typeof mqtt !== "undefined" && mqtt.connect) {
           try {
             const client = mqtt.connect("wss://broker.emqx.io:8084/mqtt", {
@@ -831,7 +1030,7 @@
         };
       }, [currentUser.id]);
 
-      // Broadcast da posição do piloto real a cada 2.5s
+      // Broadcast da posiÃ§Ã£o do piloto real a cada 2.5s
       useEffect(() => {
         const sendUpdate = () => {
           const client = mqttClientRef.current;
@@ -859,7 +1058,7 @@
         return () => clearInterval(interval);
       }, [myLocation, exactSpeed, gpsHeading, currentUser, myCity]);
 
-      // Limpeza de pilotos reais desconectados (há mais de 25 segundos sem sinal)
+      // Limpeza de pilotos reais desconectados (hÃ¡ mais de 25 segundos sem sinal)
       useEffect(() => {
         const interval = setInterval(() => {
           const now = Date.now();
@@ -914,7 +1113,7 @@
             markersGroupRef.current = markersGroup;
             mapInstanceRef.current = map;
 
-            // Pausa o auto-follow se o usuário arrastar o mapa manualmente
+            // Pausa o auto-follow se o usuÃ¡rio arrastar o mapa manualmente
             map.on("dragstart", () => {
               setIsAutoFollow(false);
               isAutoFollowRef.current = false;
@@ -951,13 +1150,13 @@
             <div class="relative flex items-center justify-center cursor-pointer">
               <div class="w-16 h-16 bg-neon-lime/30 rounded-full waze-car-halo absolute"></div>
               <div class="w-11 h-11 bg-carbon-950 border-3 border-neon-lime rounded-full flex items-center justify-center shadow-waze-glow z-10 text-xl font-black transition-transform duration-300" style="transform: rotate(${gpsHeading}deg);">
-                🏎️
+                ðŸŽï¸
               </div>
               <div class="absolute -bottom-7 px-2.5 py-0.5 rounded-full bg-carbon-950/95 border border-neon-lime text-[10px] font-racing font-bold text-neon-lime whitespace-nowrap shadow-2xl flex items-center gap-1">
                 <span>${currentUser.name}</span>
-                <span class="text-gray-400">•</span>
+                <span class="text-gray-400">â€¢</span>
                 <span>${currentUser.car}</span>
-                <span class="text-neon-cyan font-mono">[📍 ${myCity}]</span>
+                <span class="text-neon-cyan font-mono">[ðŸ“ ${myCity}]</span>
               </div>
             </div>
           `,
@@ -969,7 +1168,7 @@
 
         // 2. Apenas Pilotos Reais Conectados
         Object.values(livePilots).forEach(pilot => {
-          const opponentCity = pilot.city || myCity || "Tupã - SP";
+          const opponentCity = pilot.city || myCity || "TupÃ£ - SP";
 
           const opponentWazeIcon = L.divIcon({
             className: "opponent-waze-car",
@@ -977,12 +1176,12 @@
               <div class="relative flex items-center justify-center cursor-pointer">
                 <div class="w-14 h-14 bg-neon-red/35 rounded-full opponent-waze-halo absolute"></div>
                 <div class="w-10 h-10 bg-carbon-950 border-2 border-neon-red rounded-full flex items-center justify-center shadow-waze-alert text-base font-bold text-white z-10">
-                  ⚡
+                  âš¡
                 </div>
                 <div class="absolute -bottom-7 px-2.5 py-0.5 rounded-full bg-carbon-950/95 border border-neon-red/70 text-[10px] font-mono font-bold text-white whitespace-nowrap shadow-2xl flex items-center gap-1">
                   <span>${pilot.name}</span>
                   <span class="text-neon-red font-bold">(${pilot.car})</span>
-                  <span class="text-neon-cyan font-bold bg-carbon-900 px-1.5 py-0.2 rounded">📍 ${opponentCity}</span>
+                  <span class="text-neon-cyan font-bold bg-carbon-900 px-1.5 py-0.2 rounded">ðŸ“ ${opponentCity}</span>
                 </div>
               </div>
             `,
@@ -999,7 +1198,7 @@
       };
 
       // -----------------------------------------------------------------------
-      // 5. INTERAÇÕES SOCIAIS (CURTIR, COMENTAR, NOVO POST, SEGUIR)
+      // 5. INTERAÃ‡Ã•ES SOCIAIS (CURTIR, COMENTAR, NOVO POST, SEGUIR)
       // -----------------------------------------------------------------------
       const handleToggleLike = (postId) => {
         SoundFx.playLike();
@@ -1021,7 +1220,7 @@
         setPosts(prev => prev.map(p => {
           if (p.id === postId) {
             const nextSaved = !p.isSaved;
-            showToast(nextSaved ? "💾 Post salvo nos seus favoritos!" : "Post removido dos favoritos.");
+            showToast(nextSaved ? "ðŸ’¾ Post salvo nos seus favoritos!" : "Post removido dos favoritos.");
             return { ...p, isSaved: nextSaved };
           }
           return p;
@@ -1033,7 +1232,7 @@
         setPosts(prev => prev.map(p => {
           if (p.username === username) {
             const nextState = !p.isFollowing;
-            showToast(nextState ? `Você começou a seguir ${username}` : `Você deixou de seguir ${username}`);
+            showToast(nextState ? `VocÃª comeÃ§ou a seguir ${username}` : `VocÃª deixou de seguir ${username}`);
             return { ...p, isFollowing: nextState };
           }
           return p;
@@ -1057,7 +1256,7 @@
           }
           return p;
         }));
-        showToast("💬 Comentário publicado!");
+        showToast("ðŸ’¬ ComentÃ¡rio publicado!");
       };
 
       // Desafio de racha
@@ -1074,15 +1273,15 @@
             timestamp: Date.now()
           };
           client.publish(`gridzone/challenges/${opponent.id}`, JSON.stringify(payload));
-          showToast(`⚡ Desafio de racha enviado para ${opponent.name}!`);
+          showToast(`âš¡ Desafio de racha enviado para ${opponent.name}!`);
           setSelectedOpponent(null);
         } else {
-          showToast(`⚡ Desafio de racha enviado para ${opponent.name}!`);
+          showToast(`âš¡ Desafio de racha enviado para ${opponent.name}!`);
           setSelectedOpponent(null);
         }
       };
 
-      // Ativação da Assinatura VIP
+      // AtivaÃ§Ã£o da Assinatura VIP
       const handleConfirmVipSubscription = () => {
         setIsVipProcessing(true);
         setTimeout(() => {
@@ -1096,12 +1295,12 @@
           setCurrentUser(updatedUser);
           setIsVipModalOpen(false);
           SoundFx.playVipSuccess();
-          showToast("🎉 ASSINATURA VIP ATIVADA! Bem-vindo ao Waze dos Pilotos!");
+          showToast("ðŸŽ‰ ASSINATURA VIP ATIVADA! Bem-vindo ao Waze dos Pilotos!");
           setActiveTab("radar");
         }, 1500);
       };
 
-      // Mudança de Aba com Checagem de VIP para o Radar Waze
+      // MudanÃ§a de Aba com Checagem de VIP para o Radar Waze
       const handleTabChange = (tabName) => {
         if (tabName === "radar") {
           if (!currentUser.isVip) {
@@ -1138,23 +1337,23 @@
                     {currentUser.isVip ? "PRO PILOT" : "SOCIAL"}
                   </span>
                 </div>
-                <p className="text-[11px] font-mono text-gray-400">📍 {myCity}</p>
+                <p className="text-[11px] font-mono text-gray-400">ðŸ“ {myCity}</p>
               </div>
             </div>
 
-            {/* Ações do Topo */}
+            {/* AÃ§Ãµes do Topo */}
             <div className="flex items-center gap-2">
               {!currentUser.isVip ? (
                 <button 
                   onClick={() => setIsVipModalOpen(true)}
                   className="px-3.5 py-1.5 rounded-full bg-gradient-to-r from-neon-gold to-neon-amber text-carbon-950 font-racing font-bold text-xs flex items-center gap-1.5 shadow-neon-gold hover:scale-105 transition-all"
                 >
-                  <span>👑</span>
+                  <span>ðŸ‘‘</span>
                   <span>Desbloquear Waze VIP</span>
                 </button>
               ) : (
                 <div className="hidden sm:flex items-center gap-1.5 px-3 py-1 bg-neon-lime/10 border border-neon-lime/30 rounded-full text-[11px] font-racing text-neon-lime font-bold">
-                  <span>⚡</span>
+                  <span>âš¡</span>
                   <span>VIP ATIVO</span>
                 </div>
               )}
@@ -1164,7 +1363,7 @@
                 className="px-2.5 py-1.5 rounded-full bg-carbon-850 hover:bg-carbon-800 border border-white/15 hover:border-neon-lime text-xs font-racing font-bold text-gray-300 hover:text-white flex items-center gap-1.5 transition-all"
                 title="Instalar App no Celular ou Compartilhar Link"
               >
-                <span>📲</span>
+                <span>ðŸ“²</span>
                 <span className="hidden sm:inline">Instalar App</span>
               </button>
 
@@ -1187,7 +1386,7 @@
           </header>
 
           {/* ===================================================================
-              CONTEÚDO PRINCIPAL DAS ABAS
+              CONTEÃšDO PRINCIPAL DAS ABAS
              =================================================================== */}
           <main className="pb-24">
 
@@ -1235,11 +1434,11 @@
                   <div className="glass-panel rounded-2xl p-4 border border-neon-gold/30 bg-gradient-to-r from-neon-gold/10 via-carbon-900 to-neon-red/10 flex items-center justify-between gap-3">
                     <div className="space-y-1">
                       <div className="flex items-center gap-1.5 font-racing font-bold text-sm text-neon-gold">
-                        <span>👑</span>
+                        <span>ðŸ‘‘</span>
                         <span>RADAR WAZE DOS PILOTOS BLOQUEADO</span>
                       </div>
                       <p className="text-xs text-gray-300">
-                        Assine o plano mensal por apenas <strong className="text-white">R$ 29,90/mês</strong> e localize pilotos e rachadores reais na sua cidade em tempo real!
+                        Assine o plano mensal por apenas <strong className="text-white">R$ 29,90/mÃªs</strong> e localize pilotos e rachadores reais na sua cidade em tempo real!
                       </p>
                     </div>
                     <button 
@@ -1271,8 +1470,8 @@
                               )}
                             </div>
                             <div className="text-[11px] font-mono text-neon-cyan flex items-center gap-1">
-                              <span>📍 {post.city}</span>
-                              <span className="text-gray-500">•</span>
+                              <span>ðŸ“ {post.city}</span>
+                              <span className="text-gray-500">â€¢</span>
                               <span className="text-gray-400">{post.time}</span>
                             </div>
                           </div>
@@ -1305,7 +1504,7 @@
                         </div>
                       </div>
 
-                      {/* Barra de Ações: Like, Comentário, Salvar */}
+                      {/* Barra de AÃ§Ãµes: Like, ComentÃ¡rio, Salvar */}
                       <div className="p-4 space-y-3">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-4">
@@ -1314,7 +1513,7 @@
                               className="flex items-center gap-1.5 text-lg hover:scale-110 transition-transform"
                             >
                               <span className={post.isLiked ? "text-neon-red scale-110" : "text-gray-300"}>
-                                {post.isLiked ? "❤️" : "🤍"}
+                                {post.isLiked ? "â¤ï¸" : "ðŸ¤"}
                               </span>
                               <span className="font-mono text-xs font-bold text-white">{post.likes}</span>
                             </button>
@@ -1322,21 +1521,21 @@
                             <button 
                               onClick={() => setActiveCommentsPostId(post.id)}
                               className="flex items-center gap-1.5 text-lg text-gray-300 hover:text-white transition-colors"
-                              title="Abrir comentários"
+                              title="Abrir comentÃ¡rios"
                             >
-                              <span>💬</span>
+                              <span>ðŸ’¬</span>
                               <span className="font-mono text-xs font-bold text-white">{post.comments?.length || 0}</span>
                             </button>
 
                             <button 
                               onClick={() => {
                                 navigator.clipboard.writeText(window.location.href);
-                                showToast("🔗 Link do post copiado!");
+                                showToast("ðŸ”— Link do post copiado!");
                               }}
                               className="text-lg text-gray-300 hover:text-white transition-colors"
                               title="Compartilhar"
                             >
-                              ↗️
+                              â†—ï¸
                             </button>
                           </div>
 
@@ -1344,14 +1543,14 @@
                             onClick={() => handleToggleSave(post.id)}
                             className="text-lg hover:scale-110 transition-transform"
                           >
-                            {post.isSaved ? "🔖" : "📑"}
+                            {post.isSaved ? "ðŸ”–" : "ðŸ“‘"}
                           </button>
                         </div>
 
                         {/* Legenda & Ficha do Carro */}
                         <div className="space-y-1 text-xs">
                           <div className="font-racing font-bold text-sm text-neon-lime flex items-center gap-2">
-                            <span>🚗</span>
+                            <span>ðŸš—</span>
                             <span>{post.car}</span>
                           </div>
                           <p className="text-gray-200 leading-relaxed">
@@ -1360,7 +1559,7 @@
                           </p>
                         </div>
 
-                        {/* Comentários Recentes & Abrir Todos */}
+                        {/* ComentÃ¡rios Recentes & Abrir Todos */}
                         {post.comments && post.comments.length > 0 && (
                           <div className="pt-2 border-t border-white/5 space-y-1.5 text-xs">
                             <button 
@@ -1368,7 +1567,7 @@
                               onClick={() => setActiveCommentsPostId(post.id)}
                               className="text-gray-400 hover:text-neon-lime text-[11px] font-mono block transition-colors"
                             >
-                              Ver todos os {post.comments.length} comentários...
+                              Ver todos os {post.comments.length} comentÃ¡rios...
                             </button>
                             {post.comments.slice(-2).map(c => (
                               <div key={c.id} className="text-gray-300">
@@ -1379,7 +1578,7 @@
                           </div>
                         )}
 
-                        {/* Campo de Inserir Novo Comentário */}
+                        {/* Campo de Inserir Novo ComentÃ¡rio */}
                         <form 
                           onSubmit={(e) => {
                             e.preventDefault();
@@ -1392,7 +1591,7 @@
                           <input 
                             name="comment"
                             type="text" 
-                            placeholder="Adicione um comentário automotivo..." 
+                            placeholder="Adicione um comentÃ¡rio automotivo..." 
                             className="flex-1 bg-carbon-900 border border-white/10 rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none focus:border-neon-lime"
                           />
                           <button type="submit" className="text-xs font-racing font-bold text-neon-lime px-2 py-1">
@@ -1413,86 +1612,187 @@
                 ABA 2: EVENTOS & ENCONTROS AUTOMOTIVOS
                ================================================================= */}
             {activeTab === "events" && (
-              <div className="max-w-2xl mx-auto px-4 py-6 space-y-6">
-                <div className="flex items-center justify-between">
+              <div className="max-w-3xl mx-auto px-3 sm:px-4 py-6 space-y-6">
+                
+                {/* Header Principal da PÃ¡gina de Eventos */}
+                <div className="glass-panel rounded-3xl p-5 sm:p-6 border border-white/10 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                   <div>
-                    <h2 className="font-racing font-black text-2xl text-white">ENCONTROS & EVENTOS</h2>
-                    <p className="text-xs font-mono text-gray-400">Rachas noturnos, trackdays e encontros na região de {myCity}</p>
+                    <div className="flex items-center gap-2.5">
+                      <span className="text-3xl">ðŸ</span>
+                      <h2 className="font-racing font-black text-2xl sm:text-3xl text-white">
+                        EVENTOS AUTOMOTIVOS REAIS â€¢ BRASIL
+                      </h2>
+                    </div>
+                    <p className="text-xs text-gray-300 font-mono mt-1 flex flex-wrap items-center gap-1.5">
+                      <span>ðŸ“ Sua localizaÃ§Ã£o atual:</span>
+                      <span className="text-neon-lime font-bold">{myCity}</span>
+                      <span className="text-gray-400">â€¢ Ordenados automaticamente pelo mais prÃ³ximo de vocÃª!</span>
+                    </p>
                   </div>
-                  <button 
-                    onClick={() => {
-                      showToast("🎪 Envie sua sugestão de evento para a moderação!");
-                    }}
-                    className="px-3 py-1.5 rounded-xl bg-carbon-850 border border-white/15 text-xs font-racing font-bold text-neon-lime hover:bg-carbon-800"
-                  >
-                    + Criar Encontro
-                  </button>
+
+                  {/* Filtros de Categoria */}
+                  <div className="flex flex-wrap gap-1.5">
+                    <button 
+                      onClick={() => setEventCategoryFilter("all")}
+                      className={`px-3 py-1.5 rounded-xl font-racing font-bold text-xs transition-all ${
+                        eventCategoryFilter === "all" ? "bg-neon-lime text-carbon-950 shadow-neon-lime font-black" : "bg-carbon-850 text-gray-400 hover:text-white"
+                      }`}
+                    >
+                      Todos (Mais PrÃ³ximos)
+                    </button>
+                    <button 
+                      onClick={() => setEventCategoryFilter("Drift")}
+                      className={`px-3 py-1.5 rounded-xl font-racing font-bold text-xs transition-all ${
+                        eventCategoryFilter === "Drift" ? "bg-neon-lime text-carbon-950 shadow-neon-lime font-black" : "bg-carbon-850 text-gray-400 hover:text-white"
+                      }`}
+                    >
+                      ðŸ’¨ Drift
+                    </button>
+                    <button 
+                      onClick={() => setEventCategoryFilter("Arrancada")}
+                      className={`px-3 py-1.5 rounded-xl font-racing font-bold text-xs transition-all ${
+                        eventCategoryFilter === "Arrancada" ? "bg-neon-lime text-carbon-950 shadow-neon-lime font-black" : "bg-carbon-850 text-gray-400 hover:text-white"
+                      }`}
+                    >
+                      ðŸ Arrancada & Drag
+                    </button>
+                    <button 
+                      onClick={() => setEventCategoryFilter("Track")}
+                      className={`px-3 py-1.5 rounded-xl font-racing font-bold text-xs transition-all ${
+                        eventCategoryFilter === "Track" ? "bg-neon-lime text-carbon-950 shadow-neon-lime font-black" : "bg-carbon-850 text-gray-400 hover:text-white"
+                      }`}
+                    >
+                      ðŸŽï¸ Track Day
+                    </button>
+                    <button 
+                      onClick={() => setEventCategoryFilter("Custom")}
+                      className={`px-3 py-1.5 rounded-xl font-racing font-bold text-xs transition-all ${
+                        eventCategoryFilter === "Custom" ? "bg-neon-lime text-carbon-950 shadow-neon-lime font-black" : "bg-carbon-850 text-gray-400 hover:text-white"
+                      }`}
+                    >
+                      âœ¨ Encontros & VAG
+                    </button>
+                  </div>
                 </div>
 
+                {/* Lista de Cards de Eventos Reais */}
                 <div className="space-y-5">
-                  {eventsList.map(ev => (
-                    <div key={ev.id} className="glass-panel rounded-3xl border border-white/10 overflow-hidden shadow-2xl hover:border-neon-lime/40 transition-all">
-                      <div className="relative h-52 sm:h-64 w-full overflow-hidden group">
-                        <img src={ev.image} alt={ev.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                        <div className="absolute inset-0 bg-gradient-to-t from-carbon-950 via-carbon-950/50 to-transparent"></div>
-                        <div className="absolute top-3 left-3 px-3 py-1 rounded-full bg-neon-red/90 text-white font-racing font-bold text-[11px] uppercase tracking-wider shadow-lg flex items-center gap-1.5">
-                          <span>🔥</span>
-                          <span>{ev.category || "Evento Oficial"}</span>
+                  {sortedEventsList.map((ev, index) => (
+                    <div key={ev.id} className="glass-panel rounded-3xl border border-white/10 overflow-hidden shadow-2xl flex flex-col md:flex-row group hover:border-neon-lime/40 transition-all">
+                      
+                      {/* Banner / Cartaz Oficial do Evento (com clique para ampliar) */}
+                      <div 
+                        onClick={() => setViewingEventFlyer(ev)}
+                        className="relative md:w-80 h-56 md:h-auto overflow-hidden shrink-0 cursor-pointer group/img bg-carbon-950"
+                        title="Clique para ver o cartaz oficial ampliado"
+                      >
+                        <img 
+                          src={ev.image} 
+                          alt={ev.title} 
+                          className="w-full h-full object-cover group-hover/img:scale-105 transition-transform duration-500" 
+                          loading="lazy"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t md:bg-gradient-to-r from-carbon-950 via-carbon-950/30 to-transparent"></div>
+                        
+                        {/* Overlay no hover: Ver Cartaz */}
+                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center">
+                          <span className="px-3.5 py-1.5 rounded-xl bg-carbon-950/90 text-white border border-white/20 text-xs font-mono font-bold flex items-center gap-1.5 shadow-xl backdrop-blur-md">
+                            ðŸ” Ver Cartaz Oficial
+                          </span>
                         </div>
-                        <div className="absolute bottom-4 left-4 right-4">
-                          <h3 className="font-racing font-black text-xl text-white tracking-wide">{ev.title}</h3>
-                          <div className="text-xs text-neon-cyan font-mono flex flex-wrap items-center gap-x-3 gap-y-1 mt-1">
-                            <span>📅 {ev.date}</span>
-                            <span>•</span>
-                            <span>📍 {ev.location}</span>
-                          </div>
+
+                        {/* DistÃ¢ncia da LocalizaÃ§Ã£o do UsuÃ¡rio */}
+                        <div className="absolute top-3 left-3 flex flex-col gap-1.5 z-10">
+                          {index === 0 && (
+                            <span className="px-3 py-1 rounded-full bg-gradient-to-r from-neon-lime to-emerald-400 text-carbon-950 text-[10px] font-racing font-black uppercase tracking-wider shadow-neon-lime">
+                              ðŸ† O MAIS PRÃ“XIMO DE VOCÃŠ
+                            </span>
+                          )}
+                          <span className="px-3 py-1 rounded-full bg-carbon-950/90 border border-neon-cyan text-neon-cyan text-xs font-mono font-bold shadow-xl backdrop-blur-md">
+                            ðŸ“ A {ev.distText} de vocÃª
+                          </span>
+                        </div>
+
+                        <div className="absolute bottom-3 left-3 z-10 flex items-center gap-1.5">
+                          <span className={`px-2.5 py-1 rounded-lg text-[10px] font-mono font-bold border backdrop-blur-md ${ev.badgeColor}`}>
+                            {ev.tag}
+                          </span>
+                          <span className="px-2 py-0.5 rounded-lg text-[9px] font-mono bg-black/70 text-gray-300 border border-white/10 backdrop-blur-md">
+                            ðŸ” Toque p/ ampliar
+                          </span>
                         </div>
                       </div>
 
-                      {/* Descrição do Evento */}
-                      <div className="p-4 space-y-3 bg-carbon-900/80">
-                        <p className="text-xs text-gray-300 leading-relaxed">
-                          {ev.description}
-                        </p>
-
-                        {/* Barra de Ações: Ingressos, Instagram e Presença */}
-                        <div className="pt-2 border-t border-white/10 flex flex-wrap items-center justify-between gap-2.5">
-                          <div className="flex items-center gap-2">
-                            {ev.ticketUrl && (
-                              <a 
-                                href={ev.ticketUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-neon-gold to-neon-amber text-carbon-950 font-racing font-black text-xs flex items-center gap-1.5 shadow-neon-gold hover:scale-105 transition-all"
-                              >
-                                <span>🎟️</span>
-                                <span>Comprar Ingresso / Site</span>
-                              </a>
-                            )}
-
-                            {ev.instagramUrl && (
-                              <a 
-                                href={ev.instagramUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="px-3 py-2 rounded-xl bg-carbon-800 hover:bg-carbon-700 border border-white/15 text-xs font-racing font-bold text-gray-200 flex items-center gap-1.5 transition-all"
-                              >
-                                <span>📸</span>
-                                <span>Instagram Oficial</span>
-                              </a>
-                            )}
+                      {/* InformaÃ§Ãµes Completas do Evento */}
+                      <div className="p-5 sm:p-6 flex-1 flex flex-col justify-between space-y-4">
+                        <div>
+                          <div className="flex flex-wrap items-center justify-between gap-2 mb-1.5">
+                            <span className="text-xs font-mono text-neon-lime font-bold">{ev.edition}</span>
+                            <span className="text-xs font-mono text-gray-400 bg-carbon-850 px-2 py-0.5 rounded-md border border-white/5">{ev.date}</span>
                           </div>
 
-                          <div className="flex items-center gap-3">
-                            <span className="text-[11px] font-mono text-neon-lime font-bold">
-                              🏁 {ev.confirmed} Confirmados
-                            </span>
+                          {/* Logo Oficial + TÃ­tulo */}
+                          <div className="flex items-center gap-3 mt-1">
+                            {ev.logo && (
+                              <img 
+                                src={ev.logo} 
+                                alt="Logo" 
+                                className="w-10 h-10 object-contain rounded-xl bg-carbon-900/90 p-1 border border-white/10 shrink-0 shadow-md" 
+                              />
+                            )}
+                            <h3 className="font-racing font-black text-xl sm:text-2xl text-white group-hover:text-neon-lime transition-colors">
+                              {ev.title}
+                            </h3>
+                          </div>
+
+                          <div className="flex items-center gap-1.5 text-xs font-mono text-gray-300 mt-2">
+                            <span>ðŸ“ {ev.location} â€¢</span>
+                            <span className="text-white font-bold">{ev.city}</span>
+                          </div>
+
+                          <p className="text-xs text-gray-300 font-sans mt-3 leading-relaxed">
+                            {ev.description}
+                          </p>
+                        </div>
+
+                        {/* Barra de AÃ§Ãµes: Ingressos, Instagram e PresenÃ§a */}
+                        <div className="pt-4 border-t border-white/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                          <div className="space-y-0.5">
+                            <div className="text-[10px] font-mono text-gray-400">INGRESSOS DISPONÃVEIS:</div>
+                            <div className="text-sm font-racing font-bold text-white">{ev.ticketPrice}</div>
+                            <div className="text-[10px] font-mono text-neon-cyan">Plataforma: {ev.ticketPlatform}</div>
+                          </div>
+
+                          <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+                            {/* BotÃ£o Instagram Oficial */}
+                            <a 
+                              href={ev.instagramUrl} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="flex-1 sm:flex-none px-3.5 py-2 rounded-xl bg-carbon-850 hover:bg-carbon-800 border border-white/15 text-xs font-mono font-bold text-gray-200 hover:text-white transition-all flex items-center justify-center gap-1.5"
+                            >
+                              <span>ðŸ“¸</span>
+                              <span>{ev.instagram}</span>
+                            </a>
+
+                            {/* BotÃ£o Oficial de Ingressos */}
+                            <a 
+                              href={ev.ticketUrl} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="flex-1 sm:flex-none px-4 py-2.5 rounded-xl bg-gradient-to-r from-neon-lime to-emerald-400 hover:from-emerald-400 hover:to-neon-lime text-carbon-950 font-racing font-black text-xs uppercase tracking-wider shadow-neon-lime hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-1.5"
+                            >
+                              <span>ðŸŽŸï¸</span>
+                              <span>COMPRAR INGRESSOS</span>
+                            </a>
+
+                            {/* BotÃ£o Confirmar PresenÃ§a */}
                             <button 
                               onClick={() => {
                                 setEventsList(prev => prev.map(e => {
                                   if (e.id === ev.id) {
                                     const nextGoing = !e.isGoing;
-                                    showToast(nextGoing ? "✓ Presença confirmada no evento!" : "Presença cancelada.");
+                                    showToast(nextGoing ? `PresenÃ§a confirmada no ${ev.title}!` : "PresenÃ§a cancelada.");
                                     return {
                                       ...e,
                                       isGoing: nextGoing,
@@ -1503,13 +1803,13 @@
                                 }));
                                 SoundFx.playSonar();
                               }}
-                              className={`px-3.5 py-2 rounded-xl text-xs font-racing font-bold transition-all ${
+                              className={`px-3 py-2 rounded-xl text-xs font-racing font-bold transition-all ${
                                 ev.isGoing 
-                                  ? "bg-neon-lime/20 text-neon-lime border border-neon-lime" 
-                                  : "bg-neon-lime text-carbon-950 font-black shadow-neon-lime"
+                                  ? "bg-carbon-800 text-neon-lime border border-neon-lime/40" 
+                                  : "bg-carbon-900 hover:bg-carbon-850 text-gray-300 border border-white/10"
                               }`}
                             >
-                              {ev.isGoing ? "✓ Vou Participar" : "Eu Vou! Confirmar"}
+                              {ev.isGoing ? "âœ“ Confirmado" : "Eu Vou"}
                             </button>
                           </div>
                         </div>
@@ -1530,17 +1830,17 @@
                 {/* 1. MAPA LEAFLET FULLSCREEN */}
                 <div id="waze-fullscreen-map" className="w-full h-full z-0"></div>
 
-                {/* 2. BARRA SUPERIOR DE ENDEREÇO & STATUS DOS PILOTOS REAIS */}
+                {/* 2. BARRA SUPERIOR DE ENDEREÃ‡O & STATUS DOS PILOTOS REAIS */}
                 <div className="absolute top-4 left-4 right-4 z-20 pointer-events-none flex justify-center">
                   <div className="waze-pill-floating px-4 py-2.5 rounded-2xl flex items-center gap-3 border border-white/15 pointer-events-auto shadow-2xl max-w-lg w-full">
                     <div className="w-3 h-3 rounded-full bg-neon-lime animate-ping"></div>
                     <div className="flex-1 overflow-hidden">
                       <div className="text-[10px] font-mono text-gray-400 uppercase tracking-widest flex items-center gap-1">
                         <span>RADAR WAZE AO VIVO</span>
-                        <span className="text-neon-lime font-bold">• {realPilotsCount} Piloto(s) Real(is) na Pista</span>
+                        <span className="text-neon-lime font-bold">â€¢ {realPilotsCount} Piloto(s) Real(is) na Pista</span>
                       </div>
                       <div className="text-xs font-racing font-bold text-white truncate">
-                        📍 {myCity} • SP-294 e Vias Urbanas
+                        ðŸ“ {myCity} â€¢ SP-294 e Vias Urbanas
                       </div>
                     </div>
                     <div className="flex items-center gap-1.5">
@@ -1549,7 +1849,7 @@
                         className="px-2.5 py-1 bg-carbon-800 hover:bg-carbon-700 text-xs font-racing font-bold text-white rounded-lg border border-white/10 flex items-center gap-1 transition-all"
                         title="Alternar Modo Claro (Dia) e Modo Escuro (Noite)"
                       >
-                        <span>{wazeTheme === "street" ? "☀️ Dia" : "🌙 Noite"}</span>
+                        <span>{wazeTheme === "street" ? "â˜€ï¸ Dia" : "ðŸŒ™ Noite"}</span>
                       </button>
 
                       <button 
@@ -1562,7 +1862,7 @@
                   </div>
                 </div>
 
-                {/* 3. VELOCÍMETRO HUD CIRCULAR WAZE (0 KM/H PARADO) */}
+                {/* 3. VELOCÃMETRO HUD CIRCULAR WAZE (0 KM/H PARADO) */}
                 <div className="absolute bottom-20 left-4 z-20 pointer-events-auto flex flex-col items-center gap-2">
                   <div className="relative w-28 h-28 rounded-full waze-pill-floating border-2 border-white/20 flex flex-col items-center justify-center shadow-waze-glow">
                     <div className="text-[10px] font-racing font-bold text-gray-400 uppercase tracking-wider">
@@ -1575,24 +1875,24 @@
                       KM / H
                     </div>
 
-                    {/* Indicador de Câmbio Dinâmico */}
+                    {/* Indicador de CÃ¢mbio DinÃ¢mico */}
                     <div className="absolute -top-2.5 px-2 py-0.5 rounded-full bg-carbon-900 border border-white/20 text-[10px] font-mono font-bold text-neon-cyan">
-                      {exactSpeed === 0 ? "P" : exactSpeed < 35 ? "1ª" : exactSpeed < 70 ? "2ª" : exactSpeed < 105 ? "3ª" : exactSpeed < 145 ? "4ª" : "5ª"}
+                      {exactSpeed === 0 ? "P" : exactSpeed < 35 ? "1Âª" : exactSpeed < 70 ? "2Âª" : exactSpeed < 105 ? "3Âª" : exactSpeed < 145 ? "4Âª" : "5Âª"}
                     </div>
                   </div>
 
-                  {/* Botão de Teste Rápido / Simular Puxada */}
+                  {/* BotÃ£o de Teste RÃ¡pido / Simular Puxada */}
                   <button 
                     onClick={handleSimulateDrive}
                     disabled={isSimulatingDrive}
                     className="px-2.5 py-1 rounded-full bg-carbon-900/90 border border-white/20 text-[10px] font-racing font-bold text-gray-300 hover:text-neon-lime hover:border-neon-lime transition-all whitespace-nowrap shadow-lg"
-                    title="Testar velocímetro e movimento do mapa imediatamente"
+                    title="Testar velocÃ­metro e movimento do mapa imediatamente"
                   >
-                    {isSimulatingDrive ? "⚡ Acelerando..." : "🚀 Testar Puxada"}
+                    {isSimulatingDrive ? "âš¡ Acelerando..." : "ðŸš€ Testar Puxada"}
                   </button>
                 </div>
 
-                {/* BOTÃO FLUTUANTE RECENTRALIZAR NO MEU CARRO (SE ARRASTAR O MAPA) */}
+                {/* BOTÃƒO FLUTUANTE RECENTRALIZAR NO MEU CARRO (SE ARRASTAR O MAPA) */}
                 {!isAutoFollow && (
                   <div className="absolute top-20 right-4 z-20 pointer-events-auto animate-bounce">
                     <button 
@@ -1602,33 +1902,33 @@
                         if (mapInstanceRef.current) {
                           mapInstanceRef.current.panTo([myLocation.lat, myLocation.lng], { animate: true, duration: 0.8 });
                         }
-                        showToast("🎯 Câmera centralizada no seu carro!");
+                        showToast("ðŸŽ¯ CÃ¢mera centralizada no seu carro!");
                       }}
                       className="px-3.5 py-1.5 rounded-full bg-neon-lime text-carbon-950 font-racing font-bold text-xs shadow-neon-lime flex items-center gap-1.5"
                     >
-                      <span>🎯</span>
+                      <span>ðŸŽ¯</span>
                       <span>Seguir Meu Carro</span>
                     </button>
                   </div>
                 )}
 
-                {/* 4. BOTÃO FLUTUANTE DE REPORTAR ALERTA WAZE */}
+                {/* 4. BOTÃƒO FLUTUANTE DE REPORTAR ALERTA WAZE */}
                 <div className="absolute bottom-20 right-4 z-20 pointer-events-auto">
                   <button 
                     onClick={() => setIsWazeReportMenuOpen(true)}
                     className="w-14 h-14 rounded-full bg-neon-red text-white font-black text-2xl flex items-center justify-center shadow-waze-alert border-2 border-white/30 hover:scale-110 active:scale-95 transition-all"
                     title="Reportar Alerta Waze"
                   >
-                    🚨
+                    ðŸš¨
                   </button>
                 </div>
 
-                {/* 5. AVISO CASO NÃO HAJA OUTROS PILOTOS REAIS NA ÁREA NO MOMENTO */}
+                {/* 5. AVISO CASO NÃƒO HAJA OUTROS PILOTOS REAIS NA ÃREA NO MOMENTO */}
                 {realPilotsCount === 0 && (
                   <div className="absolute top-20 left-1/2 transform -translate-x-1/2 z-20 pointer-events-auto max-w-sm w-full px-4">
                     <div className="waze-pill-floating p-3 rounded-2xl border border-white/15 text-center space-y-1.5 shadow-2xl">
                       <div className="text-xs font-racing font-bold text-neon-lime">
-                        📡 Você é o único piloto online em {myCity} agora!
+                        ðŸ“¡ VocÃª Ã© o Ãºnico piloto online em {myCity} agora!
                       </div>
                       <p className="text-[11px] text-gray-300">
                         O radar mostra estritamente pilotos reais. Compartilhe o link do GridZone para seus amigos aparecerem aqui no mapa em tempo real!
@@ -1636,7 +1936,7 @@
                       <button 
                         onClick={() => {
                           navigator.clipboard.writeText(window.location.href);
-                          showToast("🔗 Link copiado! Envie no WhatsApp para seus amigos.");
+                          showToast("ðŸ”— Link copiado! Envie no WhatsApp para seus amigos.");
                         }}
                         className="px-3 py-1 bg-neon-lime text-carbon-950 font-racing font-bold text-xs rounded-lg shadow-neon-lime hover:scale-105"
                       >
@@ -1646,29 +1946,29 @@
                   </div>
                 )}
 
-                {/* 6. CARD DO ADVERSÁRIO REAL SELECIONADO */}
+                {/* 6. CARD DO ADVERSÃRIO REAL SELECIONADO */}
                 {selectedOpponent && (
                   <div className="absolute bottom-24 left-4 right-4 sm:left-auto sm:right-4 sm:w-96 z-30 pointer-events-auto animate-fadeIn">
                     <div className="waze-pill-floating p-4 rounded-3xl border border-neon-red/50 space-y-3 shadow-2xl">
                       <div className="flex justify-between items-start">
                         <div>
                           <span className="px-2 py-0.5 rounded bg-neon-red/20 text-neon-red font-mono text-[10px] font-bold uppercase">
-                            PILOTO REAL ADVERSÁRIO
+                            PILOTO REAL ADVERSÃRIO
                           </span>
                           <h3 className="font-racing font-bold text-lg text-white mt-1">{selectedOpponent.name}</h3>
-                          <div className="text-xs text-neon-cyan font-mono">📍 {selectedOpponent.city}</div>
+                          <div className="text-xs text-neon-cyan font-mono">ðŸ“ {selectedOpponent.city}</div>
                         </div>
-                        <button onClick={() => setSelectedOpponent(null)} className="text-gray-400 hover:text-white text-lg">✕</button>
+                        <button onClick={() => setSelectedOpponent(null)} className="text-gray-400 hover:text-white text-lg">âœ•</button>
                       </div>
 
                       <div className="p-3 bg-carbon-900 rounded-xl border border-white/10 flex justify-between items-center text-xs">
                         <div>
-                          <div className="text-gray-400 font-mono text-[10px]">VEÍCULO</div>
+                          <div className="text-gray-400 font-mono text-[10px]">VEÃCULO</div>
                           <div className="font-racing font-bold text-white text-sm">{selectedOpponent.car}</div>
                           <div className="text-neon-lime font-bold">{selectedOpponent.power}</div>
                         </div>
                         <div className="text-right">
-                          <div className="text-gray-400 font-mono text-[10px]">DISTÂNCIA</div>
+                          <div className="text-gray-400 font-mono text-[10px]">DISTÃ‚NCIA</div>
                           <div className="font-mono font-bold text-neon-cyan text-sm">
                             {getDistanceBetween(myLocation.lat, myLocation.lng, selectedOpponent.lat, selectedOpponent.lng)}
                           </div>
@@ -1679,7 +1979,7 @@
                         onClick={() => handleSendChallenge(selectedOpponent)}
                         className="w-full py-2.5 rounded-xl bg-neon-red text-white font-racing font-black text-sm uppercase tracking-wider shadow-waze-alert hover:scale-[1.02] transition-transform"
                       >
-                        ⚡ Desafiar para Racha Agora
+                        âš¡ Desafiar para Racha Agora
                       </button>
                     </div>
                   </div>
@@ -1689,7 +1989,7 @@
             )}
 
             {/* =================================================================
-                ABA 4: GARAGEM VIRTUAL & MODIFICAÇÕES (MEU CARRO)
+                ABA 4: GARAGEM VIRTUAL & MODIFICAÃ‡Ã•ES (MEU CARRO)
                ================================================================= */}
             {activeTab === "garage" && (
               <div className="max-w-3xl mx-auto px-4 py-6 space-y-6">
@@ -1702,20 +2002,20 @@
                   <div className="absolute bottom-5 left-5 right-5 flex justify-between items-end">
                     <div>
                       <span className="px-3 py-1 rounded-full bg-neon-lime text-carbon-950 font-racing font-bold text-xs uppercase shadow-neon-lime">
-                        Projeto Ativo • Stage 3
+                        Projeto Ativo â€¢ Stage 3
                       </span>
                       <h2 className="font-racing font-black text-3xl text-white mt-1">{currentUser.car}</h2>
-                      <p className="text-xs font-mono text-neon-cyan">📍 Garagem: {currentUser.city}</p>
+                      <p className="text-xs font-mono text-neon-cyan">ðŸ“ Garagem: {currentUser.city}</p>
                     </div>
 
                     <div className="text-right">
-                      <div className="text-xs font-mono text-gray-400">POTÊNCIA ATUAL</div>
+                      <div className="text-xs font-mono text-gray-400">POTÃŠNCIA ATUAL</div>
                       <div className="font-racing font-black text-3xl text-neon-lime">{currentUser.power}</div>
                     </div>
                   </div>
                 </div>
 
-                {/* Grid de Especificações Rápidas */}
+                {/* Grid de EspecificaÃ§Ãµes RÃ¡pidas */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                   <div className="glass-card p-3 rounded-2xl border border-white/10 text-center">
                     <span className="text-[10px] font-mono text-gray-400">0 A 100 KM/H</span>
@@ -1726,19 +2026,19 @@
                     <div className="text-lg font-racing font-black text-neon-lime">510 Nm</div>
                   </div>
                   <div className="glass-card p-3 rounded-2xl border border-white/10 text-center">
-                    <span className="text-[10px] font-mono text-gray-400">PESO/POTÊNCIA</span>
+                    <span className="text-[10px] font-mono text-gray-400">PESO/POTÃŠNCIA</span>
                     <div className="text-lg font-racing font-black text-white">3.6 kg/cv</div>
                   </div>
                   <div className="glass-card p-3 rounded-2xl border border-white/10 text-center">
-                    <span className="text-[10px] font-mono text-gray-400">COMBUSTÍVEL</span>
+                    <span className="text-[10px] font-mono text-gray-400">COMBUSTÃVEL</span>
                     <div className="text-lg font-racing font-black text-neon-cyan">E100 Puro</div>
                   </div>
                 </div>
 
-                {/* Lista de Modificações Instaladas */}
+                {/* Lista de ModificaÃ§Ãµes Instaladas */}
                 <div className="glass-panel p-5 rounded-3xl border border-white/10 space-y-4">
                   <div className="flex justify-between items-center">
-                    <h3 className="font-racing font-bold text-lg text-white">MODIFICAÇÕES (MODS INSTALADOS)</h3>
+                    <h3 className="font-racing font-bold text-lg text-white">MODIFICAÃ‡Ã•ES (MODS INSTALADOS)</h3>
                     <span className="text-xs font-mono text-neon-lime font-bold">Total: R$ 20.100</span>
                   </div>
 
@@ -1747,7 +2047,7 @@
                       <div key={m.id} className="p-3 bg-carbon-900 rounded-2xl border border-white/5 flex items-center justify-between text-xs">
                         <div>
                           <div className="font-bold text-white text-sm">{m.name}</div>
-                          <div className="text-gray-400 font-mono">{m.brand} • {m.category}</div>
+                          <div className="text-gray-400 font-mono">{m.brand} â€¢ {m.category}</div>
                         </div>
                         <div className="text-right">
                           <div className="text-neon-lime font-racing font-bold">{m.gain}</div>
@@ -1767,7 +2067,7 @@
             {activeTab === "profile" && (
               <div className="max-w-xl mx-auto px-4 py-6 space-y-6">
                 
-                {/* Cabeçalho do Perfil (Instagram Layout) */}
+                {/* CabeÃ§alho do Perfil (Instagram Layout) */}
                 <div className="flex items-center gap-6">
                   <div className="relative">
                     <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full p-1 bg-gradient-to-tr from-neon-lime via-neon-cyan to-neon-gold">
@@ -1783,7 +2083,7 @@
                   <div className="flex-1 space-y-2">
                     <div className="flex items-center gap-2">
                       <h2 className="font-bold text-base sm:text-lg text-white">{currentUser.name}</h2>
-                      {currentUser.isVip && <span className="text-neon-gold text-sm">👑</span>}
+                      {currentUser.isVip && <span className="text-neon-gold text-sm">ðŸ‘‘</span>}
                     </div>
 
                     <div className="flex items-center gap-4 text-xs font-mono">
@@ -1798,11 +2098,11 @@
                 <div className="space-y-1 text-xs">
                   <div className="font-mono font-bold text-neon-lime">{currentUser.username}</div>
                   <p className="text-gray-200 leading-relaxed">{currentUser.bio}</p>
-                  <div className="text-neon-cyan font-mono">🚗 Garagem: {currentUser.car} ({currentUser.power})</div>
-                  <div className="text-gray-400 font-mono">📍 Cidade: {currentUser.city}</div>
+                  <div className="text-neon-cyan font-mono">ðŸš— Garagem: {currentUser.car} ({currentUser.power})</div>
+                  <div className="text-gray-400 font-mono">ðŸ“ Cidade: {currentUser.city}</div>
                 </div>
 
-                {/* Botões de Ação do Perfil */}
+                {/* BotÃµes de AÃ§Ã£o do Perfil */}
                 <div className="flex gap-2 pt-2">
                   <button 
                     onClick={() => setIsAuthModalOpen(true)}
@@ -1816,11 +2116,11 @@
                       onClick={() => setIsVipModalOpen(true)}
                       className="flex-1 py-2 rounded-xl bg-gradient-to-r from-neon-gold to-neon-amber text-carbon-950 font-racing font-black text-xs shadow-neon-gold hover:scale-105 transition-all"
                     >
-                      👑 Assinar Waze VIP
+                      ðŸ‘‘ Assinar Waze VIP
                     </button>
                   ) : (
                     <div className="flex-1 py-2 rounded-xl bg-neon-lime/15 border border-neon-lime text-neon-lime font-racing font-bold text-xs text-center">
-                      ⚡ Membro VIP Ativo
+                      âš¡ Membro VIP Ativo
                     </div>
                   )}
                 </div>
@@ -1841,7 +2141,7 @@
                   </div>
 
                   <div className="flex items-center gap-3.5 overflow-x-auto pb-1.5 no-scrollbar">
-                    {/* Botão Criar Novo Destaque */}
+                    {/* BotÃ£o Criar Novo Destaque */}
                     <div 
                       onClick={() => setIsNewHighlightModalOpen(true)}
                       className="flex flex-col items-center gap-1.5 flex-shrink-0 cursor-pointer group"
@@ -1863,7 +2163,7 @@
                             avatar: currentUser.avatar,
                             image: hl.image,
                             time: "Destaque",
-                            caption: `${currentUser.name} • ${hl.title}`
+                            caption: `${currentUser.name} â€¢ ${hl.title}`
                           });
                           setIsStoryViewerOpen(true);
                         }}
@@ -1881,9 +2181,9 @@
                 {/* Grade de Fotos (Grid Instagram) */}
                 <div className="pt-4 border-t border-white/10 space-y-3">
                   <div className="flex justify-around text-xs font-racing font-bold text-gray-400 border-b border-white/5 pb-2">
-                    <span className="text-neon-lime flex items-center gap-1">📷 POSTAGENS</span>
-                    <span className="flex items-center gap-1">🏎️ MEU CARRO</span>
-                    <span className="flex items-center gap-1">📑 SALVOS</span>
+                    <span className="text-neon-lime flex items-center gap-1">ðŸ“· POSTAGENS</span>
+                    <span className="flex items-center gap-1">ðŸŽï¸ MEU CARRO</span>
+                    <span className="flex items-center gap-1">ðŸ“‘ SALVOS</span>
                   </div>
 
                   <div className="grid grid-cols-3 gap-1.5">
@@ -1891,7 +2191,7 @@
                       <div key={p.id} className="relative aspect-square bg-carbon-900 rounded-lg overflow-hidden group cursor-pointer">
                         <img src={p.image} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" />
                         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center gap-2 text-white font-mono text-xs transition-opacity">
-                          <span>❤️ {p.likes}</span>
+                          <span>â¤ï¸ {p.likes}</span>
                         </div>
                       </div>
                     ))}
@@ -1910,7 +2210,7 @@
           </main>
 
           {/* ===================================================================
-              DOCK DE NAVEGAÇÃO INFERIOR FIXO
+              DOCK DE NAVEGAÃ‡ÃƒO INFERIOR FIXO
              =================================================================== */}
           <div className="fixed bottom-3 left-1/2 transform -translate-x-1/2 z-40 pointer-events-auto">
             <nav className="flex items-center gap-1 p-1.5 rounded-full waze-pill-floating border border-white/15 shadow-2xl">
@@ -1924,7 +2224,7 @@
                     : "text-gray-400 hover:text-white"
                 }`}
               >
-                <span>📱</span>
+                <span>ðŸ“±</span>
                 <span className="hidden sm:inline">Feed</span>
               </button>
 
@@ -1937,7 +2237,7 @@
                     : "text-gray-400 hover:text-white"
                 }`}
               >
-                <span>🎪</span>
+                <span>ðŸŽª</span>
                 <span className="hidden sm:inline">Eventos</span>
               </button>
 
@@ -1952,7 +2252,7 @@
                       : "text-neon-gold hover:bg-neon-gold/10"
                 }`}
               >
-                <span>{currentUser.isVip ? "📡" : "🔒"}</span>
+                <span>{currentUser.isVip ? "ðŸ“¡" : "ðŸ”’"}</span>
                 <span>Waze Radar</span>
                 {!currentUser.isVip && (
                   <span className="px-1 text-[9px] bg-neon-gold text-carbon-950 font-black rounded font-mono">
@@ -1970,7 +2270,7 @@
                     : "text-gray-400 hover:text-white"
                 }`}
               >
-                <span>🏎️</span>
+                <span>ðŸŽï¸</span>
                 <span className="hidden sm:inline">Garagem</span>
               </button>
 
@@ -1983,12 +2283,92 @@
                     : "text-gray-400 hover:text-white"
                 }`}
               >
-                <span>👤</span>
+                <span>ðŸ‘¤</span>
                 <span className="hidden sm:inline">Perfil</span>
               </button>
 
             </nav>
           </div>
+
+          
+          {/* ===================================================================
+              MODAL: VISUALIZADOR DO CARTAZ / PÃ”STER OFICIAL DO EVENTO
+             =================================================================== */}
+          {viewingEventFlyer && (
+            <div 
+              onClick={() => setViewingEventFlyer(null)}
+              className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/90 backdrop-blur-md animate-fadeIn"
+            >
+              <div 
+                onClick={(e) => e.stopPropagation()} 
+                className="glass-panel rounded-3xl max-w-2xl w-full p-4 sm:p-6 border border-white/20 shadow-2xl relative max-h-[92vh] flex flex-col space-y-4 overflow-y-auto"
+              >
+                <div className="flex items-center justify-between border-b border-white/10 pb-3">
+                  <div className="flex items-center gap-3">
+                    {viewingEventFlyer.logo && (
+                      <img 
+                        src={viewingEventFlyer.logo} 
+                        alt="Logo" 
+                        className="w-10 h-10 object-contain rounded-xl bg-carbon-900 p-1 border border-white/10 shadow-md" 
+                      />
+                    )}
+                    <div>
+                      <h3 className="font-racing font-black text-lg sm:text-xl text-white leading-tight">
+                        {viewingEventFlyer.title}
+                      </h3>
+                      <p className="text-[11px] font-mono text-neon-lime">
+                        {viewingEventFlyer.edition} â€¢ {viewingEventFlyer.city}
+                      </p>
+                    </div>
+                  </div>
+                  <button 
+                    onClick={() => setViewingEventFlyer(null)}
+                    className="w-8 h-8 rounded-full bg-carbon-800 hover:bg-carbon-700 text-gray-300 hover:text-white flex items-center justify-center text-sm font-bold border border-white/10 transition-all"
+                  >
+                    âœ•
+                  </button>
+                </div>
+
+                {/* Imagem / Cartaz Oficial em Alta ResoluÃ§Ã£o */}
+                <div className="rounded-2xl overflow-hidden border border-white/15 bg-black/60 flex items-center justify-center max-h-[60vh]">
+                  <img 
+                    src={viewingEventFlyer.image} 
+                    alt={viewingEventFlyer.title} 
+                    className="w-full h-auto max-h-[60vh] object-contain select-none"
+                  />
+                </div>
+
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-2 border-t border-white/10">
+                  <div className="text-xs font-mono text-gray-300 space-y-0.5">
+                    <div><span className="text-gray-400">ðŸ“… Data:</span> <strong className="text-white">{viewingEventFlyer.date}</strong></div>
+                    <div><span className="text-gray-400">ðŸ“ Local:</span> <strong className="text-white">{viewingEventFlyer.location} ({viewingEventFlyer.city})</strong></div>
+                    <div><span className="text-gray-400">ðŸŽŸï¸ Ingressos:</span> <strong className="text-neon-lime">{viewingEventFlyer.ticketPrice}</strong></div>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <a 
+                      href={viewingEventFlyer.instagramUrl} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="px-3.5 py-2.5 rounded-xl bg-carbon-850 hover:bg-carbon-800 border border-white/15 text-xs font-mono font-bold text-gray-200 hover:text-white transition-all flex items-center gap-1.5"
+                    >
+                      <span>ðŸ“¸</span>
+                      <span>Instagram</span>
+                    </a>
+
+                    <a 
+                      href={viewingEventFlyer.ticketUrl} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-neon-lime to-emerald-400 hover:from-emerald-400 hover:to-neon-lime text-carbon-950 font-racing font-black text-xs uppercase tracking-wider shadow-neon-lime hover:scale-105 active:scale-95 transition-all flex items-center gap-1.5"
+                    >
+                      <span>ðŸŽŸï¸ Comprar Ingressos</span>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* ===================================================================
               MODAL: PAYWALL DE ASSINATURA MENSAL (WAZE RADAR VIP)
@@ -2001,12 +2381,12 @@
                   onClick={() => setIsVipModalOpen(false)} 
                   className="absolute top-4 right-4 text-gray-400 hover:text-white text-lg"
                 >
-                  ✕
+                  âœ•
                 </button>
 
                 <div className="text-center space-y-1 pt-1">
                   <span className="px-3 py-0.5 rounded-full bg-gradient-to-r from-neon-gold to-neon-amber text-carbon-950 font-racing font-black text-xs uppercase shadow-neon-gold">
-                    ACESSO EXCLUSIVO • WAZE DOS PILOTOS
+                    ACESSO EXCLUSIVO â€¢ WAZE DOS PILOTOS
                   </span>
                   <h3 className="font-racing font-black text-2xl text-white pt-2">DESBLOQUEIE O RADAR VIP</h3>
                   <p className="text-xs font-mono text-gray-300">
@@ -2017,24 +2397,24 @@
                 {/* Vantagens do Plano */}
                 <div className="p-3.5 bg-carbon-900 rounded-2xl border border-white/10 space-y-2 text-xs">
                   <div className="flex items-center gap-2 text-gray-200">
-                    <span className="text-neon-lime font-bold">✓</span>
+                    <span className="text-neon-lime font-bold">âœ“</span>
                     <span><strong>Apenas Pilotos Reais:</strong> sem bots, encontre carros reais na rua</span>
                   </div>
                   <div className="flex items-center gap-2 text-gray-200">
-                    <span className="text-neon-lime font-bold">✓</span>
-                    <span><strong>Velocímetro Exato HUD:</strong> 0 km/h estrito quando parado</span>
+                    <span className="text-neon-lime font-bold">âœ“</span>
+                    <span><strong>VelocÃ­metro Exato HUD:</strong> 0 km/h estrito quando parado</span>
                   </div>
                   <div className="flex items-center gap-2 text-gray-200">
-                    <span className="text-neon-lime font-bold">✓</span>
-                    <span><strong>Desafios de Racha:</strong> convites instantâneos com som de largada</span>
+                    <span className="text-neon-lime font-bold">âœ“</span>
+                    <span><strong>Desafios de Racha:</strong> convites instantÃ¢neos com som de largada</span>
                   </div>
                   <div className="flex items-center gap-2 text-gray-200">
-                    <span className="text-neon-lime font-bold">✓</span>
-                    <span><strong>Alertas Waze:</strong> blitz policial, pista e radares comunitários</span>
+                    <span className="text-neon-lime font-bold">âœ“</span>
+                    <span><strong>Alertas Waze:</strong> blitz policial, pista e radares comunitÃ¡rios</span>
                   </div>
                 </div>
 
-                {/* Seleção do Plano */}
+                {/* SeleÃ§Ã£o do Plano */}
                 <div className="grid grid-cols-2 gap-3">
                   <div 
                     onClick={() => setSelectedVipPlan("monthly")}
@@ -2046,7 +2426,7 @@
                   >
                     <div className="text-[10px] font-mono font-bold uppercase">PLANO MENSAL</div>
                     <div className="font-racing font-black text-xl text-white">R$ 29,90</div>
-                    <div className="text-[10px] text-gray-400">por mês</div>
+                    <div className="text-[10px] text-gray-400">por mÃªs</div>
                   </div>
 
                   <div 
@@ -2066,7 +2446,7 @@
                   </div>
                 </div>
 
-                {/* Método de Pagamento */}
+                {/* MÃ©todo de Pagamento */}
                 <div className="space-y-2 pt-1">
                   <div className="flex justify-between items-center text-xs font-mono text-gray-300">
                     <span>FORMA DE PAGAMENTO:</span>
@@ -2083,7 +2463,7 @@
                         onClick={() => setVipPaymentMethod("card")}
                         className={`px-2 py-0.5 rounded ${vipPaymentMethod === "card" ? "bg-neon-lime text-carbon-950 font-bold" : "bg-carbon-800 text-gray-400"}`}
                       >
-                        Cartão
+                        CartÃ£o
                       </button>
                     </div>
                   </div>
@@ -2099,7 +2479,7 @@
                     </div>
                   ) : (
                     <div className="space-y-2 text-xs">
-                      <input type="text" placeholder="Número do Cartão" defaultValue="4532 •••• •••• 8912" className="w-full bg-carbon-900 border border-white/10 rounded-xl px-3 py-2 text-white font-mono" />
+                      <input type="text" placeholder="NÃºmero do CartÃ£o" defaultValue="4532 â€¢â€¢â€¢â€¢ â€¢â€¢â€¢â€¢ 8912" className="w-full bg-carbon-900 border border-white/10 rounded-xl px-3 py-2 text-white font-mono" />
                       <div className="grid grid-cols-2 gap-2">
                         <input type="text" placeholder="Validade (MM/AA)" defaultValue="08/28" className="bg-carbon-900 border border-white/10 rounded-xl px-3 py-2 text-white font-mono" />
                         <input type="text" placeholder="CVV" defaultValue="734" className="bg-carbon-900 border border-white/10 rounded-xl px-3 py-2 text-white font-mono" />
@@ -2108,16 +2488,16 @@
                   )}
                 </div>
 
-                {/* Botão de Finalizar Assinatura */}
+                {/* BotÃ£o de Finalizar Assinatura */}
                 <button 
                   onClick={handleConfirmVipSubscription}
                   disabled={isVipProcessing}
                   className="w-full py-3 rounded-2xl bg-gradient-to-r from-neon-gold via-neon-amber to-neon-lime text-carbon-950 font-racing font-black text-sm tracking-wider shadow-neon-gold hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2"
                 >
                   {isVipProcessing ? (
-                    <span>⏳ Aprovando Pagamento Instantâneo...</span>
+                    <span>â³ Aprovando Pagamento InstantÃ¢neo...</span>
                   ) : (
-                    <span>⚡ Confirmar e Liberar Acesso VIP</span>
+                    <span>âš¡ Confirmar e Liberar Acesso VIP</span>
                   )}
                 </button>
 
@@ -2132,8 +2512,8 @@
             <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-fadeIn">
               <div className="waze-pill-floating rounded-3xl max-w-md w-full p-6 border border-white/15 space-y-4 shadow-2xl">
                 <div className="flex justify-between items-center border-b border-white/10 pb-3">
-                  <h3 className="font-racing font-bold text-base text-white">Criar Nova Publicação</h3>
-                  <button onClick={() => setIsNewPostModalOpen(false)} className="text-gray-400 hover:text-white text-lg">✕</button>
+                  <h3 className="font-racing font-bold text-base text-white">Criar Nova PublicaÃ§Ã£o</h3>
+                  <button onClick={() => setIsNewPostModalOpen(false)} className="text-gray-400 hover:text-white text-lg">âœ•</button>
                 </div>
 
                 <form 
@@ -2159,7 +2539,7 @@
                     setPosts(prev => [newP, ...prev]);
                     setIsNewPostModalOpen(false);
                     SoundFx.playLike();
-                    showToast("📸 Publicação compartilhada no GridZone!");
+                    showToast("ðŸ“¸ PublicaÃ§Ã£o compartilhada no GridZone!");
                   }}
                   className="space-y-3 text-xs"
                 >
@@ -2177,10 +2557,10 @@
                   <div>
                     <label className="text-gray-300 font-mono block mb-1">Categoria</label>
                     <select name="category" className="w-full bg-carbon-900 border border-white/10 rounded-xl px-3 py-2 text-white font-mono focus:outline-none focus:border-neon-lime">
-                      <option value="Meu Projeto / Garagem">🏎️ Meu Projeto / Garagem</option>
-                      <option value="Encontro Noturno">🎪 Encontro Noturno</option>
-                      <option value="Racha / Arrancada">🏁 Racha / Arrancada</option>
-                      <option value="Dica de Oficina / Peças">🔧 Dica de Oficina / Peças</option>
+                      <option value="Meu Projeto / Garagem">ðŸŽï¸ Meu Projeto / Garagem</option>
+                      <option value="Encontro Noturno">ðŸŽª Encontro Noturno</option>
+                      <option value="Racha / Arrancada">ðŸ Racha / Arrancada</option>
+                      <option value="Dica de Oficina / PeÃ§as">ðŸ”§ Dica de Oficina / PeÃ§as</option>
                     </select>
                   </div>
 
@@ -2199,8 +2579,8 @@
                     <textarea 
                       name="caption" 
                       rows="3" 
-                      placeholder="Conte sobre seu carro, modificações ou convide a galera para puxar..." 
-                      defaultValue="Mais uma melhoria feita no projeto! Pronto pra puxar na pista. 🔥 #GridZone #Racha"
+                      placeholder="Conte sobre seu carro, modificaÃ§Ãµes ou convide a galera para puxar..." 
+                      defaultValue="Mais uma melhoria feita no projeto! Pronto pra puxar na pista. ðŸ”¥ #GridZone #Racha"
                       className="w-full bg-carbon-900 border border-white/10 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-neon-lime resize-none"
                     ></textarea>
                   </div>
@@ -2237,7 +2617,7 @@
                       <div className="text-[10px] font-mono text-gray-300">{activeStory.time}</div>
                     </div>
                   </div>
-                  <button onClick={() => setIsStoryViewerOpen(false)} className="text-white text-xl p-1">✕</button>
+                  <button onClick={() => setIsStoryViewerOpen(false)} className="text-white text-xl p-1">âœ•</button>
                 </div>
 
                 {/* Imagem do Story */}
@@ -2253,14 +2633,14 @@
           )}
 
           {/* ===================================================================
-              MODAL: CADASTRO / LOGIN / EDIÇÃO DO PILOTO
+              MODAL: CADASTRO / LOGIN / EDIÃ‡ÃƒO DO PILOTO
              =================================================================== */}
           {isAuthModalOpen && (
             <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-fadeIn">
               <div className="waze-pill-floating rounded-3xl max-w-md w-full p-6 border border-white/15 space-y-4 shadow-2xl">
                 <div className="flex justify-between items-center border-b border-white/10 pb-3">
                   <h3 className="font-racing font-bold text-base text-white">Ficha do Piloto & Cadastro</h3>
-                  <button onClick={() => setIsAuthModalOpen(false)} className="text-gray-400 hover:text-white text-lg">✕</button>
+                  <button onClick={() => setIsAuthModalOpen(false)} className="text-gray-400 hover:text-white text-lg">âœ•</button>
                 </div>
 
                 <form 
@@ -2269,7 +2649,7 @@
                     const form = e.target;
                     const updated = {
                       ...currentUser,
-                      name: form.name.value.trim() || "Victor Simão",
+                      name: form.name.value.trim() || "Victor SimÃ£o",
                       username: form.username.value.trim() || "@victor_gti",
                       car: form.car.value.trim() || "Golf GTI Stage 3",
                       power: form.power.value.trim() || "380 cv",
@@ -2280,7 +2660,7 @@
                     setMyCity(updated.city);
                     setIsAuthModalOpen(false);
                     SoundFx.playSonar();
-                    showToast("✓ Cadastro e Perfil atualizados!");
+                    showToast("âœ“ Cadastro e Perfil atualizados!");
                   }}
                   className="space-y-3 text-xs"
                 >
@@ -2290,7 +2670,7 @@
                       <input name="name" type="text" defaultValue={currentUser.name} className="w-full bg-carbon-900 border border-white/10 rounded-xl px-3 py-2 text-white font-bold" />
                     </div>
                     <div>
-                      <label className="text-gray-300 font-mono block mb-1">@Usuário</label>
+                      <label className="text-gray-300 font-mono block mb-1">@UsuÃ¡rio</label>
                       <input name="username" type="text" defaultValue={currentUser.username} className="w-full bg-carbon-900 border border-white/10 rounded-xl px-3 py-2 text-white font-bold" />
                     </div>
                   </div>
@@ -2301,7 +2681,7 @@
                       <input name="car" type="text" defaultValue={currentUser.car} className="w-full bg-carbon-900 border border-white/10 rounded-xl px-3 py-2 text-white font-bold" />
                     </div>
                     <div>
-                      <label className="text-gray-300 font-mono block mb-1">Potência Estimada (cv)</label>
+                      <label className="text-gray-300 font-mono block mb-1">PotÃªncia Estimada (cv)</label>
                       <input name="power" type="text" defaultValue={currentUser.power} className="w-full bg-carbon-900 border border-white/10 rounded-xl px-3 py-2 text-white font-bold" />
                     </div>
                   </div>
@@ -2318,7 +2698,7 @@
 
                   <div className="pt-2 flex justify-end gap-2">
                     <button type="button" onClick={() => setIsAuthModalOpen(false)} className="px-4 py-2 rounded-xl bg-carbon-800 text-gray-300">Fechar</button>
-                    <button type="submit" className="px-5 py-2 rounded-xl bg-neon-lime text-carbon-950 font-black font-racing shadow-neon-lime">Salvar Alterações</button>
+                    <button type="submit" className="px-5 py-2 rounded-xl bg-neon-lime text-carbon-950 font-black font-racing shadow-neon-lime">Salvar AlteraÃ§Ãµes</button>
                   </div>
                 </form>
               </div>
@@ -2331,7 +2711,7 @@
           {activeChallengeReceived && (
             <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-fadeIn">
               <div className="waze-pill-floating rounded-3xl max-w-sm w-full p-6 border-2 border-neon-red space-y-4 shadow-waze-alert text-center">
-                <div className="text-4xl animate-bounce">⚡🏁</div>
+                <div className="text-4xl animate-bounce">âš¡ðŸ</div>
                 <div>
                   <span className="px-2.5 py-0.5 rounded bg-neon-red text-white font-mono text-[10px] font-bold">
                     DESAFIO DE RACHA RECEBIDO!
@@ -2340,12 +2720,12 @@
                     {activeChallengeReceived.challengerName}
                   </h3>
                   <div className="text-xs text-neon-cyan font-mono">
-                    📍 {activeChallengeReceived.challengerCity || myCity}
+                    ðŸ“ {activeChallengeReceived.challengerCity || myCity}
                   </div>
                 </div>
 
                 <div className="p-3 bg-carbon-900 rounded-2xl border border-white/10 text-xs">
-                  <div className="text-gray-400 font-mono text-[10px]">VEÍCULO DO DESAFIANTE</div>
+                  <div className="text-gray-400 font-mono text-[10px]">VEÃCULO DO DESAFIANTE</div>
                   <div className="font-racing font-bold text-white text-base">{activeChallengeReceived.challengerCar}</div>
                   <div className="text-neon-lime font-bold">{activeChallengeReceived.challengerPower}</div>
                 </div>
@@ -2360,7 +2740,7 @@
                   <button 
                     onClick={() => {
                       SoundFx.playVipSuccess();
-                      showToast(`🏁 DESAFIO ACEITO! Alinhe na pista contra ${activeChallengeReceived.challengerName}!`);
+                      showToast(`ðŸ DESAFIO ACEITO! Alinhe na pista contra ${activeChallengeReceived.challengerName}!`);
                       setActiveChallengeReceived(null);
                     }}
                     className="flex-1 py-2.5 rounded-xl bg-neon-red text-white font-racing font-black text-xs shadow-waze-alert"
@@ -2380,51 +2760,51 @@
               <div className="waze-pill-floating rounded-3xl max-w-md w-full p-6 border border-white/15 space-y-4 shadow-2xl">
                 <div className="flex justify-between items-center border-b border-white/10 pb-3">
                   <h3 className="font-racing font-bold text-sm text-white">Reportar Alerta Waze aos Pilotos</h3>
-                  <button onClick={() => setIsWazeReportMenuOpen(false)} className="text-gray-400 hover:text-white text-lg">✕</button>
+                  <button onClick={() => setIsWazeReportMenuOpen(false)} className="text-gray-400 hover:text-white text-lg">âœ•</button>
                 </div>
 
                 <div className="grid grid-cols-2 gap-3 text-center">
                   <button 
                     onClick={() => {
-                      showToast("🚨 Alerta de Blitz Policial transmitido para Tupã - SP!");
+                      showToast("ðŸš¨ Alerta de Blitz Policial transmitido para TupÃ£ - SP!");
                       setIsWazeReportMenuOpen(false);
                     }}
                     className="p-4 rounded-2xl bg-carbon-900 hover:bg-carbon-850 border border-neon-red/40 space-y-1 transition-all"
                   >
-                    <div className="text-2xl">👮‍♂️</div>
+                    <div className="text-2xl">ðŸ‘®â€â™‚ï¸</div>
                     <div className="font-racing font-bold text-xs text-white">Blitz / Comando</div>
                   </button>
 
                   <button 
                     onClick={() => {
-                      showToast("🚔 Viatura em ronda reportada!");
+                      showToast("ðŸš” Viatura em ronda reportada!");
                       setIsWazeReportMenuOpen(false);
                     }}
                     className="p-4 rounded-2xl bg-carbon-900 hover:bg-carbon-850 border border-neon-cyan/40 space-y-1 transition-all"
                   >
-                    <div className="text-2xl">🚔</div>
+                    <div className="text-2xl">ðŸš”</div>
                     <div className="font-racing font-bold text-xs text-white">Viatura na Via</div>
                   </button>
 
                   <button 
                     onClick={() => {
-                      showToast("📷 Radar móvel alertado!");
+                      showToast("ðŸ“· Radar mÃ³vel alertado!");
                       setIsWazeReportMenuOpen(false);
                     }}
                     className="p-4 rounded-2xl bg-carbon-900 hover:bg-carbon-850 border border-neon-amber/40 space-y-1 transition-all"
                   >
-                    <div className="text-2xl">📷</div>
-                    <div className="font-racing font-bold text-xs text-white">Radar Móvel</div>
+                    <div className="text-2xl">ðŸ“·</div>
+                    <div className="font-racing font-bold text-xs text-white">Radar MÃ³vel</div>
                   </button>
 
                   <button 
                     onClick={() => {
-                      showToast("🌧️ Pista escorregadia alertada!");
+                      showToast("ðŸŒ§ï¸ Pista escorregadia alertada!");
                       setIsWazeReportMenuOpen(false);
                     }}
                     className="p-4 rounded-2xl bg-carbon-900 hover:bg-carbon-850 border border-neon-lime/40 space-y-1 transition-all"
                   >
-                    <div className="text-2xl">🌧️</div>
+                    <div className="text-2xl">ðŸŒ§ï¸</div>
                     <div className="font-racing font-bold text-xs text-white">Pista Molhada</div>
                   </button>
                 </div>
@@ -2439,8 +2819,8 @@
             <div className="fixed inset-0 z-50 flex items-start justify-center p-4 pt-16 bg-black/80 backdrop-blur-md animate-fadeIn">
               <div className="waze-pill-floating rounded-3xl max-w-md w-full p-6 border border-white/15 space-y-4 shadow-2xl">
                 <div className="flex justify-between items-center border-b border-white/10 pb-3">
-                  <h3 className="font-racing font-bold text-sm text-white">Mudar Cidade / Posição do Radar</h3>
-                  <button onClick={() => setIsSearchOpen(false)} className="text-gray-400 hover:text-white text-lg">✕</button>
+                  <h3 className="font-racing font-bold text-sm text-white">Mudar Cidade / PosiÃ§Ã£o do Radar</h3>
+                  <button onClick={() => setIsSearchOpen(false)} className="text-gray-400 hover:text-white text-lg">âœ•</button>
                 </div>
 
                 <form 
@@ -2448,7 +2828,7 @@
                     e.preventDefault();
                     if (!searchQuery.trim()) return;
                     try {
-                      showToast("🔍 Buscando endereço...");
+                      showToast("ðŸ” Buscando endereÃ§o...");
                       const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery.trim() + ", Brasil")}`);
                       const data = await res.json();
                       if (data && data.length > 0) {
@@ -2459,10 +2839,10 @@
                         if (mapInstanceRef.current) {
                           mapInstanceRef.current.panTo([newLat, newLng], { animate: true });
                         }
-                        showToast(`📍 Movido para: ${data[0].display_name.split(",")[0]}`);
+                        showToast(`ðŸ“ Movido para: ${data[0].display_name.split(",")[0]}`);
                         setIsSearchOpen(false);
                       } else {
-                        showToast("Localização não encontrada.");
+                        showToast("LocalizaÃ§Ã£o nÃ£o encontrada.");
                       }
                     } catch(err) {
                       showToast("Erro na busca.");
@@ -2474,7 +2854,7 @@
                     type="text" 
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Ex: Av. Tamoios, Tupã ou Marília, SP" 
+                    placeholder="Ex: Av. Tamoios, TupÃ£ ou MarÃ­lia, SP" 
                     className="w-full bg-carbon-900 border border-white/10 rounded-xl px-3.5 py-2.5 text-white font-bold focus:outline-none focus:border-neon-lime"
                   />
                   <div className="flex justify-end gap-2">
@@ -2496,7 +2876,7 @@
                   onClick={() => setIsShareModalOpen(false)} 
                   className="absolute top-4 right-4 text-gray-400 hover:text-white text-lg"
                 >
-                  ✕
+                  âœ•
                 </button>
 
                 <div className="text-center space-y-1">
@@ -2512,26 +2892,26 @@
                 <div className="p-3.5 bg-carbon-900 rounded-2xl border border-white/10 space-y-3 text-xs">
                   <div className="space-y-1">
                     <div className="font-bold text-white flex items-center gap-1.5 text-neon-cyan">
-                      <span>🍏</span>
+                      <span>ðŸ</span>
                       <span>No iPhone / iOS (Safari):</span>
                     </div>
                     <p className="text-gray-300 text-[11px] leading-relaxed">
-                      Toque no botão <strong>Compartilhar</strong> (quadradinho com seta para cima) na barra inferior e selecione <strong>"Adicionar à Tela de Início"</strong>.
+                      Toque no botÃ£o <strong>Compartilhar</strong> (quadradinho com seta para cima) na barra inferior e selecione <strong>"Adicionar Ã  Tela de InÃ­cio"</strong>.
                     </p>
                   </div>
 
                   <div className="space-y-1 pt-2 border-t border-white/5">
                     <div className="font-bold text-white flex items-center gap-1.5 text-neon-lime">
-                      <span>🤖</span>
+                      <span>ðŸ¤–</span>
                       <span>No Android (Google Chrome):</span>
                     </div>
                     <p className="text-gray-300 text-[11px] leading-relaxed">
-                      Toque nos <strong>3 pontinhos</strong> no canto superior direito e clique em <strong>"Instalar aplicativo"</strong> ou <strong>"Adicionar à tela inicial"</strong>.
+                      Toque nos <strong>3 pontinhos</strong> no canto superior direito e clique em <strong>"Instalar aplicativo"</strong> ou <strong>"Adicionar Ã  tela inicial"</strong>.
                     </p>
                   </div>
                 </div>
 
-                {/* Ações de Compartilhamento */}
+                {/* AÃ§Ãµes de Compartilhamento */}
                 <div className="space-y-2 pt-1">
                   <a 
                     href="https://api.whatsapp.com/send?text=Bora%20tirar%20racha%20e%20ver%20os%20carros%20da%20nossa%20cidade%20ao%20vivo!%20Acessa%20o%20GridZone%20aqui:%20https://vctraphael.github.io/projeto-1/"
@@ -2539,18 +2919,18 @@
                     rel="noopener noreferrer"
                     className="w-full py-3 rounded-2xl bg-[#25D366] text-white font-racing font-black text-xs tracking-wider shadow-lg hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2"
                   >
-                    <span>💬</span>
+                    <span>ðŸ’¬</span>
                     <span>Compartilhar no WhatsApp com os Pilotos</span>
                   </a>
 
                   <button 
                     onClick={() => {
                       navigator.clipboard.writeText("https://vctraphael.github.io/projeto-1/");
-                      showToast("🔗 Link oficial copiado para a área de transferência!");
+                      showToast("ðŸ”— Link oficial copiado para a Ã¡rea de transferÃªncia!");
                     }}
                     className="w-full py-2.5 rounded-2xl bg-carbon-850 hover:bg-carbon-800 border border-white/15 text-xs font-racing font-bold text-gray-200 flex items-center justify-center gap-2"
                   >
-                    <span>📋</span>
+                    <span>ðŸ“‹</span>
                     <span>Copiar Link do App</span>
                   </button>
                 </div>
@@ -2565,7 +2945,7 @@
           {toast.show && (
             <div className="fixed top-16 left-1/2 transform -translate-x-1/2 z-50 pointer-events-none animate-bounce">
               <div className="waze-pill-floating px-4 py-2.5 rounded-2xl border border-neon-lime/40 text-xs font-racing font-bold text-white shadow-2xl flex items-center gap-2">
-                <span>⚡</span>
+                <span>âš¡</span>
                 <span>{toast.msg}</span>
               </div>
             </div>
@@ -2575,7 +2955,7 @@
       );
     }
 
-    // Renderiza a aplicação
+    // Renderiza a aplicaÃ§Ã£o
     ReactDOM.createRoot(document.getElementById("root")).render(<App />);
   </script>
 
