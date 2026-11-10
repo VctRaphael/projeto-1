@@ -1074,6 +1074,15 @@
 
         let map = mapInstanceRef.current;
 
+        // Se o mapa anterior estiver desconectado do DOM (ex: ao trocar de abas), limpa e recria
+        if (map && (!map.getContainer || !document.body.contains(map.getContainer()))) {
+          try { map.remove(); } catch(e) {}
+          map = null;
+          mapInstanceRef.current = null;
+          tileLayerRef.current = null;
+          markersGroupRef.current = null;
+        }
+
         if (container._leaflet_id && !map) {
           container._leaflet_id = null;
         }
@@ -1088,9 +1097,10 @@
             });
 
             // ESRI World Street Map (Estradas amarelas/laranjas estilo Waze limpo)
-            const tileLayer = L.tileLayer("https://services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}", {
-              maxZoom: 19
-            }).addTo(map);
+            const tileUrl = wazeTheme === "street"
+              ? "https://services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}"
+              : "https://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}";
+            const tileLayer = L.tileLayer(tileUrl, { maxZoom: 19 }).addTo(map);
 
             tileLayerRef.current = tileLayer;
 
@@ -1817,12 +1827,22 @@
                         📍 {myCity} • SP-294 e Vias Urbanas
                       </div>
                     </div>
-                    <button 
-                      onClick={() => setIsSearchOpen(true)}
-                      className="px-2.5 py-1 bg-carbon-800 hover:bg-carbon-700 text-neon-cyan font-mono text-xs rounded-lg border border-white/10"
-                    >
-                      Mudar Rua
-                    </button>
+                    <div className="flex items-center gap-1.5">
+                      <button 
+                        onClick={toggleWazeTheme}
+                        className="px-2.5 py-1 bg-carbon-800 hover:bg-carbon-700 text-xs font-racing font-bold text-white rounded-lg border border-white/10 flex items-center gap-1 transition-all"
+                        title="Alternar Modo Claro (Dia) e Modo Escuro (Noite)"
+                      >
+                        <span>{wazeTheme === "street" ? "☀️ Dia" : "🌙 Noite"}</span>
+                      </button>
+
+                      <button 
+                        onClick={() => setIsSearchOpen(true)}
+                        className="px-2.5 py-1 bg-carbon-800 hover:bg-carbon-700 text-neon-cyan font-mono text-xs rounded-lg border border-white/10"
+                      >
+                        Mudar Rua
+                      </button>
+                    </div>
                   </div>
                 </div>
 
