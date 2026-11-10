@@ -17,26 +17,20 @@ Uma plataforma web progressiva (PWA) de alta performance desenvolvida sob medida
 
 ### 🏁 Principais Eventos Mapeados:
 
-#### 📍 Região Alta Paulista & Centro-Oeste (Marília, Bauru, Tupã & Assis):
-1. **Festival de Drift & Arrancada de Marília** — Autódromo Municipal de Avencas (Marília - SP) | Instagram: @automovelclubemarilia | Ingressos: 1kg Alimento Solidário
-2. **Night Meet Turbos & Clássicos na Esmeralda** — Av. das Esmeraldas (Marília - SP) | Instagram: @clubedoopalamarilia | Entrada Franca
-3. **Expo Dapper Style Bauru** — Recinto Mello Moraes (Bauru - SP) | Instagram: @dapper_style_oficial | Ingressos: Sympla Oficial Dapper
-4. **Exposição Tradicional de Carros Antigos de Bauru** — Recinto Mello Moraes & Vitória Régia (Bauru - SP) | Ingressos: Sympla & Portaria
-5. **Encontro de Clássicos no Sambódromo de Bauru** — Sambódromo Municipal (Bauru - SP) | Instagram: @bauru147clube | Entrada Franca
-6. **Encontro Noturno de Turbos & Customizados de Tupã** — Praça da Bandeira / Av. Tamoios (Tupã - SP) | Entrada Franca
-7. **Encontro Automotivo & Antigos de Assis** — Parque Ecológico Buracão (Assis - SP) | Entrada Franca
+#### 📍 Região Mais Próxima (Marília & Bauru):
+1. **Ryoukai Meet Marília (1ª Edição)** — Autódromo Municipal de Marília (Marília - SP) | Instagram: @ryoukaimeet | Ingressos: Uticket Oficial (uticket.com.br)
+2. **Expo Dapper Style Bauru** — Recinto Mello Moraes (Bauru - SP) | Instagram: @dapper_style_oficial | Ingressos: Sympla Oficial (sympla.com.br/evento/expo-dapper-style/2290620)
 
-#### 🏆 Grandes Campeonatos Nacionais:
-1. **Ultimate Drift Brasil** — Autódromo ECPA (Piracicaba - SP) | Instagram: `@ultimatedriftbr` | Ingressos: Sympla & Site Oficial
-2. **Bubble Gun Treffen (BGT 14)** — Praça Adhemar de Barros (Águas de Lindóia - SP) | Instagram: `@bgtreffen` | Ingressos: Sympla Oficial
-3. **Crazy For Auto** — Autódromo de Interlagos (São Paulo - SP) | Instagram: `@crazyforauto` | Ingressos: Sympla & Linktree
-4. **Armageddon Arrancada No Prep** — Pista Race Park (Maringá - PR) | Instagram: `@listasbrasiloficial` | Ingressos: Sympla & Minha Entrada
-5. **VP Series de Arrancada** — Autódromo Velopark (Nova Santa Rita - RS) | Instagram: `@velopark` | Ingressos: Sympla Velopark
-6. **Detailer Fest Brasil & Drift** — Centro de Eventos Boituva (SP) | Instagram: `@detailerfestbrasil` | Ingressos: Site Oficial & Sympla
-7. **Km de Arrancada** — Autódromo de Goiânia (GO) | Instagram: `@km_arrancada` | Ingressos: Sympla Oficial
-8. **Encontro Brasileiro de Autos Antigos (EBAA)** — Águas de Lindóia (SP) | Instagram: `@encontroantigosaguasdelindoia`
-9. **STX Festival / Car Culture** — Sambódromo do Anhembi (São Paulo - SP) | Instagram: `@stxfestival` | Ingressos: Sympla Oficial
-
+#### 🏆 Grandes Campeonatos Nacionais & Interestaduais:
+3. **SPID Cup • Arrancada Internacional (Padrão NHRA)** — SPID Dragway (Itatiba - SP) | Instagram: @spidcup | Ingressos: Bilheteria Oficial SPID (spidcup.com.br)
+4. **Armageddon Arrancada No Prep** — Pistas Oficiais (Londrina / Race Park / Velopark) | Instagram: @listasbrasiloficial | Ingressos: Bilheteria Oficial Listas Brasil & Sympla
+5. **Detailer Fest Brasil & Drift Show** — Centro de Eventos Boituva (Boituva - SP) | Instagram: @detailerfestbrasil | Ingressos: Sympla Oficial (sympla.com.br)
+6. **Drag Fest Brasil (Arrancada 201m)** — Pista Force Car (Artur Nogueira - SP) | Instagram: @dragfestoficial | Ingressos: Sympla Oficial (sympla.com.br)
+7. **Bubble Gun Treffen (BGT 14)** — Praça Adhemar de Barros (Águas de Lindóia - SP) | Instagram: @bgtreffen | Ingressos: Sympla Oficial VP97
+8. **Crazy For Auto • Interlagos** — Autódromo de Interlagos (São Paulo - SP) | Instagram: @crazyforauto | Ingressos: Sympla Oficial
+9. **Ultimate Drift Brasil** — Autódromo ECPA (Piracicaba - SP) & Mega Space | Instagram: @ultimatedriftbr | Ingressos: Bilheteria Oficial & Sympla (ultimatedrift.com.br)
+10. **Encontro Brasileiro de Autos Antigos (EBAA)** — Praça Adhemar de Barros (Águas de Lindóia - SP) | Instagram: @encontroantigosaguasdelindoia | Acesso Gratuito Pedestres (encontroaguasdelindoia.com.br)
+11. **VP Series de Arrancada Velopark** — Complexo Automobilístico Velopark (Nova Santa Rita - RS) | Instagram: @velopark | Ingressos: Sympla Oficial Velopark
 ---
 
 ## 🏎️ Outros Módulos Integrados
