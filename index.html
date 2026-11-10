@@ -1687,6 +1687,22 @@
 
             {/* Ações do Topo */}
             <div className="flex items-center gap-2">
+              
+              {/* Botão de Atalho Rápido para a Aba Race Stats */}
+              <button 
+                onClick={() => handleTabChange("racestats")}
+                className={`px-3 py-1.5 rounded-full border text-xs font-racing font-bold flex items-center gap-1.5 transition-all shadow-md ${
+                  activeTab === "racestats"
+                    ? "bg-neon-lime text-carbon-950 border-neon-lime shadow-neon-lime font-black"
+                    : "bg-carbon-900 border-neon-lime/40 text-neon-lime hover:bg-neon-lime/10"
+                }`}
+                title="Abrir Aba Race Stats (Telemetria Dragy)"
+              >
+                <span>⏱️</span>
+                <span className="hidden xs:inline">Race Stats</span>
+                <span className="px-1 text-[8px] bg-neon-lime text-carbon-950 font-black rounded font-mono">DRAGY</span>
+              </button>
+
               {!currentUser.isVip ? (
                 <button 
                   onClick={() => setIsVipModalOpen(true)}
@@ -1793,6 +1809,30 @@
                     </button>
                   </div>
                 )}
+
+                {/* BANNER DE ACESSO RÁPIDO AO RACE STATS */}
+                <div 
+                  onClick={() => handleTabChange("racestats")}
+                  className="glass-panel rounded-2xl p-3.5 border border-neon-lime/40 bg-gradient-to-r from-neon-lime/10 via-carbon-900 to-carbon-900 flex items-center justify-between gap-3 cursor-pointer hover:border-neon-lime transition-all shadow-neon-lime"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-neon-lime/20 border border-neon-lime/50 flex items-center justify-center text-xl shadow-md">
+                      ⏱️
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="font-racing font-bold text-sm text-white">NOVA ABA: RACE STATS (DRAGY)</span>
+                        <span className="px-1.5 py-0.2 bg-neon-lime text-carbon-950 text-[9px] font-racing font-black rounded">NOVO</span>
+                      </div>
+                      <p className="text-[11px] font-mono text-gray-300">
+                        Meça 0-100 km/h, 100-200, 402m e telemetria física do {currentUser.car}!
+                      </p>
+                    </div>
+                  </div>
+                  <button className="px-3 py-1.5 rounded-xl bg-neon-lime text-carbon-950 font-racing font-bold text-xs shadow-neon-lime whitespace-nowrap">
+                    Acessar ›
+                  </button>
+                </div>
 
                 {/* 2. FEED DE POSTAGENS DOS CARROS E EVENTOS (ESTILO INSTAGRAM) */}
                 <div className="space-y-6">
@@ -2213,6 +2253,17 @@
                       {exactSpeed === 0 ? "P" : exactSpeed < 35 ? "1ª" : exactSpeed < 70 ? "2ª" : exactSpeed < 105 ? "3ª" : exactSpeed < 145 ? "4ª" : "5ª"}
                     </div>
                   </div>
+
+                  {/* Atalho direto para a página Race Stats */}
+                  <button 
+                    onClick={() => handleTabChange("racestats")}
+                    className="px-3 py-1.5 rounded-full bg-carbon-900/95 border border-neon-lime/50 text-neon-lime hover:bg-neon-lime hover:text-carbon-950 text-[10px] font-racing font-bold transition-all shadow-lg flex items-center gap-1.5 whitespace-nowrap"
+                    title="Abrir página dedicada Race Stats (Telemetria Dragy)"
+                  >
+                    <span>⏱️</span>
+                    <span>Abrir Race Stats (Dragy)</span>
+                    <span>›</span>
+                  </button>
                 </div>
 
                 {/* BOTÃO FLUTUANTE RECENTRALIZAR NO MEU CARRO (SE ARRASTAR O MAPA) */}
@@ -3073,39 +3124,39 @@
           {/* ===================================================================
               DOCK DE NAVEGAÇÃO INFERIOR FIXO
              =================================================================== */}
-          <div className="fixed bottom-3 left-1/2 transform -translate-x-1/2 z-40 pointer-events-auto">
-            <nav className="flex items-center gap-1 p-1.5 rounded-full waze-pill-floating border border-white/15 shadow-2xl">
+          <div className="fixed bottom-2 left-1/2 transform -translate-x-1/2 z-40 pointer-events-auto max-w-[99vw] px-1">
+            <nav className="flex items-center gap-1 sm:gap-2 p-1.5 rounded-3xl waze-pill-floating border border-white/20 shadow-2xl">
               
               {/* 1. Feed Social (Instagram) */}
               <button 
                 onClick={() => handleTabChange("feed")}
-                className={`flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-racing font-bold transition-all ${
+                className={`flex flex-col sm:flex-row items-center gap-0.5 sm:gap-1.5 px-2.5 sm:px-3 py-1 sm:py-2 rounded-2xl text-[10px] sm:text-xs font-racing font-bold transition-all ${
                   activeTab === "feed"
                     ? "bg-neon-lime text-carbon-950 shadow-neon-lime"
                     : "text-gray-400 hover:text-white"
                 }`}
               >
-                <span>📱</span>
-                <span className="hidden sm:inline">Feed</span>
+                <span className="text-sm">📱</span>
+                <span className="leading-none">Feed</span>
               </button>
 
               {/* 2. Encontros Automotivos */}
               <button 
                 onClick={() => handleTabChange("events")}
-                className={`flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-racing font-bold transition-all ${
+                className={`flex flex-col sm:flex-row items-center gap-0.5 sm:gap-1.5 px-2.5 sm:px-3 py-1 sm:py-2 rounded-2xl text-[10px] sm:text-xs font-racing font-bold transition-all ${
                   activeTab === "events"
                     ? "bg-neon-lime text-carbon-950 shadow-neon-lime"
                     : "text-gray-400 hover:text-white"
                 }`}
               >
-                <span>🎪</span>
-                <span className="hidden sm:inline">Eventos</span>
+                <span className="text-sm">🎪</span>
+                <span className="leading-none">Eventos</span>
               </button>
 
               {/* 3. Waze Radar (Com Cadeado / VIP) */}
               <button 
                 onClick={() => handleTabChange("radar")}
-                className={`flex items-center gap-1.5 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-[11px] sm:text-xs font-racing font-bold transition-all ${
+                className={`flex flex-col sm:flex-row items-center gap-0.5 sm:gap-1.5 px-2.5 sm:px-3 py-1 sm:py-2 rounded-2xl text-[10px] sm:text-xs font-racing font-bold transition-all ${
                   activeTab === "radar"
                     ? "bg-neon-lime text-carbon-950 shadow-neon-lime"
                     : currentUser.isVip 
@@ -3113,53 +3164,51 @@
                       : "text-neon-gold hover:bg-neon-gold/10"
                 }`}
               >
-                <span>{currentUser.isVip ? "📡" : "🔒"}</span>
-                <span className="hidden sm:inline">Radar</span>
-                {!currentUser.isVip && (
-                  <span className="px-1 text-[9px] bg-neon-gold text-carbon-950 font-black rounded font-mono">
-                    VIP
-                  </span>
-                )}
+                <span className="text-sm">{currentUser.isVip ? "📡" : "🔒"}</span>
+                <span className="leading-none">Radar</span>
               </button>
 
-              {/* 4. Race Stats (Dragy / RaceBox Telemetria) */}
+              {/* 4. Race Stats (Dragy / RaceBox Telemetria) - DESTAQUE */}
               <button 
                 onClick={() => handleTabChange("racestats")}
-                className={`flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-full text-[11px] sm:text-xs font-racing font-bold transition-all ${
+                className={`relative flex flex-col sm:flex-row items-center gap-0.5 sm:gap-1.5 px-3 sm:px-4 py-1 sm:py-2 rounded-2xl text-[10px] sm:text-xs font-racing font-bold transition-all ${
                   activeTab === "racestats"
-                    ? "bg-neon-lime text-carbon-950 shadow-neon-lime"
-                    : "text-gray-400 hover:text-white"
+                    ? "bg-neon-lime text-carbon-950 shadow-neon-lime font-black"
+                    : "bg-carbon-850/90 text-white border border-neon-lime/40 hover:border-neon-lime shadow-neon-lime"
                 }`}
-                title="Race Stats • Dragy & Telemetria"
+                title="Aba Race Stats • Telemetria Dragy"
               >
-                <span>⏱️</span>
-                <span className="hidden sm:inline">Race Stats</span>
+                <span className="absolute -top-2 -right-1 px-1.5 py-0.2 bg-neon-red text-white text-[8px] font-black rounded-full font-mono animate-bounce shadow-md">
+                  NOVO
+                </span>
+                <span className="text-sm">⏱️</span>
+                <span className="leading-none whitespace-nowrap">Race Stats</span>
               </button>
 
               {/* 5. Minha Garagem & Mods */}
               <button 
                 onClick={() => handleTabChange("garage")}
-                className={`flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-full text-[11px] sm:text-xs font-racing font-bold transition-all ${
+                className={`flex flex-col sm:flex-row items-center gap-0.5 sm:gap-1.5 px-2.5 sm:px-3 py-1 sm:py-2 rounded-2xl text-[10px] sm:text-xs font-racing font-bold transition-all ${
                   activeTab === "garage"
                     ? "bg-neon-lime text-carbon-950 shadow-neon-lime"
                     : "text-gray-400 hover:text-white"
                 }`}
               >
-                <span>🏎️</span>
-                <span className="hidden sm:inline">Garagem</span>
+                <span className="text-sm">🏎️</span>
+                <span className="leading-none">Garagem</span>
               </button>
 
               {/* 6. Perfil Social */}
               <button 
                 onClick={() => handleTabChange("profile")}
-                className={`flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-full text-[11px] sm:text-xs font-racing font-bold transition-all ${
+                className={`flex flex-col sm:flex-row items-center gap-0.5 sm:gap-1.5 px-2.5 sm:px-3 py-1 sm:py-2 rounded-2xl text-[10px] sm:text-xs font-racing font-bold transition-all ${
                   activeTab === "profile"
                     ? "bg-neon-lime text-carbon-950 shadow-neon-lime"
                     : "text-gray-400 hover:text-white"
                 }`}
               >
-                <span>👤</span>
-                <span className="hidden sm:inline">Perfil</span>
+                <span className="text-sm">👤</span>
+                <span className="leading-none">Perfil</span>
               </button>
 
             </nav>
