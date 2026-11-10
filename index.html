@@ -294,6 +294,72 @@
           osc.start();
           osc.stop(ctx.currentTime + 0.35);
         } catch(e) {}
+      },
+      playStageBeep() {
+        try {
+          const ctx = this.getCtx();
+          if (!ctx) return;
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.type = "sine";
+          osc.frequency.setValueAtTime(520, ctx.currentTime);
+          gain.gain.setValueAtTime(0.2, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.12);
+          osc.start();
+          osc.stop(ctx.currentTime + 0.12);
+        } catch(e) {}
+      },
+      playAmberBeep() {
+        try {
+          const ctx = this.getCtx();
+          if (!ctx) return;
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.type = "sine";
+          osc.frequency.setValueAtTime(660, ctx.currentTime);
+          gain.gain.setValueAtTime(0.25, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.18);
+          osc.start();
+          osc.stop(ctx.currentTime + 0.18);
+        } catch(e) {}
+      },
+      playGreenLaunch() {
+        try {
+          const ctx = this.getCtx();
+          if (!ctx) return;
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.type = "square";
+          osc.frequency.setValueAtTime(1320, ctx.currentTime);
+          gain.gain.setValueAtTime(0.3, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.45);
+          osc.start();
+          osc.stop(ctx.currentTime + 0.45);
+        } catch(e) {}
+      },
+      playFinishFanfare() {
+        try {
+          const ctx = this.getCtx();
+          if (!ctx) return;
+          [880, 1174.66, 1760].forEach((freq, idx) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.type = "sine";
+            osc.frequency.setValueAtTime(freq, ctx.currentTime + idx * 0.12);
+            gain.gain.setValueAtTime(0.2, ctx.currentTime + idx * 0.12);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + idx * 0.12 + 0.25);
+            osc.start(ctx.currentTime + idx * 0.12);
+            osc.stop(ctx.currentTime + idx * 0.12 + 0.26);
+          });
+        } catch(e) {}
       }
     };
 
@@ -819,37 +885,320 @@
       const [isWazeReportMenuOpen, setIsWazeReportMenuOpen] = useState(false);
       const [isSearchOpen, setIsSearchOpen] = useState(false);
       const [searchQuery, setSearchQuery] = useState("");
-      const [isSimulatingDrive, setIsSimulatingDrive] = useState(false);
       const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
-      // Função para simular teste de puxada (quando o usuário quiser testar em casa ou no computador)
-      const handleSimulateDrive = () => {
-        if (isSimulatingDrive) return;
-        setIsSimulatingDrive(true);
-        showToast("🚀 Simulando puxada na pista!");
-        SoundFx.playChallenge();
+      // =======================================================================
+      // RACE STATS & DRAGY TELEMETRY STATE (ESTILO DRAGY / RACEBOX APP)
+      // =======================================================================
+      const [raceFilter, setRaceFilter] = useState("all"); // "all", "speed", "drag", "brake"
+      const [raceTreeState, setRaceTreeState] = useState("ready"); // "ready", "staging", "amber1", "amber2", "amber3", "green", "running", "finished"
+      const [raceSpeed, setRaceSpeed] = useState(0);
+      const [raceCurrentG, setRaceCurrentG] = useState(0.00);
+      const [racePeakG, setRacePeakG] = useState(0.85);
+      const [raceElapsedMs, setRaceElapsedMs] = useState(0);
+      const [raceDistanceM, setRaceDistanceM] = useState(0);
+      const [raceReactionTime, setRaceReactionTime] = useState(0.312);
+      const [isRacePulling, setIsRacePulling] = useState(false);
+      const [raceSlipModal, setRaceSlipModal] = useState(null);
 
-        let step = 0;
-        const speeds = [0, 18, 42, 68, 95, 122, 148, 125, 88, 45, 15, 0];
-        const timer = setInterval(() => {
-          if (step < speeds.length) {
-            const simulatedKmh = speeds[step];
-            setExactSpeed(simulatedKmh);
-            setMyLocation(prev => {
-              const next = { lat: prev.lat + 0.00015, lng: prev.lng + 0.00012 };
-              if (mapInstanceRef.current && isAutoFollowRef.current) {
-                mapInstanceRef.current.panTo([next.lat, next.lng], { animate: true, duration: 0.6 });
-              }
-              return next;
-            });
-            step++;
-          } else {
-            clearInterval(timer);
-            setExactSpeed(0);
-            setIsSimulatingDrive(false);
-            showToast("🏁 Puxada concluída! Velocímetro em 0 km/h.");
+      // Tempos registrados da puxada atual
+      const [currentRunMetrics, setCurrentRunMetrics] = useState({
+        t0_60: 2.14,
+        t0_100: 4.24,
+        t100_200: 7.58,
+        t60_120: 3.38,
+        t201m: { time: 7.88, speed: 154.2 },
+        t402m: { time: 12.08, speed: 196.4 },
+        t100_0: { time: 2.84, dist: 35.8 },
+        peakG: 0.85,
+        slope: -0.28,
+        isValid: true
+      });
+
+      // Histórico de puxadas gravado no localStorage
+      const [raceHistory, setRaceHistory] = useState(() => {
+        try {
+          const saved = localStorage.getItem("gridzone_racestats_history");
+          if (saved) return JSON.parse(saved);
+        } catch(e) {}
+        return [
+          {
+            id: "run-1",
+            date: "Hoje às 19:42",
+            car: "Golf GTI Mk7.5 Stage 3 (380 cv)",
+            t0_60: 2.14,
+            t0_100: 4.24,
+            t100_200: 7.58,
+            t60_120: 3.38,
+            t201m: { time: 7.88, speed: 154.2 },
+            t402m: { time: 12.08, speed: 196.4 },
+            t100_0: { time: 2.84, dist: 35.8 },
+            peakG: 0.85,
+            slope: -0.28,
+            isValid: true,
+            notes: "Largada perfeita no asfalto com Launch Control 3.500 RPM"
+          },
+          {
+            id: "run-2",
+            date: "Ontem às 22:15",
+            car: "Golf GTI Mk7.5 Stage 3 (380 cv)",
+            t0_60: 2.22,
+            t0_100: 4.38,
+            t100_200: 7.72,
+            t60_120: 3.45,
+            t201m: { time: 8.01, speed: 151.8 },
+            t402m: { time: 12.29, speed: 193.1 },
+            t100_0: { time: 2.91, dist: 36.5 },
+            peakG: 0.81,
+            slope: -0.15,
+            isValid: true,
+            notes: "Puxada noturna em rodovia plana"
           }
-        }, 650);
+        ];
+      });
+
+      const raceIntervalRef = useRef(null);
+
+      // Função para Iniciar Simulação / Puxada Estilo Race Stats
+      const handleStartRacePull = () => {
+        if (isRacePulling) return;
+        setIsRacePulling(true);
+        setRaceSpeed(0);
+        setRaceElapsedMs(0);
+        setRaceDistanceM(0);
+        setRaceCurrentG(0);
+
+        // Reset tempos temporários para a puxada
+        setCurrentRunMetrics(prev => ({
+          ...prev,
+          t0_60: null,
+          t0_100: null,
+          t100_200: null,
+          t60_120: null,
+          t201m: null,
+          t402m: null,
+          t100_0: null,
+          peakG: 0
+        }));
+
+        // Sequência da Árvore de Natal de Arrancada (Drag Christmas Tree)
+        setRaceTreeState("staging");
+        SoundFx.playStageBeep();
+        showToast("🟡 Alinhando na largada... Pre-Stage & Stage ativos!");
+
+        setTimeout(() => {
+          setRaceTreeState("amber1");
+          SoundFx.playAmberBeep();
+
+          setTimeout(() => {
+            setRaceTreeState("amber2");
+            SoundFx.playAmberBeep();
+
+            setTimeout(() => {
+              setRaceTreeState("amber3");
+              SoundFx.playAmberBeep();
+
+              setTimeout(() => {
+                // GREEN LIGHT - LARGADA!
+                setRaceTreeState("green");
+                SoundFx.playGreenLaunch();
+                const rt = Number((0.280 + Math.random() * 0.08).toFixed(3));
+                setRaceReactionTime(rt);
+                showToast("🟢🟢 LARGADA! Pé no fundo!");
+
+                // Iniciar corrida e telemetria física em tempo real
+                setRaceTreeState("running");
+                let elapsedSec = 0;
+                let currentKmH = 0;
+                let currentDist = 0;
+                let maxG = 0;
+                let t60 = null;
+                let t100 = null;
+                let t120 = null;
+                let t201 = null;
+                let t200 = null;
+                let t402 = null;
+                let t100StartMs = null;
+                let isBrakingPhase = false;
+
+                const stepMs = 40;
+                raceIntervalRef.current = setInterval(() => {
+                  elapsedSec += stepMs / 1000;
+                  setRaceElapsedMs(Math.round(elapsedSec * 1000));
+
+                  if (!isBrakingPhase) {
+                    // Aceleração física do Golf GTI Stage 3 (380 cv):
+                    let gForce = 0;
+                    if (elapsedSec < 2.15) {
+                      // 1ª Marcha: arrancada agressiva com pico de 0.85G
+                      const progress = elapsedSec / 2.15;
+                      currentKmH = Math.round(progress * 60);
+                      gForce = Number((0.85 - progress * 0.15 + (Math.random() * 0.04 - 0.02)).toFixed(2));
+                      if (currentKmH >= 60 && !t60) {
+                        t60 = Number(elapsedSec.toFixed(2));
+                        setCurrentRunMetrics(m => ({ ...m, t0_60: t60 }));
+                      }
+                    } else if (elapsedSec < 4.25) {
+                      // 2ª Marcha: 60 a 100 km/h
+                      const progress = (elapsedSec - 2.15) / (4.25 - 2.15);
+                      currentKmH = Math.round(60 + progress * 40);
+                      gForce = Number((0.68 - progress * 0.12 + (Math.random() * 0.03 - 0.015)).toFixed(2));
+                      if (currentKmH >= 100 && !t100) {
+                        t100 = Number(elapsedSec.toFixed(2));
+                        t100StartMs = elapsedSec;
+                        setCurrentRunMetrics(m => ({ ...m, t0_100: t100 }));
+                      }
+                    } else if (elapsedSec < 7.9) {
+                      // 3ª Marcha: 100 a 155 km/h
+                      const progress = (elapsedSec - 4.25) / (7.9 - 4.25);
+                      currentKmH = Math.round(100 + progress * 55);
+                      gForce = Number((0.54 - progress * 0.08 + (Math.random() * 0.03 - 0.015)).toFixed(2));
+                      if (currentKmH >= 120 && !t120) {
+                        t120 = Number((elapsedSec - (t60 || 2.14)).toFixed(2));
+                        setCurrentRunMetrics(m => ({ ...m, t60_120: t120 }));
+                      }
+                    } else if (elapsedSec < 12.1) {
+                      // 4ª Marcha: 155 a 198 km/h
+                      const progress = (elapsedSec - 7.9) / (12.1 - 7.9);
+                      currentKmH = Math.round(155 + progress * 43);
+                      gForce = Number((0.44 - progress * 0.06 + (Math.random() * 0.02 - 0.01)).toFixed(2));
+                      if (currentKmH >= 200 && !t200 && t100StartMs) {
+                        t200 = Number((elapsedSec - t100StartMs).toFixed(2));
+                        setCurrentRunMetrics(m => ({ ...m, t100_200: t200 }));
+                      }
+                    } else {
+                      currentKmH = 205;
+                      gForce = 0.38;
+                      if (!t200 && t100StartMs) {
+                        t200 = Number((elapsedSec - t100StartMs).toFixed(2));
+                        setCurrentRunMetrics(m => ({ ...m, t100_200: t200 }));
+                      }
+                    }
+
+                    // Distância percorrida acumulada
+                    const speedMs = (currentKmH * 1000) / 3600;
+                    currentDist += speedMs * (stepMs / 1000);
+                    setRaceDistanceM(Number(currentDist.toFixed(1)));
+
+                    if (currentDist >= 201 && !t201) {
+                      t201 = { time: Number(elapsedSec.toFixed(2)), speed: Number(currentKmH.toFixed(1)) };
+                      setCurrentRunMetrics(m => ({ ...m, t201m: t201 }));
+                    }
+
+                    if (currentDist >= 402 && !t402) {
+                      t402 = { time: Number(elapsedSec.toFixed(2)), speed: Number(currentKmH.toFixed(1)) };
+                      setCurrentRunMetrics(m => ({ ...m, t402m: t402 }));
+                    }
+
+                    if (gForce > maxG) maxG = gForce;
+                    setRaceCurrentG(gForce);
+                    setRacePeakG(maxG);
+                    setRaceSpeed(currentKmH);
+                    setExactSpeed(currentKmH);
+
+                    // Aos 12.4s ou após cruzar os 402m e 200 km/h, inicia a frenagem de segurança
+                    if (elapsedSec >= 12.4 && currentDist >= 402) {
+                      isBrakingPhase = true;
+                      showToast("🛑 Cruzou a linha dos 402m! Testando frenagem...");
+                    }
+                  } else {
+                    // Fase de Frenagem: desaceleração de 205 até 0 km/h
+                    currentKmH -= 14;
+                    const decelG = Number((-1.05 + (Math.random() * 0.08 - 0.04)).toFixed(2));
+                    setRaceCurrentG(decelG);
+
+                    if (currentKmH <= 0) {
+                      currentKmH = 0;
+                      clearInterval(raceIntervalRef.current);
+                      setRaceSpeed(0);
+                      setExactSpeed(0);
+                      setRaceCurrentG(0);
+                      setRaceTreeState("finished");
+                      setIsRacePulling(false);
+                      SoundFx.playFinishFanfare();
+
+                      // Consolidar resultados finais da puxada
+                      const finalRun = {
+                        id: "run-" + Date.now(),
+                        date: "Hoje às " + new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }),
+                        car: currentUser.car + " (" + currentUser.power + ")",
+                        t0_60: t60 || 2.14,
+                        t0_100: t100 || 4.24,
+                        t100_200: t200 || 7.58,
+                        t60_120: t120 || 3.38,
+                        t201m: t201 || { time: 7.88, speed: 154.2 },
+                        t402m: t402 || { time: 12.08, speed: 196.4 },
+                        t100_0: { time: 2.84, dist: 35.8 },
+                        peakG: maxG || 0.85,
+                        slope: -0.28,
+                        isValid: true,
+                        notes: "Puxada oficial Dragy / Race Stats registrada com sucesso!"
+                      };
+
+                      setCurrentRunMetrics(finalRun);
+                      setRaceHistory(prev => {
+                        const updated = [finalRun, ...prev];
+                        try {
+                          localStorage.setItem("gridzone_racestats_history", JSON.stringify(updated.slice(0, 15)));
+                        } catch(e) {}
+                        return updated;
+                      });
+
+                      showToast("🏆 Puxada Concluída! 0-100: " + finalRun.t0_100 + "s | 402m: " + finalRun.t402m.time + "s");
+                    } else {
+                      setRaceSpeed(currentKmH);
+                      setExactSpeed(currentKmH);
+                    }
+                  }
+                }, stepMs);
+
+              }, 500); // Green
+            }, 500); // Amber 3
+          }, 500); // Amber 2
+        }, 600); // Amber 1
+      };
+
+      // Resetar Race Stats
+      const handleResetRace = () => {
+        if (raceIntervalRef.current) clearInterval(raceIntervalRef.current);
+        setIsRacePulling(false);
+        setRaceTreeState("ready");
+        setRaceSpeed(0);
+        setExactSpeed(0);
+        setRaceCurrentG(0);
+        setRaceElapsedMs(0);
+        setRaceDistanceM(0);
+        showToast("🔄 Race Stats resetado e pronto para nova largada!");
+      };
+
+      // Compartilhar / Publicar Telemetria no Feed Social do GridZone
+      const handlePublishRaceSlipToFeed = (run) => {
+        const newPost = {
+          id: "post_race_" + Date.now(),
+          author: currentUser.name || "Victor Simão",
+          username: currentUser.username || "@victor_gti",
+          avatar: currentUser.avatar || "logo.jpg",
+          city: currentUser.city || "Tupã - SP",
+          time: "agora",
+          isVip: true,
+          isFollowing: false,
+          likes: 48,
+          isLiked: true,
+          isSaved: false,
+          car: currentUser.car + " • " + currentUser.power,
+          category: "Race Stats / Telemetria",
+          image: currentUser.carImage || "https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?auto=format&fit=crop&w=1200&q=80",
+          caption: `⏱️ NOVA PUXADA REGISTRADA NO RACE STATS! 🚀\n🔥 0 a 100 km/h: ${run.t0_100}s\n⚡ 100 a 200 km/h: ${run.t100_200}s\n🏁 1/4 de Milha (402m): ${run.t402m ? run.t402m.time + 's @ ' + run.t402m.speed + ' km/h' : '12.08s'}\n📈 Pico G: +${run.peakG}G | Inclinação: ${run.slope}% (VÁLIDO Dragy / SAE J1349)\n📍 Pista Tupã - SP. O Golf GTI Stage 3 tá canhão! Quem aguenta no radar? #RaceStats #Dragy #GolfGTI #Stage3 #GridZone`,
+          comments: [
+            { id: "c_race1", user: "GridZone Oficial", username: "@gridzone_official", text: "⏱️ Telemetria certificada com sucesso! Tempo no Top 3 regional de Tupã!" }
+          ]
+        };
+
+        setPosts(prev => [newPost, ...prev]);
+        setRaceSlipModal(null);
+        setActiveTab("feed");
+        SoundFx.playLike();
+        showToast("🚀 Telemetria publicada com sucesso no Feed Social!");
       };
 
       // Toast feedback
@@ -1864,16 +2213,6 @@
                       {exactSpeed === 0 ? "P" : exactSpeed < 35 ? "1ª" : exactSpeed < 70 ? "2ª" : exactSpeed < 105 ? "3ª" : exactSpeed < 145 ? "4ª" : "5ª"}
                     </div>
                   </div>
-
-                  {/* Botão de Teste Rápido / Simular Puxada */}
-                  <button 
-                    onClick={handleSimulateDrive}
-                    disabled={isSimulatingDrive}
-                    className="px-2.5 py-1 rounded-full bg-carbon-900/90 border border-white/20 text-[10px] font-racing font-bold text-gray-300 hover:text-neon-lime hover:border-neon-lime transition-all whitespace-nowrap shadow-lg"
-                    title="Testar velocímetro e movimento do mapa imediatamente"
-                  >
-                    {isSimulatingDrive ? "⚡ Acelerando..." : "🚀 Testar Puxada"}
-                  </button>
                 </div>
 
                 {/* BOTÃO FLUTUANTE RECENTRALIZAR NO MEU CARRO (SE ARRASTAR O MAPA) */}
@@ -1973,7 +2312,598 @@
             )}
 
             {/* =================================================================
-                ABA 4: GARAGEM VIRTUAL & MODIFICAÇÕES (MEU CARRO)
+                ABA 4: RACE STATS & TELEMETRIA DRAGY (ESTILO RACE STATS / DRAGY / RACEBOX)
+               ================================================================= */}
+            {activeTab === "racestats" && (
+              <div className="max-w-4xl mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-6">
+
+                {/* 1. Barra de Status GNSS / Dragy Header */}
+                <div className="glass-panel p-3.5 sm:p-4 rounded-3xl border border-white/10 flex flex-wrap items-center justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    <div className="relative flex items-center justify-center w-10 h-10 rounded-2xl bg-carbon-900 border border-neon-lime/30 shadow-neon-lime">
+                      <span className="text-xl">⏱️</span>
+                      <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-neon-lime opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-neon-lime"></span>
+                      </span>
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h2 className="font-racing font-black text-lg sm:text-xl text-white tracking-wider">
+                          RACE STATS
+                        </h2>
+                        <span className="px-1.5 py-0.5 rounded bg-neon-lime/10 border border-neon-lime/30 text-[10px] font-mono font-bold text-neon-lime">
+                          10Hz GNSS
+                        </span>
+                        <span className="px-1.5 py-0.5 rounded bg-neon-cyan/10 border border-neon-cyan/30 text-[10px] font-mono font-bold text-neon-cyan">
+                          RTK ±0.05m
+                        </span>
+                      </div>
+                      <p className="text-[11px] font-mono text-gray-400">
+                        Telemetria de Alta Precisão • Arrancada, Retomada & Frenagem
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Badges de Clima, Inclinação e DA */}
+                  <div className="flex flex-wrap items-center gap-2 text-[11px] font-mono">
+                    <div className="px-2.5 py-1 rounded-xl bg-carbon-900 border border-white/10 text-gray-300 flex items-center gap-1.5">
+                      <span className="text-neon-lime font-bold">22/24 Sats</span>
+                      <span className="text-gray-500">•</span>
+                      <span>10ms</span>
+                    </div>
+                    <div className="px-2.5 py-1 rounded-xl bg-neon-lime/10 border border-neon-lime/30 text-neon-lime font-bold flex items-center gap-1.5">
+                      <span>📐 -0.28%</span>
+                      <span className="text-xs">✅ VÁLIDO</span>
+                    </div>
+                    <div className="px-2.5 py-1 rounded-xl bg-carbon-900 border border-white/10 text-gray-300">
+                      🌡️ 23°C • DA +380m
+                    </div>
+                  </div>
+                </div>
+
+                {/* 2. Banner do Veículo & Status do Launch Control */}
+                <div className="glass-card p-4 rounded-3xl border border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
+                  <div className="flex items-center gap-3.5">
+                    <img 
+                      src={currentUser.carImage} 
+                      className="w-16 h-16 rounded-2xl object-cover border border-white/15 shadow-lg" 
+                    />
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="px-2 py-0.5 rounded-full bg-neon-lime text-carbon-950 font-racing font-bold text-[10px] uppercase">
+                          Veículo Conectado
+                        </span>
+                        <span className="text-xs font-mono text-gray-400">📍 {currentUser.city}</span>
+                      </div>
+                      <h3 className="font-racing font-black text-xl text-white mt-0.5">
+                        {currentUser.car}
+                      </h3>
+                      <div className="flex items-center gap-3 text-xs font-mono text-neon-cyan">
+                        <span>Potência: {currentUser.power}</span>
+                        <span>•</span>
+                        <span>Câmbio: DSG DQ250</span>
+                        <span>•</span>
+                        <span>Tração: FWD</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Status da Puxada */}
+                  <div className="text-right flex sm:flex-col items-center sm:items-end justify-between w-full sm:w-auto">
+                    <div className="text-[10px] font-racing font-bold text-gray-400 uppercase tracking-wider">
+                      MODO DE PISTA
+                    </div>
+                    <div className={`font-racing font-black text-sm px-3 py-1 rounded-full border ${
+                      raceTreeState === "ready" 
+                        ? "bg-carbon-900 border-white/20 text-gray-300"
+                        : raceTreeState === "running"
+                          ? "bg-neon-lime/20 border-neon-lime text-neon-lime animate-pulse"
+                          : raceTreeState === "finished"
+                            ? "bg-neon-gold/20 border-neon-gold text-neon-gold"
+                            : "bg-neon-amber/20 border-neon-amber text-neon-amber animate-pulse"
+                    }`}>
+                      {raceTreeState === "ready" && "⚪ STANDBY (ARMADO NO ZERO)"}
+                      {raceTreeState === "staging" && "🟡 ALINHANDO (STAGING)"}
+                      {(raceTreeState === "amber1" || raceTreeState === "amber2" || raceTreeState === "amber3") && "🟡🟡🟡 CONTAGEM..."}
+                      {(raceTreeState === "green" || raceTreeState === "running") && "🟢🟢 PÉ NO FUNDO (ACELERANDO!)"}
+                      {raceTreeState === "finished" && "🏁 PUXADA CONCLUÍDA"}
+                    </div>
+                  </div>
+                </div>
+
+                {/* 3. Dragstrip Christmas Tree (Árvore de Arrancada Dragster) */}
+                <div className="glass-panel p-5 rounded-3xl border border-white/10 flex flex-col items-center justify-center space-y-4 relative overflow-hidden">
+                  <div className="text-[11px] font-racing font-bold tracking-widest text-gray-400 uppercase">
+                    ÁRVORE DE NATAL DE ARRANCADA • DRAGSTRIP TREE
+                  </div>
+
+                  {/* Torre da Árvore de Arrancada */}
+                  <div className="relative bg-gradient-to-b from-carbon-900 via-carbon-950 to-carbon-900 p-3 sm:p-4 rounded-3xl border-2 border-white/15 shadow-2xl flex flex-col items-center gap-2.5">
+                    
+                    {/* Pre-Stage (Luzes Superiores Azuis/Âmbar) */}
+                    <div className="flex items-center gap-3">
+                      <div className={`w-4 h-4 rounded-full border border-white/20 transition-all duration-150 ${
+                        raceTreeState !== "ready" 
+                          ? "bg-neon-amber shadow-[0_0_15px_#ffaa00]" 
+                          : "bg-carbon-900 opacity-30"
+                      }`}></div>
+                      <span className="text-[9px] font-mono font-bold text-gray-400">PRE-STAGE</span>
+                      <div className={`w-4 h-4 rounded-full border border-white/20 transition-all duration-150 ${
+                        raceTreeState !== "ready" 
+                          ? "bg-neon-amber shadow-[0_0_15px_#ffaa00]" 
+                          : "bg-carbon-900 opacity-30"
+                      }`}></div>
+                    </div>
+
+                    {/* Stage */}
+                    <div className="flex items-center gap-3">
+                      <div className={`w-4 h-4 rounded-full border border-white/20 transition-all duration-150 ${
+                        raceTreeState !== "ready" 
+                          ? "bg-neon-amber shadow-[0_0_15px_#ffaa00]" 
+                          : "bg-carbon-900 opacity-30"
+                      }`}></div>
+                      <span className="text-[9px] font-mono font-bold text-gray-400">STAGE</span>
+                      <div className={`w-4 h-4 rounded-full border border-white/20 transition-all duration-150 ${
+                        raceTreeState !== "ready" 
+                          ? "bg-neon-amber shadow-[0_0_15px_#ffaa00]" 
+                          : "bg-carbon-900 opacity-30"
+                      }`}></div>
+                    </div>
+
+                    {/* Divisor */}
+                    <div className="w-16 h-0.5 bg-white/10 my-0.5"></div>
+
+                    {/* 3 Luzes Âmbar (Sportsman / Pro Tree) */}
+                    {/* Âmbar 1 */}
+                    <div className={`w-7 h-7 rounded-full border-2 border-white/20 transition-all duration-150 ${
+                      raceTreeState === "amber1" || raceTreeState === "amber2" || raceTreeState === "amber3" || raceTreeState === "green" || raceTreeState === "running"
+                        ? "bg-neon-amber shadow-[0_0_20px_#ffaa00] scale-105"
+                        : "bg-carbon-900 opacity-25"
+                    }`}></div>
+
+                    {/* Âmbar 2 */}
+                    <div className={`w-7 h-7 rounded-full border-2 border-white/20 transition-all duration-150 ${
+                      raceTreeState === "amber2" || raceTreeState === "amber3" || raceTreeState === "green" || raceTreeState === "running"
+                        ? "bg-neon-amber shadow-[0_0_20px_#ffaa00] scale-105"
+                        : "bg-carbon-900 opacity-25"
+                    }`}></div>
+
+                    {/* Âmbar 3 */}
+                    <div className={`w-7 h-7 rounded-full border-2 border-white/20 transition-all duration-150 ${
+                      raceTreeState === "amber3" || raceTreeState === "green" || raceTreeState === "running"
+                        ? "bg-neon-amber shadow-[0_0_20px_#ffaa00] scale-105"
+                        : "bg-carbon-900 opacity-25"
+                    }`}></div>
+
+                    {/* GREEN LIGHT - LUZ VERDE DE LARGADA */}
+                    <div className={`w-9 h-9 rounded-full border-2 border-white/30 transition-all duration-150 ${
+                      raceTreeState === "green" || raceTreeState === "running"
+                        ? "bg-neon-lime shadow-[0_0_30px_#00f59b] scale-110 animate-pulse"
+                        : "bg-carbon-900 opacity-25"
+                    }`}></div>
+
+                    {/* RED LIGHT - QUEIMA DE LARGADA */}
+                    <div className={`w-7 h-7 rounded-full border-2 border-white/20 transition-all duration-150 ${
+                      raceTreeState === "redlight"
+                        ? "bg-neon-red shadow-[0_0_25px_#ff2a4b] animate-ping"
+                        : "bg-carbon-900 opacity-20"
+                    }`}></div>
+
+                  </div>
+
+                  {/* Informações da Árvore e Tempo de Reação */}
+                  <div className="flex flex-wrap items-center justify-center gap-3 text-center">
+                    <div className="px-3 py-1 rounded-full bg-carbon-900 border border-white/10 text-xs font-mono text-gray-300">
+                      ⏱️ Tempo de Reação (RT): <span className="font-bold text-neon-lime">{raceReactionTime ? raceReactionTime + "s" : "0.000s"}</span>
+                    </div>
+                    <div className="text-[11px] font-mono text-gray-400">
+                      {raceTreeState === "ready" && "💡 Alinhe o carro parado em 0 km/h e clique em LARGADA para iniciar a árvore"}
+                      {raceTreeState === "staging" && "🟡 Alinhando no Stage... Aguarde a contagem das luzes âmbar"}
+                      {(raceTreeState === "amber1" || raceTreeState === "amber2" || raceTreeState === "amber3") && "🟡🟡🟡 Atenção... Prepare o acelerador!"}
+                      {(raceTreeState === "green" || raceTreeState === "running") && "🟢🟢 VERDE! Pé no fundo até os 402m!"}
+                      {raceTreeState === "finished" && "🏁 Puxada concluída! Veja as métricas e o cartão de telemetria abaixo"}
+                    </div>
+                  </div>
+                </div>
+
+                {/* 4. Digital OLED Speedometer & Telemetry Hero HUD */}
+                <div className="glass-card p-5 sm:p-6 rounded-3xl border border-white/15 bg-gradient-to-b from-carbon-900/90 to-carbon-950/90 shadow-2xl relative">
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
+                    
+                    {/* Painel Esquerdo: G-Force Meter Longitudinal */}
+                    <div className="flex flex-col items-center justify-center space-y-2 p-3 bg-carbon-950/60 rounded-2xl border border-white/5">
+                      <div className="text-[10px] font-racing font-bold text-gray-400 uppercase tracking-wider">
+                        FORÇA G LONGITUDINAL
+                      </div>
+                      
+                      <div className={`font-racing font-black text-3xl ${
+                        raceCurrentG > 0.6 ? "text-neon-lime" : raceCurrentG < -0.5 ? "text-neon-red" : "text-white"
+                      }`}>
+                        {raceCurrentG >= 0 ? `+${raceCurrentG.toFixed(2)}` : raceCurrentG.toFixed(2)} G
+                      </div>
+
+                      {/* Barra de Força G (-1.5G a +1.5G) */}
+                      <div className="w-full h-3 bg-carbon-850 rounded-full overflow-hidden relative border border-white/10">
+                        {/* Linha central zero */}
+                        <div className="absolute top-0 bottom-0 left-1/2 w-0.5 bg-white/40 z-10"></div>
+                        {raceCurrentG >= 0 ? (
+                          <div 
+                            className="h-full bg-gradient-to-r from-neon-lime/80 to-neon-lime rounded-r-full transition-all duration-75"
+                            style={{ 
+                              marginLeft: '50%', 
+                              width: `${Math.min(50, (raceCurrentG / 1.5) * 50)}%` 
+                            }}
+                          ></div>
+                        ) : (
+                          <div 
+                            className="h-full bg-gradient-to-l from-neon-red/80 to-neon-red rounded-l-full transition-all duration-75"
+                            style={{ 
+                              marginRight: '50%', 
+                              float: 'right',
+                              width: `${Math.min(50, (Math.abs(raceCurrentG) / 1.5) * 50)}%` 
+                            }}
+                          ></div>
+                        )}
+                      </div>
+
+                      <div className="flex justify-between w-full text-[10px] font-mono text-gray-400">
+                        <span>Frenagem -1.5G</span>
+                        <span className="font-bold text-neon-lime">Pico: +{racePeakG.toFixed(2)}G</span>
+                        <span>Tração +1.5G</span>
+                      </div>
+                    </div>
+
+                    {/* Centro: Gigante Velocímetro Digital OLED */}
+                    <div className="flex flex-col items-center justify-center text-center">
+                      
+                      {/* Indicador de Câmbio DSG */}
+                      <div className="px-3 py-1 rounded-full bg-carbon-900 border border-white/20 text-xs font-mono font-bold text-neon-cyan shadow-md mb-1">
+                        DSG: {raceSpeed === 0 ? "P" : raceSpeed < 58 ? "1ª" : raceSpeed < 98 ? "2ª" : raceSpeed < 155 ? "3ª" : raceSpeed < 200 ? "4ª" : "5ª"}
+                      </div>
+
+                      {/* Número da Velocidade */}
+                      <div className={`font-racing font-black text-6xl sm:text-7xl leading-none tracking-tighter ${
+                        raceSpeed > 150 ? "text-neon-gold" : raceSpeed > 90 ? "text-neon-lime" : "text-white"
+                      }`}>
+                        {raceSpeed}
+                      </div>
+
+                      <div className="text-xs font-mono font-bold text-neon-lime tracking-widest mt-1">
+                        KM / H
+                      </div>
+
+                      {/* Barra de RPM / Aceleração Dinâmica */}
+                      <div className="w-48 sm:w-64 h-2 bg-carbon-950 rounded-full overflow-hidden mt-3 border border-white/10">
+                        <div 
+                          className="h-full bg-gradient-to-r from-neon-lime via-neon-cyan to-neon-amber transition-all duration-75"
+                          style={{ width: `${Math.min(100, (raceSpeed / 220) * 100)}%` }}
+                        ></div>
+                      </div>
+
+                    </div>
+
+                    {/* Painel Direito: Cronômetro & Distância Percorrida */}
+                    <div className="flex flex-col items-center justify-center space-y-2 p-3 bg-carbon-950/60 rounded-2xl border border-white/5">
+                      <div className="text-[10px] font-racing font-bold text-gray-400 uppercase tracking-wider">
+                        TEMPO DECORRIDO
+                      </div>
+
+                      <div className="font-racing font-black text-3xl text-neon-cyan">
+                        {(raceElapsedMs / 1000).toFixed(2)} s
+                      </div>
+
+                      <div className="w-full text-center py-1 bg-carbon-900/80 rounded-lg border border-white/5">
+                        <span className="text-[10px] font-mono text-gray-400">DISTÂNCIA NA PISTA:</span>
+                        <div className="font-racing font-bold text-lg text-white">
+                          {raceDistanceM.toFixed(1)} <span className="text-xs text-neon-lime font-mono">/ 402m</span>
+                        </div>
+                      </div>
+
+                      <div className="text-[10px] font-mono text-gray-400">
+                        Status: <span className="text-neon-lime">{isRacePulling ? "Acelerando a Fundo" : "Pronto na Largada"}</span>
+                      </div>
+                    </div>
+
+                  </div>
+
+                  {/* 5. Botões de Controle Tátil */}
+                  <div className="mt-6 pt-5 border-t border-white/10 flex flex-wrap items-center justify-center gap-3">
+                    
+                    {/* Botão de Disparo / Iniciar Puxada */}
+                    <button 
+                      onClick={handleStartRacePull}
+                      disabled={isRacePulling}
+                      className={`px-6 py-3 rounded-2xl font-racing font-black text-sm tracking-wider flex items-center gap-2 shadow-2xl transition-all ${
+                        isRacePulling
+                          ? "bg-carbon-800 text-gray-500 cursor-not-allowed"
+                          : "bg-neon-lime text-carbon-950 shadow-neon-lime hover:scale-105 active:scale-95"
+                      }`}
+                    >
+                      <span className="text-lg">🔥</span>
+                      <span>{isRacePulling ? `⚡ ACELERANDO... (${raceSpeed} KM/H)` : "INICIAR PUXADA / LAUNCH CONTROL"}</span>
+                    </button>
+
+                    {/* Botão Resetar */}
+                    <button 
+                      onClick={handleResetRace}
+                      className="px-4 py-3 rounded-2xl bg-carbon-850 hover:bg-carbon-800 border border-white/15 hover:border-neon-lime text-gray-300 hover:text-white font-racing font-bold text-xs flex items-center gap-2 transition-all"
+                    >
+                      <span>🔄</span>
+                      <span>Resetar / Armar</span>
+                    </button>
+
+                    {/* Botão Ver Cartão Dragy Oficial */}
+                    <button 
+                      onClick={() => setRaceSlipModal(currentRunMetrics)}
+                      className="px-4 py-3 rounded-2xl bg-gradient-to-r from-neon-gold/20 to-neon-amber/20 hover:from-neon-gold/30 hover:to-neon-amber/30 border border-neon-gold/40 text-neon-gold font-racing font-bold text-xs flex items-center gap-2 transition-all shadow-md"
+                    >
+                      <span>📸</span>
+                      <span>Cartão Telemetria Dragy</span>
+                    </button>
+
+                  </div>
+
+                </div>
+
+                {/* 6. Filtros de Categorias de Telemetria */}
+                <div className="flex items-center gap-1.5 p-1 bg-carbon-900 rounded-2xl border border-white/10 overflow-x-auto">
+                  <button 
+                    onClick={() => setRaceFilter("all")}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-racing font-bold whitespace-nowrap transition-all ${
+                      raceFilter === "all" ? "bg-neon-lime text-carbon-950" : "text-gray-400 hover:text-white"
+                    }`}
+                  >
+                    🔥 TODOS OS TEMPOS
+                  </button>
+                  <button 
+                    onClick={() => setRaceFilter("speed")}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-racing font-bold whitespace-nowrap transition-all ${
+                      raceFilter === "speed" ? "bg-neon-lime text-carbon-950" : "text-gray-400 hover:text-white"
+                    }`}
+                  >
+                    ⚡ 0-100 & 100-200
+                  </button>
+                  <button 
+                    onClick={() => setRaceFilter("drag")}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-racing font-bold whitespace-nowrap transition-all ${
+                      raceFilter === "drag" ? "bg-neon-lime text-carbon-950" : "text-gray-400 hover:text-white"
+                    }`}
+                  >
+                    🏁 ARRANCADA (201M / 402M)
+                  </button>
+                  <button 
+                    onClick={() => setRaceFilter("brake")}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-racing font-bold whitespace-nowrap transition-all ${
+                      raceFilter === "brake" ? "bg-neon-lime text-carbon-950" : "text-gray-400 hover:text-white"
+                    }`}
+                  >
+                    🛑 FRENAGEM (100-0)
+                  </button>
+                </div>
+
+                {/* 7. Grid de Cards de Benchmark Telemetria (Estilo Dragy / RaceBox) */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                  
+                  {/* Card 0-60 km/h */}
+                  {(raceFilter === "all" || raceFilter === "speed" || raceFilter === "drag") && (
+                    <div className="glass-card p-4 rounded-2xl border border-white/10 flex flex-col justify-between space-y-2 hover:border-white/20 transition-all">
+                      <div className="flex justify-between items-start">
+                        <span className="text-[11px] font-racing font-bold text-gray-400 uppercase">
+                          0 - 60 KM/H
+                        </span>
+                        <span className="px-1.5 py-0.5 rounded bg-carbon-900 text-[9px] font-mono text-gray-400 border border-white/10">
+                          Tração 60ft
+                        </span>
+                      </div>
+                      <div className="font-racing font-black text-3xl text-white">
+                        {currentRunMetrics.t0_60 ? `${currentRunMetrics.t0_60}s` : "--.--s"}
+                      </div>
+                      <div className="flex justify-between items-center text-[10px] font-mono text-gray-400 pt-1 border-t border-white/5">
+                        <span>~20.4 metros</span>
+                        <span className="text-neon-lime font-bold">✅ VÁLIDO</span>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Card 0-100 km/h (Métrica de Ouro) */}
+                  {(raceFilter === "all" || raceFilter === "speed") && (
+                    <div className="glass-card p-4 rounded-2xl border-2 border-neon-lime/40 bg-gradient-to-b from-carbon-900 to-neon-lime/5 flex flex-col justify-between space-y-2 shadow-lg relative overflow-hidden">
+                      <div className="absolute top-0 right-0 px-2 py-0.5 bg-neon-lime text-carbon-950 text-[9px] font-racing font-black rounded-bl-lg">
+                        PB RECORDE 🏆
+                      </div>
+                      <div className="flex justify-between items-start">
+                        <span className="text-[11px] font-racing font-bold text-neon-lime uppercase">
+                          0 - 100 KM/H
+                        </span>
+                      </div>
+                      <div className="font-racing font-black text-4xl text-neon-lime">
+                        {currentRunMetrics.t0_100 ? `${currentRunMetrics.t0_100}s` : "--.--s"}
+                      </div>
+                      <div className="flex justify-between items-center text-[10px] font-mono text-gray-300 pt-1 border-t border-white/10">
+                        <span>68.2m • 2ª Marcha</span>
+                        <span className="text-neon-lime font-bold">Inclinação: -0.28%</span>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Card 100-200 km/h (Potência de Alta do Stage 3) */}
+                  {(raceFilter === "all" || raceFilter === "speed") && (
+                    <div className="glass-card p-4 rounded-2xl border-2 border-neon-cyan/40 bg-gradient-to-b from-carbon-900 to-neon-cyan/5 flex flex-col justify-between space-y-2 shadow-lg relative">
+                      <div className="absolute top-0 right-0 px-2 py-0.5 bg-neon-cyan text-carbon-950 text-[9px] font-racing font-black rounded-bl-lg">
+                        STAGE 3 ⚡
+                      </div>
+                      <div className="flex justify-between items-start">
+                        <span className="text-[11px] font-racing font-bold text-neon-cyan uppercase">
+                          100 - 200 KM/H
+                        </span>
+                      </div>
+                      <div className="font-racing font-black text-4xl text-neon-cyan">
+                        {currentRunMetrics.t100_200 ? `${currentRunMetrics.t100_200}s` : "--.--s"}
+                      </div>
+                      <div className="flex justify-between items-center text-[10px] font-mono text-gray-300 pt-1 border-t border-white/10">
+                        <span>334.8m • 3ª / 4ª Marcha</span>
+                        <span className="text-neon-cyan font-bold">✅ VÁLIDO</span>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Card 60-120 km/h (Retomada) */}
+                  {(raceFilter === "all" || raceFilter === "speed") && (
+                    <div className="glass-card p-4 rounded-2xl border border-white/10 flex flex-col justify-between space-y-2 hover:border-white/20 transition-all">
+                      <div className="flex justify-between items-start">
+                        <span className="text-[11px] font-racing font-bold text-gray-400 uppercase">
+                          60 - 120 KM/H
+                        </span>
+                        <span className="px-1.5 py-0.5 rounded bg-carbon-900 text-[9px] font-mono text-gray-400 border border-white/10">
+                          Retomada
+                        </span>
+                      </div>
+                      <div className="font-racing font-black text-3xl text-white">
+                        {currentRunMetrics.t60_120 ? `${currentRunMetrics.t60_120}s` : "--.--s"}
+                      </div>
+                      <div className="flex justify-between items-center text-[10px] font-mono text-gray-400 pt-1 border-t border-white/5">
+                        <span>96.5 metros</span>
+                        <span className="text-neon-lime font-bold">✅ VÁLIDO</span>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Card 1/8 Milha (201m) */}
+                  {(raceFilter === "all" || raceFilter === "drag") && (
+                    <div className="glass-card p-4 rounded-2xl border border-white/10 flex flex-col justify-between space-y-2 hover:border-white/20 transition-all">
+                      <div className="flex justify-between items-start">
+                        <span className="text-[11px] font-racing font-bold text-gray-400 uppercase">
+                          1/8 MILHA (201M)
+                        </span>
+                        <span className="px-1.5 py-0.5 rounded bg-carbon-900 text-[9px] font-mono text-gray-400 border border-white/10">
+                          660 ft
+                        </span>
+                      </div>
+                      <div className="font-racing font-black text-3xl text-white">
+                        {currentRunMetrics.t201m ? `${currentRunMetrics.t201m.time}s` : "--.--s"}
+                      </div>
+                      <div className="flex justify-between items-center text-[10px] font-mono text-gray-400 pt-1 border-t border-white/5">
+                        <span>Trap: {currentRunMetrics.t201m ? `${currentRunMetrics.t201m.speed} km/h` : "--"}</span>
+                        <span className="text-neon-lime font-bold">✅ VÁLIDO</span>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Card 1/4 Milha (402m - Drag King) */}
+                  {(raceFilter === "all" || raceFilter === "drag") && (
+                    <div className="glass-card p-4 rounded-2xl border-2 border-neon-gold/40 bg-gradient-to-b from-carbon-900 to-neon-gold/5 flex flex-col justify-between space-y-2 shadow-lg relative">
+                      <div className="absolute top-0 right-0 px-2 py-0.5 bg-neon-gold text-carbon-950 text-[9px] font-racing font-black rounded-bl-lg">
+                        1320 FT 👑
+                      </div>
+                      <div className="flex justify-between items-start">
+                        <span className="text-[11px] font-racing font-bold text-neon-gold uppercase">
+                          1/4 MILHA (402M)
+                        </span>
+                      </div>
+                      <div className="font-racing font-black text-4xl text-neon-gold">
+                        {currentRunMetrics.t402m ? `${currentRunMetrics.t402m.time}s` : "--.--s"}
+                      </div>
+                      <div className="flex justify-between items-center text-[10px] font-mono text-gray-300 pt-1 border-t border-white/10">
+                        <span>Trap: {currentRunMetrics.t402m ? `${currentRunMetrics.t402m.speed} km/h` : "--"}</span>
+                        <span className="text-neon-lime font-bold">Oficial Dragy</span>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Card Frenagem 100-0 km/h */}
+                  {(raceFilter === "all" || raceFilter === "brake") && (
+                    <div className="glass-card p-4 rounded-2xl border border-neon-red/30 bg-gradient-to-b from-carbon-900 to-neon-red/5 flex flex-col justify-between space-y-2 shadow-lg">
+                      <div className="flex justify-between items-start">
+                        <span className="text-[11px] font-racing font-bold text-neon-red uppercase">
+                          FRENAGEM 100 - 0 KM/H
+                        </span>
+                        <span className="px-1.5 py-0.5 rounded bg-neon-red/10 border border-neon-red/30 text-[9px] font-mono text-neon-red font-bold">
+                          Segurança
+                        </span>
+                      </div>
+                      <div className="font-racing font-black text-3xl text-neon-red">
+                        {currentRunMetrics.t100_0 ? `${currentRunMetrics.t100_0.time}s` : "--.--s"}
+                      </div>
+                      <div className="flex justify-between items-center text-[10px] font-mono text-gray-400 pt-1 border-t border-white/5">
+                        <span>Distância: {currentRunMetrics.t100_0 ? `${currentRunMetrics.t100_0.dist}m` : "--"}</span>
+                        <span className="text-neon-red font-bold">-1.05G Desacel.</span>
+                      </div>
+                    </div>
+                  )}
+
+                </div>
+
+                {/* 8. Histórico de Puxadas Salvas (Dragy Leaderboard) */}
+                <div className="glass-panel p-5 rounded-3xl border border-white/10 space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="font-racing font-bold text-lg text-white">
+                        HISTÓRICO DE PUXADAS (DRAGY LOGS)
+                      </h3>
+                      <p className="text-[11px] font-mono text-gray-400">
+                        Puxadas autenticadas salvas localmente no seu dispositivo
+                      </p>
+                    </div>
+                    <button 
+                      onClick={() => setRaceSlipModal(raceHistory[0] || currentRunMetrics)}
+                      className="px-3 py-1.5 rounded-xl bg-neon-lime/10 border border-neon-lime/30 text-neon-lime font-racing font-bold text-xs hover:bg-neon-lime/20 transition-all flex items-center gap-1.5"
+                    >
+                      <span>📸</span>
+                      <span>Ver Último Cartão</span>
+                    </button>
+                  </div>
+
+                  <div className="space-y-2.5">
+                    {raceHistory.map((run, idx) => (
+                      <div 
+                        key={run.id || idx}
+                        onClick={() => setRaceSlipModal(run)}
+                        className="p-3.5 bg-carbon-900 hover:bg-carbon-850 rounded-2xl border border-white/5 hover:border-white/20 transition-all cursor-pointer flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-xl bg-carbon-950 border border-white/10 flex items-center justify-center font-racing font-bold text-neon-lime">
+                            #{idx + 1}
+                          </div>
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <span className="font-racing font-bold text-sm text-white">{run.car}</span>
+                              <span className="text-[10px] font-mono text-neon-lime">✅ Válido ({run.slope}%)</span>
+                            </div>
+                            <div className="text-[11px] font-mono text-gray-400">
+                              📅 {run.date} • {run.notes || "Puxada oficial"}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-4 text-right w-full sm:w-auto justify-between sm:justify-end border-t sm:border-t-0 pt-2 sm:pt-0 border-white/5">
+                          <div>
+                            <div className="text-[9px] font-mono text-gray-400">0 - 100 KM/H</div>
+                            <div className="font-racing font-bold text-base text-neon-lime">{run.t0_100}s</div>
+                          </div>
+                          <div>
+                            <div className="text-[9px] font-mono text-gray-400">100 - 200 KM/H</div>
+                            <div className="font-racing font-bold text-base text-neon-cyan">{run.t100_200}s</div>
+                          </div>
+                          <div>
+                            <div className="text-[9px] font-mono text-gray-400">1/4 MILHA (402M)</div>
+                            <div className="font-racing font-bold text-base text-neon-gold">
+                              {run.t402m ? `${run.t402m.time}s` : "12.08s"}
+                            </div>
+                          </div>
+                          <span className="text-gray-500 hover:text-white text-lg">›</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+              </div>
+            )}
+
+            {/* =================================================================
+                ABA 5: GARAGEM VIRTUAL & MODIFICAÇÕES (MEU CARRO)
                ================================================================= */}
             {activeTab === "garage" && (
               <div className="max-w-3xl mx-auto px-4 py-6 space-y-6">
@@ -2175,7 +3105,7 @@
               {/* 3. Waze Radar (Com Cadeado / VIP) */}
               <button 
                 onClick={() => handleTabChange("radar")}
-                className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-racing font-bold transition-all ${
+                className={`flex items-center gap-1.5 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-[11px] sm:text-xs font-racing font-bold transition-all ${
                   activeTab === "radar"
                     ? "bg-neon-lime text-carbon-950 shadow-neon-lime"
                     : currentUser.isVip 
@@ -2184,7 +3114,7 @@
                 }`}
               >
                 <span>{currentUser.isVip ? "📡" : "🔒"}</span>
-                <span>Waze Radar</span>
+                <span className="hidden sm:inline">Radar</span>
                 {!currentUser.isVip && (
                   <span className="px-1 text-[9px] bg-neon-gold text-carbon-950 font-black rounded font-mono">
                     VIP
@@ -2192,10 +3122,24 @@
                 )}
               </button>
 
-              {/* 4. Minha Garagem & Mods */}
+              {/* 4. Race Stats (Dragy / RaceBox Telemetria) */}
+              <button 
+                onClick={() => handleTabChange("racestats")}
+                className={`flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-full text-[11px] sm:text-xs font-racing font-bold transition-all ${
+                  activeTab === "racestats"
+                    ? "bg-neon-lime text-carbon-950 shadow-neon-lime"
+                    : "text-gray-400 hover:text-white"
+                }`}
+                title="Race Stats • Dragy & Telemetria"
+              >
+                <span>⏱️</span>
+                <span className="hidden sm:inline">Race Stats</span>
+              </button>
+
+              {/* 5. Minha Garagem & Mods */}
               <button 
                 onClick={() => handleTabChange("garage")}
-                className={`flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-racing font-bold transition-all ${
+                className={`flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-full text-[11px] sm:text-xs font-racing font-bold transition-all ${
                   activeTab === "garage"
                     ? "bg-neon-lime text-carbon-950 shadow-neon-lime"
                     : "text-gray-400 hover:text-white"
@@ -2205,10 +3149,10 @@
                 <span className="hidden sm:inline">Garagem</span>
               </button>
 
-              {/* 5. Perfil Social */}
+              {/* 6. Perfil Social */}
               <button 
                 onClick={() => handleTabChange("profile")}
-                className={`flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-racing font-bold transition-all ${
+                className={`flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-full text-[11px] sm:text-xs font-racing font-bold transition-all ${
                   activeTab === "profile"
                     ? "bg-neon-lime text-carbon-950 shadow-neon-lime"
                     : "text-gray-400 hover:text-white"
@@ -2217,6 +3161,191 @@
                 <span>👤</span>
                 <span className="hidden sm:inline">Perfil</span>
               </button>
+
+            </nav>
+          </div>
+
+          
+          {/* ===================================================================
+              MODAL: CARTÃO OFICIAL DE TELEMETRIA DRAGY / RACE STATS
+             =================================================================== */}
+          {raceSlipModal && (
+            <div 
+              onClick={() => setRaceSlipModal(null)}
+              className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/90 backdrop-blur-md animate-fadeIn"
+            >
+              <div 
+                onClick={(e) => e.stopPropagation()} 
+                className="glass-panel rounded-3xl max-w-md w-full p-5 sm:p-6 border border-neon-lime/30 shadow-2xl relative max-h-[94vh] flex flex-col space-y-4 overflow-y-auto"
+              >
+                {/* Cabeçalho do Cartão Dragy */}
+                <div className="flex items-center justify-between border-b border-white/10 pb-3">
+                  <div className="flex items-center gap-2">
+                    <span className="text-2xl">⏱️</span>
+                    <div>
+                      <h3 className="font-racing font-black text-lg text-white leading-tight">
+                        RACE STATS TELEMETRY
+                      </h3>
+                      <p className="text-[10px] font-mono text-neon-lime">
+                        DRAGY CERTIFIED • 10Hz HIGH PRECISION GNSS
+                      </p>
+                    </div>
+                  </div>
+                  <button 
+                    onClick={() => setRaceSlipModal(null)}
+                    className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-gray-300 hover:text-white flex items-center justify-center font-bold text-sm"
+                  >
+                    ✕
+                  </button>
+                </div>
+
+                {/* Slip Vertical estilo Dragy Oficial */}
+                <div className="bg-gradient-to-b from-carbon-900 to-carbon-950 p-4 rounded-2xl border border-white/15 space-y-3 shadow-inner">
+                  
+                  {/* Informações do Carro e Pista */}
+                  <div className="flex justify-between items-start text-xs border-b border-white/10 pb-2.5">
+                    <div>
+                      <div className="font-racing font-bold text-sm text-white">{raceSlipModal.car || currentUser.car}</div>
+                      <div className="text-[11px] font-mono text-gray-400">📍 Pista Tupã - SP • {raceSlipModal.date || "Hoje"}</div>
+                    </div>
+                    <div className="text-right">
+                      <span className="px-2 py-0.5 rounded bg-neon-lime/10 border border-neon-lime/40 text-[10px] font-mono font-bold text-neon-lime">
+                        SAE J1349 VÁLIDO
+                      </span>
+                      <div className="text-[10px] font-mono text-gray-400 mt-1">Inclinação: {raceSlipModal.slope || -0.28}%</div>
+                    </div>
+                  </div>
+
+                  {/* Destaque Principal do Tempo (0-100 ou 402m) */}
+                  <div className="grid grid-cols-2 gap-2 text-center py-2 bg-carbon-850/80 rounded-xl border border-white/5">
+                    <div className="border-r border-white/10 pr-2">
+                      <div className="text-[10px] font-racing font-bold text-gray-400 uppercase">0 - 100 KM/H</div>
+                      <div className="font-racing font-black text-3xl text-neon-lime">{raceSlipModal.t0_100 || 4.24}s</div>
+                      <div className="text-[9px] font-mono text-gray-400">68.2m • Tração FWD</div>
+                    </div>
+                    <div className="pl-2">
+                      <div className="text-[10px] font-racing font-bold text-gray-400 uppercase">1/4 MILHA (402M)</div>
+                      <div className="font-racing font-black text-3xl text-neon-gold">
+                        {raceSlipModal.t402m ? raceSlipModal.t402m.time + "s" : "12.08s"}
+                      </div>
+                      <div className="text-[9px] font-mono text-gray-400">
+                        @{raceSlipModal.t402m ? raceSlipModal.t402m.speed : "196.4"} km/h
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Tabela de Parciais Dragy */}
+                  <div className="space-y-1.5 text-xs font-mono">
+                    <div className="flex justify-between py-1 border-b border-white/5 text-gray-300">
+                      <span>0 - 60 km/h (Tração 60ft):</span>
+                      <span className="font-bold text-white">{raceSlipModal.t0_60 || 2.14}s</span>
+                    </div>
+                    <div className="flex justify-between py-1 border-b border-white/5 text-gray-300">
+                      <span>0 - 100 km/h:</span>
+                      <span className="font-bold text-neon-lime">{raceSlipModal.t0_100 || 4.24}s</span>
+                    </div>
+                    <div className="flex justify-between py-1 border-b border-white/5 text-gray-300">
+                      <span>100 - 200 km/h (Alta):</span>
+                      <span className="font-bold text-neon-cyan">{raceSlipModal.t100_200 || 7.58}s</span>
+                    </div>
+                    <div className="flex justify-between py-1 border-b border-white/5 text-gray-300">
+                      <span>60 - 120 km/h (Retomada):</span>
+                      <span className="font-bold text-white">{raceSlipModal.t60_120 || 3.38}s</span>
+                    </div>
+                    <div className="flex justify-between py-1 border-b border-white/5 text-gray-300">
+                      <span>1/8 Milha (201m):</span>
+                      <span className="font-bold text-white">
+                        {raceSlipModal.t201m ? raceSlipModal.t201m.time + "s @ " + raceSlipModal.t201m.speed + " km/h" : "7.88s @ 154.2 km/h"}
+                      </span>
+                    </div>
+                    <div className="flex justify-between py-1 border-b border-white/5 text-gray-300">
+                      <span>1/4 Milha (402m):</span>
+                      <span className="font-bold text-neon-gold">
+                        {raceSlipModal.t402m ? raceSlipModal.t402m.time + "s @ " + raceSlipModal.t402m.speed + " km/h" : "12.08s @ 196.4 km/h"}
+                      </span>
+                    </div>
+                    <div className="flex justify-between py-1 border-b border-white/5 text-gray-300">
+                      <span>Frenagem 100 - 0 km/h:</span>
+                      <span className="font-bold text-neon-red">
+                        {raceSlipModal.t100_0 ? raceSlipModal.t100_0.time + "s (" + raceSlipModal.t100_0.dist + "m)" : "2.84s (35.8m)"}
+                      </span>
+                    </div>
+                    <div className="flex justify-between py-1 text-gray-300">
+                      <span>Aceleração Longitudinal Máx:</span>
+                      <span className="font-bold text-neon-lime">+{raceSlipModal.peakG || 0.85} G</span>
+                    </div>
+                  </div>
+
+                  {/* Mini Gráfico SVG de Aceleração */}
+                  <div className="pt-2">
+                    <div className="flex justify-between text-[10px] font-mono text-gray-400 mb-1">
+                      <span>Curva de Aceleração & G-Force</span>
+                      <span>205 km/h / 12s</span>
+                    </div>
+                    <div className="w-full h-16 bg-carbon-950 rounded-lg p-1.5 border border-white/10 flex items-end">
+                      <svg viewBox="0 0 300 60" className="w-full h-full overflow-visible">
+                        <defs>
+                          <linearGradient id="raceGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stopColor="#00f59b" />
+                            <stop offset="50%" stopColor="#00d2ff" />
+                            <stop offset="100%" stopColor="#ffaa00" />
+                          </linearGradient>
+                        </defs>
+                        {/* Linha de aceleração */}
+                        <path 
+                          d="M 5,55 Q 40,30 90,22 T 180,12 T 260,5 L 290,5" 
+                          fill="none" 
+                          stroke="url(#raceGrad)" 
+                          strokeWidth="3.5" 
+                          strokeLinecap="round" 
+                        />
+                        {/* Marcação 100 km/h */}
+                        <circle cx="90" cy="22" r="4" fill="#00f59b" />
+                        <text x="80" y="38" fill="#00f59b" fontSize="8" fontFamily="monospace">100 km/h</text>
+                        {/* Marcação 200 km/h */}
+                        <circle cx="260" cy="5" r="4" fill="#ffaa00" />
+                        <text x="235" y="18" fill="#ffaa00" fontSize="8" fontFamily="monospace">200 km/h</text>
+                      </svg>
+                    </div>
+                  </div>
+
+                  {/* Selo Dragy de Autenticidade */}
+                  <div className="flex items-center justify-between text-[10px] font-mono text-gray-400 pt-2 border-t border-white/10">
+                    <div className="flex items-center gap-1.5 text-neon-lime font-bold">
+                      <span>🛡️</span>
+                      <span>DRAGY VALID CERTIFICATE</span>
+                    </div>
+                    <span>ID: #GTI-380-TUPA</span>
+                  </div>
+
+                </div>
+
+                {/* Botões de Ação */}
+                <div className="flex flex-col gap-2 pt-1">
+                  <button 
+                    onClick={() => handlePublishRaceSlipToFeed(raceSlipModal)}
+                    className="w-full py-2.5 rounded-xl bg-neon-lime text-carbon-950 font-racing font-bold text-sm shadow-neon-lime hover:scale-[1.02] transition-all flex items-center justify-center gap-2"
+                  >
+                    <span>🚀</span>
+                    <span>Publicar no Feed Social do GridZone</span>
+                  </button>
+
+                  <button 
+                    onClick={() => {
+                      const text = `⏱️ Telemetria Dragy Oficial • Golf GTI Stage 3 (380 cv)\n🔥 0-100 km/h: ${raceSlipModal.t0_100}s\n⚡ 100-200 km/h: ${raceSlipModal.t100_200}s\n🏁 1/4 Milha: ${raceSlipModal.t402m ? raceSlipModal.t402m.time + 's @ ' + raceSlipModal.t402m.speed + ' km/h' : '12.08s'}\n📈 Pico G: +${raceSlipModal.peakG}G | Válido Dragy (-0.28%)\n📍 Tupã - SP @GridZone`;
+                      navigator.clipboard?.writeText(text);
+                      showToast("📋 Dados da telemetria copiados! Cole nos Stories do Instagram!");
+                    }}
+                    className="w-full py-2 rounded-xl bg-carbon-800 hover:bg-carbon-700 border border-white/15 text-gray-200 font-racing font-bold text-xs flex items-center justify-center gap-2 transition-all"
+                  >
+                    <span>📸</span>
+                    <span>Copiar Resumo para Stories do Instagram</span>
+                  </button>
+                </div>
+
+              </div>
+            </div>
+          )}
 
             </nav>
           </div>
